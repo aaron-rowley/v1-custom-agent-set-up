@@ -69,19 +69,16 @@
   .spinner{ width:18px; height:18px; border:3px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:50%; animation:spin .9s linear infinite; display:inline-block; vertical-align:-3px; margin-right:6px; }
   @keyframes spin{ to{ transform:rotate(360deg) } }
 
-  /* Token inserter */
-  .tokenbar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
-  .tokenbar select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
-  .tokenbar button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
-  .muted{ color:var(--muted); font-size:12px; }
-  .cv{ margin-top:6px; font-size:12px; color:#9aa3b5; word-break:break-word; white-space:pre-wrap; }
+  /* Per-field token inserter */
+  .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
+  .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
+  .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
 
-  /* Prompt editor */
-  .prompt{ background:#0e1117; border:1px solid var(--line); border-radius:14px; padding:10px; min-height:140px; }
-  .prompt[contenteditable="true"]:empty:before{ content:attr(data-placeholder); color:var(--muted); }
-  .toolbar{ display:flex; gap:8px; margin-bottom:8px; }
-  .tb-btn{ background:#10151c; color:#fff; border:1px solid var(--line); padding:6px 10px; border-radius:8px; cursor:pointer; }
-  .small{ font-size:12px; color:#9aa3b5; }
+  /* Current value chip */
+  .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; color:#9aa3b5; background:#0f141a; display:inline-block; }
+  .cv strong{ color:#cdd6e4; font-weight:700; }
+  .cv.has-value{ border-color:rgba(237,108,3,.5); background:rgba(237,108,3,.1); color:#ffd9b8; }
+
 </style>
 </head>
 <body>
@@ -106,12 +103,23 @@
       <label>Active? ("Yes" or leave blank)</label>
       <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
-      <div class="cv" id="cv_active"></div>
+      <div class="cv" id="cv_active"><strong>Current value:</strong> (not set)</div>
 
       <!-- Campaign name -->
       <label>Campaign name</label>
+      <div class="ti" data-target="campaignName">
+        <select>
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
-      <div class="cv" id="cv_campaign"></div>
+      <div class="cv" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
 
       <!-- Per day + Cadence -->
       <div class="row">
@@ -122,7 +130,7 @@
             <option>150</option><option>200</option><option>250</option><option>300</option>
             <option>350</option><option>500</option><option selected>100</option>
           </select>
-          <div class="cv" id="cv_perday"></div>
+          <div class="cv" id="cv_perday"><strong>Current value:</strong> (not set)</div>
         </div>
         <div>
           <label>Follow up cadence</label>
@@ -134,14 +142,14 @@
             <option>IM > 72h > 72h > 72h</option>
             <option>IM > 7d > 7d > 7d</option>
           </select>
-          <div class="cv" id="cv_cadence"></div>
+          <div class="cv" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
         </div>
       </div>
 
-      <!-- Token insert -->
-      <div class="muted" style="margin-top:12px">Insert variable → appends into the focused text box.</div>
-      <div class="tokenbar">
-        <select id="tokenSelect">
+      <!-- Messages -->
+      <label>First message</label>
+      <div class="ti" data-target="firstMessage">
+        <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
           <option value="{{contact.last_name}}">{{contact.last_name}}</option>
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
@@ -149,36 +157,71 @@
           <option value="{{contact.phone}}">{{contact.phone}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
-        <button type="button" id="insertToken">Insert</button>
+        <button type="button">Insert</button>
       </div>
-
-      <!-- Messages -->
-      <label>First message</label>
       <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
-      <div class="cv" id="cv_firstmsg"></div>
+      <div class="cv" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 1</label>
+      <div class="ti" data-target="bump1">
+        <select>
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
       <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
-      <div class="cv" id="cv_bump1"></div>
+      <div class="cv" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 2</label>
+      <div class="ti" data-target="bump2">
+        <select>
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
       <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
-      <div class="cv" id="cv_bump2"></div>
+      <div class="cv" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 3</label>
-      <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
-      <div class="cv" id="cv_bump3"></div>
-
-      <!-- Notes (prompt editor) -->
-      <label>Notes about campaign</label>
-      <div class="toolbar">
-        <button class="tb-btn" data-cmd="bold" type="button">Bold</button>
-        <button class="tb-btn" data-cmd="italic" type="button">Italic</button>
-        <button class="tb-btn" data-cmd="insertUnorderedList" type="button">Bullets</button>
-        <span class="small">This saves HTML.</span>
+      <div class="ti" data-target="bump3">
+        <select>
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button">Insert</button>
       </div>
-      <div id="notes" class="prompt" contenteditable="true" data-placeholder="Write notes/prompts here…"></div>
-      <div class="cv" id="cv_notes"></div>
+      <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+      <div class="cv" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+
+      <!-- Notes (plain text) -->
+      <label>Notes about campaign</label>
+      <div class="ti" data-target="notes">
+        <select>
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
+      <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
+      <div class="cv" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
       <!-- Actions -->
       <div class="actions">
@@ -199,7 +242,7 @@
   // Helpers
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
-  const locationId = get("locationId");
+  const locationId   = get("locationId");
   const businessName = get("businessName");
 
   // Header lines
@@ -233,7 +276,7 @@
   const statusEl     = document.getElementById("status");
   const submitBtn    = document.getElementById("submitBtn");
 
-  // "Current value" labels
+  // "Current value" chips
   const cv = {
     active:  document.getElementById("cv_active"),
     campaign:document.getElementById("cv_campaign"),
@@ -246,7 +289,7 @@
     notes:   document.getElementById("cv_notes"),
   };
 
-  // Per-agent working state / current values
+  // Per-agent working and current
   const working = {};
   const current = {};
 
@@ -259,23 +302,26 @@
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
-  // Token insert
-  let focusTarget = null;
-  [firstMessage, bump1, bump2, bump3].forEach(el=> el.addEventListener("focus", ()=> (focusTarget = el)));
-  document.getElementById("insertToken").addEventListener("click", ()=>{
-    const token = (document.getElementById("tokenSelect")).value;
-    const el = focusTarget || firstMessage;
+  // Token inserter: attach to every .ti
+  function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
-    const end = el.selectionEnd ?? el.value.length;
-    el.value = el.value.slice(0,start) + token + el.value.slice(end);
+    const end   = el.selectionEnd ?? el.value.length;
+    const cur   = el.value || "";
+    el.value = cur.slice(0,start) + token + cur.slice(end);
     el.focus();
     el.selectionStart = el.selectionEnd = start + token.length;
+  }
+  document.querySelectorAll(".ti").forEach(ti=>{
+    const target = document.getElementById(ti.dataset.target);
+    const sel = ti.querySelector("select");
+    const btn = ti.querySelector("button");
+    btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
   });
 
   // Reset
   document.getElementById("resetBtn").addEventListener("click", ()=>{
     campaignName.value=""; perDay.value="100"; cadence.selectedIndex=0;
-    firstMessage.value=""; bump1.value=""; bump2.value=""; bump3.value=""; notes.innerHTML="";
+    firstMessage.value=""; bump1.value=""; bump2.value=""; bump3.value=""; notes.value="";
     setActive(false); setStatus("");
   });
 
@@ -288,10 +334,12 @@
     statusEl.innerHTML = `<span class="spinner"></span>${text}`;
   }
   function setCV(el, value){
-    el.textContent = "Current value: " + (value ? String(value) : "(not set)");
+    const has = !!value;
+    el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
+    el.classList.toggle("has-value", has);
   }
 
-  // Key generator for a given agent number (1..5)
+  // Keys for an agent
   function cvKeys(n){
     const base = `custom_campaign_agent_${n}__`;
     return {
@@ -315,39 +363,9 @@
     return map;
   }
 
-  // Current agent
   let agent = 1;
 
-  // Switch tabs
-  function switchAgent(n){
-    // Save from previous
-    working[agent] = getFormValues();
-
-    // Activate tab styles
-    [...tabsEl.children].forEach(btn=>{
-      const is = Number(btn.dataset.agent)===n;
-      btn.classList.toggle("active", is);
-      btn.setAttribute("aria-selected", is ? "true" : "false");
-    });
-
-    agent = n;
-    agentChip.textContent = `Custom campaign agent ${agent}`;
-    submitBtn.textContent = `Save Agent ${agent}`;
-    document.title = `Agent ${agent} • Custom agent set up`;
-
-    // Fill form with working or current
-    const w = working[agent] || {};
-    campaignName.value = w.campaign || "";
-    perDay.value = w.perday || (current[agent]?.perday || "100");
-    cadence.value = w.cadence || (current[agent]?.cadence || "IM > 15m > 24h > 24h");
-    firstMessage.value = w.firstmsg || "";
-    bump1.value = w.bump1 || "";
-    bump2.value = w.bump2 || "";
-    bump3.value = w.bump3 || "";
-    notes.innerHTML = w.notes || "";
-    setActive( (w.active ?? (current[agent]?.active?.toLowerCase()==="yes")) ? true:false );
-
-    // Current values
+  function renderCV(){
     setCV(cv.active,  current[agent]?.active);
     setCV(cv.campaign,current[agent]?.campaign);
     setCV(cv.perday,  current[agent]?.perday);
@@ -357,11 +375,40 @@
     setCV(cv.bump2,   current[agent]?.bump2);
     setCV(cv.bump3,   current[agent]?.bump3);
     setCV(cv.notes,   current[agent]?.notes);
+  }
 
+  // Switch tabs
+  function switchAgent(n){
+    // Save previous
+    working[agent] = getFormValues();
+
+    // Activate
+    [...tabsEl.children].forEach(btn=>{
+      const is = Number(btn.dataset.agent)===n;
+      btn.classList.toggle("active", is);
+      btn.setAttribute("aria-selected", is ? "true" : "false");
+    });
+    agent = n;
+    agentChip.textContent = `Custom campaign agent ${agent}`;
+    submitBtn.textContent = `Save Agent ${agent}`;
+    document.title = `Agent ${agent} • Custom agent set up`;
+
+    // Fill form with working or defaults/current
+    const w = working[agent] || {};
+    campaignName.value = w.campaign || "";
+    perDay.value = w.perday || (current[agent]?.perday || "100");
+    cadence.value = w.cadence || (current[agent]?.cadence || "IM > 15m > 24h > 24h");
+    firstMessage.value = w.firstmsg || "";
+    bump1.value = w.bump1 || "";
+    bump2.value = w.bump2 || "";
+    bump3.value = w.bump3 || "";
+    notes.value = w.notes || "";
+    setActive( (w.active ?? (current[agent]?.active?.toLowerCase()==="yes")) ? true:false );
+
+    renderCV();
     setStatus("");
   }
 
-  // Gather values from form
   function getFormValues(){
     return {
       active:   toggle.classList.contains("on") ? "Yes" : "",
@@ -372,11 +419,11 @@
       bump1:    bump1.value,
       bump2:    bump2.value,
       bump3:    bump3.value,
-      notes:    notes.innerHTML
+      notes:    notes.value
     };
   }
 
-  // Submit
+  // Submit + auto-refresh
   document.getElementById("submitBtn").addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
@@ -385,10 +432,7 @@
     let keys = overrideKeysFromQuery(cvKeys(agent), agent);
 
     const payload = {
-      locationId,
-      businessName,
-      agent,
-      keys,
+      locationId, businessName, agent, keys,
       data: {
         ["Custom campaign agent " + agent + " – Active"]: working[agent].active,
         ["Custom campaign agent " + agent + " – Campaign name"]: working[agent].campaign,
@@ -412,9 +456,17 @@
         body: JSON.stringify(payload)
       });
       const json = await res.json().catch(()=> ({}));
-      if (String(json?.response).toLowerCase()==="complete"){ setStatus("Complete", true); }
-      else if (!res.ok){ setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`); }
-      else { setStatus("Saved", true); }
+
+      if (!res.ok){
+        setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`);
+      } else if (String(json?.response).toLowerCase()==="complete"){
+        setStatus("Saved. Refreshing…", true);
+        // wait 3s then refetch latest
+        setTimeout(refreshFromServer, 3000);
+      } else {
+        setStatus("Saved", true);
+        setTimeout(refreshFromServer, 3000);
+      }
     }catch{
       setStatus("Network error. Try again.");
     }finally{
@@ -422,23 +474,17 @@
     }
   });
 
-  // Initial fetch: pull current values for ALL agents via locationId
-  (async function init(){
-    for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
+  // Refresh current values from server and update chips (no form wipe)
+  async function refreshFromServer(){
     if (!locationId) return;
-
-    setLoading("Loading current values…");
     const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
-
     try{
       const res = await fetch(urlWithBust, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ locationId })
       });
-      if (!res.ok) throw new Error("Fetch failed: "+res.status);
       const json = await res.json().catch(()=> ({}));
-
       const agents = json?.agents || {};
       for (let i=1;i<=AGENT_COUNT;i++){
         const a = agents[String(i)] || agents[i] || {};
@@ -454,11 +500,20 @@
           notes:    a.notes ?? ""
         };
       }
-      setStatus("");
-    }catch(err){
-      setStatus("Could not load current values (fetch webhook).", false);
+      renderCV();            // update chips for the agent you're on
+      setStatus("Refreshed", true);
+    }catch{
+      setStatus("Could not refresh current values.", false);
     }
+  }
 
+  // Init
+  (async function init(){
+    for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
+    if (!locationId) return;
+
+    setLoading("Loading current values…");
+    await refreshFromServer();
     switchAgent(1);
   })();
 </script>
