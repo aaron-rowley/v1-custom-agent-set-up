@@ -154,11 +154,11 @@
   </div>
 
 <script>
-  // -------- CONFIG: set your webhook endpoints here ----------
-  const FETCH_URL  = "https://api.visquanta.com/webhook/call-value-data";   // GET or POST acceptable; we use POST with JSON
-  const SUBMIT_URL = "https://api.visquanta.com/webhook/custom-agent-set-up";  // already live per your earlier note
+  /* ------------------- CONFIG ------------------- */
+  const FETCH_URL  = "https://api.visquanta.com/webhook/call-value-data";
+  const SUBMIT_URL = "https://api.visquanta.com/webhook/custom-agent-set-up";
   const AGENT_COUNT = 5;
-  // -----------------------------------------------------------
+  /* ---------------------------------------------- */
 
   // Helpers
   const qs = new URLSearchParams(location.search);
@@ -270,7 +270,8 @@
     };
   }
 
-  // Optionally allow URL overrides like key_active_3=your_custom_key
+  // Optional: allow URL overrides like key_active_3=your_custom_key
+  const qsAll = Object.fromEntries(qs.entries());
   function overrideKeysFromQuery(kmap, n){
     const map = {...kmap};
     for (const field of Object.keys(map)){
@@ -352,15 +353,15 @@
       agent,
       keys,
       data: {
-        "Custom campaign agent " + agent + " – Active": working[agent].active,
-        "Custom campaign agent " + agent + " – Campaign name": working[agent].campaign,
-        "Custom campaign agent " + agent + " – How many per day": working[agent].perday,
-        "Custom campaign agent " + agent + " – Follow up cadence": working[agent].cadence,
-        "Custom campaign agent " + agent + " – First message": working[agent].firstmsg,
-        "Custom campaign agent " + agent + " – Bump 1": working[agent].bump1,
-        "Custom campaign agent " + agent + " – Bump 2": working[agent].bump2,
-        "Custom campaign agent " + agent + " – Bump 3": working[agent].bump3,
-        "Custom campaign agent " + agent + " – Notes about campaign": working[agent].notes
+        ["Custom campaign agent " + agent + " – Active"]: working[agent].active,
+        ["Custom campaign agent " + agent + " – Campaign name"]: working[agent].campaign,
+        ["Custom campaign agent " + agent + " – How many per day"]: working[agent].perday,
+        ["Custom campaign agent " + agent + " – Follow up cadence"]: working[agent].cadence,
+        ["Custom campaign agent " + agent + " – First message"]: working[agent].firstmsg,
+        ["Custom campaign agent " + agent + " – Bump 1"]: working[agent].bump1,
+        ["Custom campaign agent " + agent + " – Bump 2"]: working[agent].bump2,
+        ["Custom campaign agent " + agent + " – Bump 3"]: working[agent].bump3,
+        ["Custom campaign agent " + agent + " – Notes about campaign"]: working[agent].notes
       }
     };
 
@@ -368,7 +369,14 @@
     setLoading("Updating…");
 
     try{
-      const res = await fetch(SUBMIT_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch(SUBMIT_URL, {
+        method:"POST",
+        mode:"cors",
+        cache:"no-store",
+        credentials:"omit",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
       const json = await res.json().catch(()=> ({}));
       if (String(json?.response).toLowerCase()==="complete"){ setStatus("Complete", true); }
       else if (!res.ok){ setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`); }
@@ -382,21 +390,32 @@
 
   // Initial fetch: pull current values for ALL agents via locationId
   (async function init(){
-    // Build tabs state
     for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
-
     if (!locationId) return;
 
     setLoading("Loading current values…");
+
+    // Cache-buster to avoid CDN/Pages caching responses
+    const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+
     try{
-      const res = await fetch(FETCH_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ locationId }) });
+      const res = await fetch(urlWithBust, {
+        method:"POST",
+        mode:"cors",
+        cache:"no-store",
+        credentials:"omit",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ locationId })
+      });
+      if (!res.ok) throw new Error("Fetch failed: "+res.status);
       const json = await res.json().catch(()=> ({}));
-      // Expected shape (flexible): { agents: { "1": {active:"Yes",campaign:"...",perday:"100",...}, "2": {...}, ... } }
+
+      // Expected shape: { agents: { "1": {active, campaign, perday, cadence, firstmsg, bump1, bump2, bump3, notes}, "2": {...}, ... } }
       const agents = json?.agents || {};
       for (let i=1;i<=AGENT_COUNT;i++){
         const a = agents[String(i)] || agents[i] || {};
         current[i] = {
-          active:   a.active ?? "",        // "Yes" or ""
+          active:   a.active ?? "",
           campaign: a.campaign ?? "",
           perday:   a.perday ?? "",
           cadence:  a.cadence ?? "",
@@ -408,7 +427,7 @@
         };
       }
       setStatus("");
-    }catch{
+    }catch(err){
       setStatus("Could not load current values (fetch webhook).", false);
     }
 
