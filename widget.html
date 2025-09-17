@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Custom agent 1 set up</title>
+<title>Custom agent set up</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
-  .wrap{ max-width:920px; margin:24px auto; padding:20px; }
+  .wrap{ max-width:980px; margin:24px auto; padding:20px; }
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
-  input[type="text"], input[type="number"], select, textarea{
+  input[type="text"], select, textarea{
     width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none;
   }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
@@ -24,6 +24,11 @@
   .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:600; cursor:pointer; }
   .ghost{ background:transparent; color:#fff; border:1px solid var(--line); }
   .status{ font-size:13px; color:var(--muted); }
+
+  /* Tabs */
+  .tabs{ display:flex; gap:8px; margin:8px 0 14px; flex-wrap:wrap; }
+  .tab{ border:1px solid var(--line); padding:8px 12px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:600; }
+  .tab.active{ background:rgba(237,108,3,.18); border-color:rgba(237,108,3,.45); }
 
   /* Toggle */
   .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
@@ -41,41 +46,41 @@
   .tokenbar select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
   .tokenbar button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
   .muted{ color:var(--muted); font-size:12px; }
+  .cv{ margin-top:6px; font-size:12px; color:#9aa3b5; word-break:break-word; white-space:pre-wrap; }
 
   /* Prompt editor */
   .prompt{ background:#0e1117; border:1px solid var(--line); border-radius:14px; padding:10px; min-height:140px; }
   .prompt[contenteditable="true"]:empty:before{ content:attr(data-placeholder); color:var(--muted); }
   .toolbar{ display:flex; gap:8px; margin-bottom:8px; }
   .tb-btn{ background:#10151c; color:#fff; border:1px solid var(--line); padding:6px 10px; border-radius:8px; cursor:pointer; }
-  .small{ font-size:12px; color:var(--muted); }
-  code.badge{ background:#10151c; padding:2px 6px; border-radius:6px; border:1px solid var(--line); }
-  .cv{ margin-top:6px; font-size:12px; color:#9aa3b5; word-break:break-word; white-space:pre-wrap; }
+  .small{ font-size:12px; color:#9aa3b5; }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Custom agent 1 set up</h1>
+    <h1>Custom agent set up</h1>
     <div class="sub" id="bizLine"></div>
     <div class="sub" id="locLine"></div>
 
+    <!-- Tabs -->
+    <div class="tabs" id="tabs"></div>
+
     <div class="card">
       <!-- Active toggle -->
-      <label>Custom campaign agent 1 – Active? ("Yes" or leave blank)</label>
-      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0">
-        <div class="knob"></div>
-      </div>
+      <label>Active? ("Yes" or leave blank)</label>
+      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
       <div class="cv" id="cv_active"></div>
 
       <!-- Campaign name -->
-      <label>Custom campaign agent 1 – Campaign name</label>
+      <label>Campaign name</label>
       <input type="text" id="campaignName" placeholder="Campaign name" />
       <div class="cv" id="cv_campaign"></div>
 
       <!-- Per day + Cadence -->
       <div class="row">
         <div>
-          <label>Custom campaign agent 1 – How many per day (See SOP)</label>
+          <label>How many per day (See SOP)</label>
           <select id="perDay">
             <option>10</option><option>25</option><option>50</option><option>75</option>
             <option>150</option><option>200</option><option>250</option><option>300</option>
@@ -84,7 +89,7 @@
           <div class="cv" id="cv_perday"></div>
         </div>
         <div>
-          <label>Custom campaign agent 1 – Follow up cadence</label>
+          <label>Follow up cadence</label>
           <select id="cadence">
             <option>IM > 15m > 24h > 24h</option>
             <option>IM > 24h > 24h > 24h</option>
@@ -97,8 +102,8 @@
         </div>
       </div>
 
-      <!-- Big text boxes + token insert -->
-      <div class="muted" style="margin-top:12px">Insert variable → will append into the currently focused text box.</div>
+      <!-- Token insert -->
+      <div class="muted" style="margin-top:12px">Insert variable → appends into the focused text box.</div>
       <div class="tokenbar">
         <select id="tokenSelect">
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -111,29 +116,30 @@
         <button type="button" id="insertToken">Insert</button>
       </div>
 
-      <label>Custom campaign agent 1 – First message</label>
+      <!-- Messages -->
+      <label>First message</label>
       <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
       <div class="cv" id="cv_firstmsg"></div>
 
-      <label>Custom campaign agent 1 – Bump 1</label>
+      <label>Bump 1</label>
       <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
       <div class="cv" id="cv_bump1"></div>
 
-      <label>Custom campaign agent 1 – Bump 2</label>
+      <label>Bump 2</label>
       <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
       <div class="cv" id="cv_bump2"></div>
 
-      <label>Custom campaign agent 1 – Bump 3</label>
+      <label>Bump 3</label>
       <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
       <div class="cv" id="cv_bump3"></div>
 
-      <!-- Prompt editor for notes -->
-      <label>Custom campaign agent 1 – Notes about campaign</label>
+      <!-- Notes (prompt editor) -->
+      <label>Notes about campaign</label>
       <div class="toolbar">
         <button class="tb-btn" data-cmd="bold" type="button">Bold</button>
         <button class="tb-btn" data-cmd="italic" type="button">Italic</button>
         <button class="tb-btn" data-cmd="insertUnorderedList" type="button">Bullets</button>
-        <span class="small">Markdown-like text is fine; this saves HTML.</span>
+        <span class="small">This saves HTML.</span>
       </div>
       <div id="notes" class="prompt" contenteditable="true" data-placeholder="Write notes/prompts here…"></div>
       <div class="cv" id="cv_notes"></div>
@@ -145,80 +151,39 @@
         <span class="status" id="status"></span>
       </div>
     </div>
-
-    <p class="sub" style="margin-top:10px">
-      Keys passed via URL:
-      <code class="badge" id="keysBadge"></code>
-    </p>
   </div>
 
 <script>
-  // --- helpers
+  // -------- CONFIG: set your webhook endpoints here ----------
+  const FETCH_URL  = "https://api.visquanta.com/webhook/custom-agent-fetch";   // GET or POST acceptable; we use POST with JSON
+  const SUBMIT_URL = "https://api.visquanta.com/webhook/custom-agent-set-up";  // already live per your earlier note
+  const AGENT_COUNT = 5;
+  // -----------------------------------------------------------
+
+  // Helpers
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
-
   const locationId = get("locationId");
-  const bizName = get("businessName");
+  const businessName = get("businessName");
 
-  document.getElementById("locLine").textContent = locationId
-    ? `Location ID: ${locationId}`
-    : "Location ID not provided.";
-  document.getElementById("bizLine").textContent = bizName
-    ? `Business: ${bizName}`
-    : "";
+  // Header lines
+  document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
+  document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
-  // Keys (from URL)
-  const keys = {
-    active:   get("key_active"),
-    bump1:    get("key_bump1"),
-    bump2:    get("key_bump2"),
-    bump3:    get("key_bump3"),
-    campaign: get("key_campaign"),
-    firstmsg: get("key_firstmsg"),
-    cadence:  get("key_cadence"),
-    perday:   get("key_perday"),
-    notes:    get("key_notes")
-  };
-  document.getElementById("keysBadge").textContent =
-    Object.values(keys).filter(Boolean).join(" • ");
-
-  // Prefill values if provided (val_*)
-  const val = {
-    active:   get("val_active"),
-    bump1:    get("val_bump1"),
-    bump2:    get("val_bump2"),
-    bump3:    get("val_bump3"),
-    campaign: get("val_campaign"),
-    firstmsg: get("val_firstmsg"),
-    cadence:  get("val_cadence"),
-    perday:   get("val_perday"),
-    notes:    get("val_notes")
-  };
-
-  // Utility to set "Current value" under a control
-  function setCurrentValue(id, value) {
-    const el = document.getElementById(id);
-    if (!el || !value) return;
-    // Trim long blocks a bit for readability
-    const text = String(value).length > 500 ? String(value).slice(0,500) + " …" : String(value);
-    el.textContent = "Current value: " + text;
+  // Build tabs
+  const tabsEl = document.getElementById("tabs");
+  for (let i=1;i<=AGENT_COUNT;i++){
+    const t = document.createElement("button");
+    t.className = "tab" + (i===1?" active":"");
+    t.textContent = `Custom campaign agent ${i}`;
+    t.dataset.agent = i;
+    t.onclick = () => switchAgent(i);
+    tabsEl.appendChild(t);
   }
 
-  // Toggle logic
+  // Elements
   const toggle = document.getElementById("activeToggle");
   const activeLabel = document.getElementById("activeLabel");
-  function setActive(on){
-    toggle.classList.toggle("on", !!on);
-    toggle.setAttribute("aria-checked", !!on);
-    activeLabel.textContent = on ? "Yes" : "No";
-  }
-  setActive((val.active || "").toLowerCase() === "yes");
-  setCurrentValue("cv_active", val.active || "");
-
-  toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
-  toggle.addEventListener("keydown", (e)=>{ if (e.key === " " || e.key === "Enter"){ e.preventDefault(); toggle.click(); }});
-
-  // Inputs
   const campaignName = document.getElementById("campaignName");
   const perDay = document.getElementById("perDay");
   const cadence = document.getElementById("cadence");
@@ -227,29 +192,41 @@
   const bump2 = document.getElementById("bump2");
   const bump3 = document.getElementById("bump3");
   const notes = document.getElementById("notes");
+  const statusEl = document.getElementById("status");
+  const submitBtn = document.getElementById("submitBtn");
 
-  // Do NOT overwrite inputs — only show "Current value" hints and preselect dropdowns
-  if (val.perday) perDay.value = val.perday;
-  if (val.cadence) cadence.value = val.cadence;
+  // "Current value" labels
+  const cv = {
+    active:  document.getElementById("cv_active"),
+    campaign:document.getElementById("cv_campaign"),
+    perday:  document.getElementById("cv_perday"),
+    cadence: document.getElementById("cv_cadence"),
+    firstmsg:document.getElementById("cv_firstmsg"),
+    bump1:   document.getElementById("cv_bump1"),
+    bump2:   document.getElementById("cv_bump2"),
+    bump3:   document.getElementById("cv_bump3"),
+    notes:   document.getElementById("cv_notes"),
+  };
 
-  setCurrentValue("cv_campaign", val.campaign || "");
-  setCurrentValue("cv_perday", val.perday || "");
-  setCurrentValue("cv_cadence", val.cadence || "");
-  setCurrentValue("cv_firstmsg", val.firstmsg || "");
-  setCurrentValue("cv_bump1", val.bump1 || "");
-  setCurrentValue("cv_bump2", val.bump2 || "");
-  setCurrentValue("cv_bump3", val.bump3 || "");
-  // Notes: show as plain text hint (we don't inject HTML into the editor)
-  setCurrentValue("cv_notes", val.notes || "");
+  // Per-agent working state (what user is editing)
+  const working = {};
+  // Per-agent "current values" (from your fetch webhook)
+  const current = {};
+
+  // Toggle helpers
+  function setActive(on){
+    toggle.classList.toggle("on", !!on);
+    toggle.setAttribute("aria-checked", !!on);
+    activeLabel.textContent = on ? "Yes" : "No";
+  }
+  toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
+  toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
   // Token insert
   let focusTarget = null;
-  [firstMessage, bump1, bump2, bump3].forEach(el=>{
-    el.addEventListener("focus", ()=> focusTarget = el);
-  });
+  [firstMessage, bump1, bump2, bump3].forEach(el=> el.addEventListener("focus", ()=> focusTarget = el));
   document.getElementById("insertToken").addEventListener("click", ()=>{
-    const sel = document.getElementById("tokenSelect");
-    const token = sel.value;
+    const token = (document.getElementById("tokenSelect")).value;
     const el = focusTarget || firstMessage;
     const start = el.selectionStart ?? el.value.length;
     const end = el.selectionEnd ?? el.value.length;
@@ -258,50 +235,132 @@
     el.selectionStart = el.selectionEnd = start + token.length;
   });
 
-  // Prompt toolbar
-  document.querySelectorAll(".tb-btn").forEach(b=>{
-    b.addEventListener("click", ()=> document.execCommand(b.dataset.cmd, false, null));
+  // Reset
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    campaignName.value=""; perDay.value="100"; cadence.selectedIndex=0;
+    firstMessage.value=""; bump1.value=""; bump2.value=""; bump3.value=""; notes.innerHTML="";
+    setActive(false); setStatus("");
   });
 
-  // Submit
-  const statusEl = document.getElementById("status");
-  const submitBtn = document.getElementById("submitBtn");
-  function setLoading(text="Updating…"){
-    statusEl.innerHTML = `<span class="spinner"></span>${text}`;
-  }
-  function setStatus(text, ok=false){
+  function setStatus(text, ok){
+    if (!text){ statusEl.textContent=""; return; }
     statusEl.textContent = text;
     statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
   }
+  function setLoading(text="Updating…"){
+    statusEl.innerHTML = `<span class="spinner"></span>${text}`;
+  }
+  function setCV(el, value){
+    el.textContent = "Current value: " + (value ? String(value) : "(not set)");
+  }
 
-  document.getElementById("resetBtn").addEventListener("click", ()=>{
-    [firstMessage,bump1,bump2,bump3].forEach(el=> el.value="");
-    notes.innerHTML="";
-    setActive(false);
-    campaignName.value="";
-    perDay.value="100";
-    cadence.selectedIndex=0;
+  // Key generator for a given agent number (1..5)
+  function cvKeys(n){
+    const base = `custom_campaign_agent_${n}__`;
+    return {
+      active:   base + "active_yes_or_leave_blank",
+      bump1:    base + "bump_1",
+      bump2:    base + "bump_2",
+      bump3:    base + "bump_3",
+      campaign: base + "campaign_name",
+      firstmsg: base + "first_message",
+      cadence:  base + "follow_up_cadence",
+      perday:   base + "how_many_per_day_see_sop",
+      notes:    base + "notes_about_campaign"
+    };
+  }
+
+  // Optionally allow URL overrides like key_active_3=your_custom_key
+  function overrideKeysFromQuery(kmap, n){
+    const map = {...kmap};
+    for (const field of Object.keys(map)){
+      const q = qs.get(`key_${field}_${n}`);
+      if (q) map[field] = q;
+    }
+    return map;
+  }
+
+  // Current agent
+  let agent = 1;
+
+  // Switch tabs
+  function switchAgent(n){
+    // Save working values of current tab
+    working[agent] = getFormValues();
+
+    // Activate tab
+    [...tabsEl.children].forEach(btn=> btn.classList.toggle("active", Number(btn.dataset.agent)===n));
+    agent = n;
+
+    // Hydrate form with user's working state if present, else show empty inputs
+    const w = working[agent] || {};
+    campaignName.value = w.campaign || "";
+    perDay.value = w.perday || (current[agent]?.perday || "100");
+    cadence.value = w.cadence || (current[agent]?.cadence || "IM > 15m > 24h > 24h");
+    firstMessage.value = w.firstmsg || "";
+    bump1.value = w.bump1 || "";
+    bump2.value = w.bump2 || "";
+    bump3.value = w.bump3 || "";
+    notes.innerHTML = w.notes || "";
+
+    setActive( (w.active ?? (current[agent]?.active?.toLowerCase()==="yes")) ? true:false );
+
+    // Refresh "Current value" hints for this agent
+    setCV(cv.active,  current[agent]?.active);
+    setCV(cv.campaign,current[agent]?.campaign);
+    setCV(cv.perday,  current[agent]?.perday);
+    setCV(cv.cadence, current[agent]?.cadence);
+    setCV(cv.firstmsg,current[agent]?.firstmsg);
+    setCV(cv.bump1,   current[agent]?.bump1);
+    setCV(cv.bump2,   current[agent]?.bump2);
+    setCV(cv.bump3,   current[agent]?.bump3);
+    setCV(cv.notes,   current[agent]?.notes);
+
     setStatus("");
-  });
+  }
 
-  submitBtn.addEventListener("click", async (e)=>{
+  // Gather values from form
+  function getFormValues(){
+    return {
+      active:   toggle.classList.contains("on") ? "Yes" : "",
+      campaign: campaignName.value.trim(),
+      perday:   perDay.value,
+      cadence:  cadence.value,
+      firstmsg: firstMessage.value,
+      bump1:    bump1.value,
+      bump2:    bump2.value,
+      bump3:    bump3.value,
+      notes:    notes.innerHTML
+    };
+  }
+
+  // Submit
+  document.getElementById("submitBtn").addEventListener("click", async (e)=>{
     e.preventDefault();
-    if (!locationId){ setStatus("Missing locationId", false); return; }
+    if (!locationId) return setStatus("Missing locationId", false);
+
+    // keep working state up to date
+    working[agent] = getFormValues();
+
+    // Build keys for this agent
+    let keys = cvKeys(agent);
+    keys = overrideKeysFromQuery(keys, agent);
 
     const payload = {
       locationId,
-      businessName: bizName || "",
-      keys, // pass the Custom Value KEYS you’re targeting
+      businessName,
+      agent,
+      keys,
       data: {
-        "Custom campaign agent 1 – Active": toggle.classList.contains("on") ? "Yes" : "",
-        "Custom campaign agent 1 – Campaign name": campaignName.value,
-        "Custom campaign agent 1 – How many per day": perDay.value,
-        "Custom campaign agent 1 – Follow up cadence": cadence.value,
-        "Custom campaign agent 1 – First message": firstMessage.value,
-        "Custom campaign agent 1 – Bump 1": bump1.value,
-        "Custom campaign agent 1 – Bump 2": bump2.value,
-        "Custom campaign agent 1 – Bump 3": bump3.value,
-        "Custom campaign agent 1 – Notes about campaign": notes.innerHTML
+        "Custom campaign agent " + agent + " – Active": working[agent].active,
+        "Custom campaign agent " + agent + " – Campaign name": working[agent].campaign,
+        "Custom campaign agent " + agent + " – How many per day": working[agent].perday,
+        "Custom campaign agent " + agent + " – Follow up cadence": working[agent].cadence,
+        "Custom campaign agent " + agent + " – First message": working[agent].firstmsg,
+        "Custom campaign agent " + agent + " – Bump 1": working[agent].bump1,
+        "Custom campaign agent " + agent + " – Bump 2": working[agent].bump2,
+        "Custom campaign agent " + agent + " – Bump 3": working[agent].bump3,
+        "Custom campaign agent " + agent + " – Notes about campaign": working[agent].notes
       }
     };
 
@@ -309,43 +368,53 @@
     setLoading("Updating…");
 
     try{
-      const res = await fetch("https://api.visquanta.com/webhook/custom-agent-set-up",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
+      const res = await fetch(SUBMIT_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
       const json = await res.json().catch(()=> ({}));
-
-      if (String(json?.response).toLowerCase() === "complete"){
-        setStatus("Complete", true);
-      } else if (!res.ok){
-        setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`);
-      } else {
-        await poll(json?.jobId);
-      }
-    }catch(err){
+      if (String(json?.response).toLowerCase()==="complete"){ setStatus("Complete", true); }
+      else if (!res.ok){ setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`); }
+      else { setStatus("Saved", true); }
+    }catch{
       setStatus("Network error. Try again.");
     }finally{
       submitBtn.disabled = false;
     }
   });
 
-  async function poll(jobId, tries=20){
-    if (!jobId){ setStatus("Waiting…"); return; }
-    setLoading();
-    for (let i=0;i<tries;i++){
-      await new Promise(r=>setTimeout(r,1500));
-      try{
-        const r = await fetch(`https://api.visquanta.com/webhook/custom-agent-set-up?jobId=${encodeURIComponent(jobId)}`);
-        const j = await r.json().catch(()=> ({}));
-        if (String(j?.response).toLowerCase() === "complete"){
-          setStatus("Complete", true);
-          return;
-        }
-      }catch{}
+  // Initial fetch: pull current values for ALL agents via locationId
+  (async function init(){
+    // Build tabs state
+    for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
+
+    if (!locationId) return;
+
+    setLoading("Loading current values…");
+    try{
+      const res = await fetch(FETCH_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ locationId }) });
+      const json = await res.json().catch(()=> ({}));
+      // Expected shape (flexible): { agents: { "1": {active:"Yes",campaign:"...",perday:"100",...}, "2": {...}, ... } }
+      const agents = json?.agents || {};
+      for (let i=1;i<=AGENT_COUNT;i++){
+        const a = agents[String(i)] || agents[i] || {};
+        current[i] = {
+          active:   a.active ?? "",        // "Yes" or ""
+          campaign: a.campaign ?? "",
+          perday:   a.perday ?? "",
+          cadence:  a.cadence ?? "",
+          firstmsg: a.firstmsg ?? "",
+          bump1:    a.bump1 ?? "",
+          bump2:    a.bump2 ?? "",
+          bump3:    a.bump3 ?? "",
+          notes:    a.notes ?? ""
+        };
+      }
+      setStatus("");
+    }catch{
+      setStatus("Could not load current values (fetch webhook).", false);
     }
-    setStatus("Timed out waiting for completion.");
-  }
+
+    // Show Agent 1 after fetch
+    switchAgent(1);
+  })();
 </script>
 </body>
 </html>
