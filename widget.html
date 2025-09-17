@@ -7,10 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; }
+  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; --red:#ef4444; }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
   .wrap{ max-width:980px; margin:24px auto; padding:20px; }
+
+  /* Top toolbar */
+  .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .sop{ background:var(--red); color:#000; font-weight:800; border:none; text-decoration:none; padding:8px 12px; border-radius:12px; box-shadow:0 6px 14px rgba(239,68,68,.35); }
+  .sop:hover{ filter:brightness(1.05); }
 
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
@@ -55,7 +60,6 @@
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .actions{ display:flex; align-items:center; gap:12px; margin-top:14px; }
   .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:700; cursor:pointer; }
-  .ghost{ background:transparent; color:#fff; border:1px solid var(--line); }
   .status{ font-size:13px; color:var(--muted); }
 
   /* Toggle */
@@ -65,24 +69,31 @@
   .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
   .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
 
-  /* Spinner */
-  .spinner{ width:18px; height:18px; border:3px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:50%; animation:spin .9s linear infinite; display:inline-block; vertical-align:-3px; margin-right:6px; }
-  @keyframes spin{ to{ transform:rotate(360deg) } }
-
   /* Per-field token inserter */
   .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
   .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
   .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
 
   /* Current value chip */
-  .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; color:#9aa3b5; background:#0f141a; display:inline-block; }
-  .cv strong{ color:#cdd6e4; font-weight:700; }
+  .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
+  .cv strong{ font-weight:800; }
   .cv.has-value{ border-color:rgba(237,108,3,.5); background:rgba(237,108,3,.1); color:#ffd9b8; }
+  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
 
+  /* Overlay loader */
+  .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .overlay.hidden{ display:none; }
+  .loading{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .bigspin{ width:46px; height:46px; border:5px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:999px; animation:spin .9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
 </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="topbar">
+      <a class="sop" href="https://airtable.com/appZY3R7wWCzEsIZT/pagMdmBUMsAVRNYMe?ZHpwB=recPcFlbdOVjRopk2" target="_blank" rel="noopener">Link to SOP</a>
+    </div>
+
     <h1>Custom agent set up</h1>
     <div class="sub" id="bizLine"></div>
     <div class="sub" id="locLine"></div>
@@ -98,28 +109,17 @@
       <span class="chip" id="agentChip">Custom campaign agent 1</span>
     </div>
 
-    <div class="card">
+    <div class="card" id="formCard">
       <!-- Active toggle -->
       <label>Active? ("Yes" or leave blank)</label>
       <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
-      <div class="cv" id="cv_active"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
 
-      <!-- Campaign name -->
+      <!-- Campaign name (NO token picker here) -->
       <label>Campaign name</label>
-      <div class="ti" data-target="campaignName">
-        <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
-      <div class="cv" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
 
       <!-- Per day + Cadence -->
       <div class="row">
@@ -130,7 +130,7 @@
             <option>150</option><option>200</option><option>250</option><option>300</option>
             <option>350</option><option>500</option><option selected>100</option>
           </select>
-          <div class="cv" id="cv_perday"><strong>Current value:</strong> (not set)</div>
+          <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
         </div>
         <div>
           <label>Follow up cadence</label>
@@ -142,7 +142,7 @@
             <option>IM > 72h > 72h > 72h</option>
             <option>IM > 7d > 7d > 7d</option>
           </select>
-          <div class="cv" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
+          <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
         </div>
       </div>
 
@@ -155,12 +155,15 @@
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
           <option value="{{contact.email}}">{{contact.email}}</option>
           <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
+          <option value="{{contact.make}}">{{contact.make}}</option>
+          <option value="{{contact.model}}">{{contact.model}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
         <button type="button">Insert</button>
       </div>
       <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
-      <div class="cv" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 1</label>
       <div class="ti" data-target="bump1">
@@ -170,12 +173,15 @@
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
           <option value="{{contact.email}}">{{contact.email}}</option>
           <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
+          <option value="{{contact.make}}">{{contact.make}}</option>
+          <option value="{{contact.model}}">{{contact.model}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
         <button type="button">Insert</button>
       </div>
       <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
-      <div class="cv" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 2</label>
       <div class="ti" data-target="bump2">
@@ -185,12 +191,15 @@
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
           <option value="{{contact.email}}">{{contact.email}}</option>
           <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
+          <option value="{{contact.make}}">{{contact.make}}</option>
+          <option value="{{contact.model}}">{{contact.model}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
         <button type="button">Insert</button>
       </div>
       <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
-      <div class="cv" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
 
       <label>Bump 3</label>
       <div class="ti" data-target="bump3">
@@ -200,12 +209,15 @@
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
           <option value="{{contact.email}}">{{contact.email}}</option>
           <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
+          <option value="{{contact.make}}">{{contact.make}}</option>
+          <option value="{{contact.model}}">{{contact.model}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
         <button type="button">Insert</button>
       </div>
       <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
-      <div class="cv" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
 
       <!-- Notes (plain text) -->
       <label>Notes about campaign</label>
@@ -216,19 +228,29 @@
           <option value="{{contact.full_name}}">{{contact.full_name}}</option>
           <option value="{{contact.email}}">{{contact.email}}</option>
           <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
+          <option value="{{contact.make}}">{{contact.make}}</option>
+          <option value="{{contact.model}}">{{contact.model}}</option>
           <option value="{{location.name}}">{{location.name}}</option>
         </select>
         <button type="button">Insert</button>
       </div>
       <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
-      <div class="cv" id="cv_notes"><strong>Current value:</strong> (not set)</div>
+      <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
       <!-- Actions -->
       <div class="actions">
         <button class="btn" id="submitBtn">Save Agent 1</button>
-        <button class="btn ghost" id="resetBtn" type="button">Reset</button>
         <span class="status" id="status"></span>
       </div>
+    </div>
+  </div>
+
+  <!-- Overlay loader -->
+  <div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
+    <div class="loading">
+      <div class="bigspin"></div>
+      <div id="overlayText">Loading…</div>
     </div>
   </div>
 
@@ -244,6 +266,11 @@
   const get = k => qs.get(k) || "";
   const locationId   = get("locationId");
   const businessName = get("businessName");
+
+  const overlay = document.getElementById("overlay");
+  const overlayText = document.getElementById("overlayText");
+  const showOverlay = (t="Loading…") => { overlayText.textContent=t; overlay.classList.remove("hidden"); };
+  const hideOverlay = () => overlay.classList.add("hidden");
 
   // Header lines
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
@@ -276,7 +303,6 @@
   const statusEl     = document.getElementById("status");
   const submitBtn    = document.getElementById("submitBtn");
 
-  // "Current value" chips
   const cv = {
     active:  document.getElementById("cv_active"),
     campaign:document.getElementById("cv_campaign"),
@@ -289,11 +315,11 @@
     notes:   document.getElementById("cv_notes"),
   };
 
-  // Per-agent working and current
+  // Working/current
   const working = {};
   const current = {};
 
-  // Toggle helpers
+  // Toggle
   function setActive(on){
     toggle.classList.toggle("on", !!on);
     toggle.setAttribute("aria-checked", !!on);
@@ -302,7 +328,7 @@
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
-  // Token inserter: attach to every .ti
+  // Token inserter for each .ti
   function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
     const end   = el.selectionEnd ?? el.value.length;
@@ -318,28 +344,18 @@
     btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
   });
 
-  // Reset
-  document.getElementById("resetBtn").addEventListener("click", ()=>{
-    campaignName.value=""; perDay.value="100"; cadence.selectedIndex=0;
-    firstMessage.value=""; bump1.value=""; bump2.value=""; bump3.value=""; notes.value="";
-    setActive(false); setStatus("");
-  });
-
   function setStatus(text, ok){
     if (!text){ statusEl.textContent=""; return; }
     statusEl.textContent = text;
     statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
   }
-  function setLoading(text="Updating…"){
-    statusEl.innerHTML = `<span class="spinner"></span>${text}`;
-  }
   function setCV(el, value){
     const has = !!value;
     el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
     el.classList.toggle("has-value", has);
+    el.classList.toggle("empty", !has);
   }
 
-  // Keys for an agent
   function cvKeys(n){
     const base = `custom_campaign_agent_${n}__`;
     return {
@@ -377,12 +393,9 @@
     setCV(cv.notes,   current[agent]?.notes);
   }
 
-  // Switch tabs
   function switchAgent(n){
-    // Save previous
     working[agent] = getFormValues();
 
-    // Activate
     [...tabsEl.children].forEach(btn=>{
       const is = Number(btn.dataset.agent)===n;
       btn.classList.toggle("active", is);
@@ -393,7 +406,6 @@
     submitBtn.textContent = `Save Agent ${agent}`;
     document.title = `Agent ${agent} • Custom agent set up`;
 
-    // Fill form with working or defaults/current
     const w = working[agent] || {};
     campaignName.value = w.campaign || "";
     perDay.value = w.perday || (current[agent]?.perday || "100");
@@ -423,7 +435,6 @@
     };
   }
 
-  // Submit + auto-refresh
   document.getElementById("submitBtn").addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
@@ -447,7 +458,7 @@
     };
 
     submitBtn.disabled = true;
-    setLoading("Updating…");
+    showOverlay("Saving…");
 
     try{
       const res = await fetch(SUBMIT_URL, {
@@ -459,24 +470,23 @@
 
       if (!res.ok){
         setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`);
-      } else if (String(json?.response).toLowerCase()==="complete"){
-        setStatus("Saved. Refreshing…", true);
-        // wait 3s then refetch latest
-        setTimeout(refreshFromServer, 3000);
+        hideOverlay();
       } else {
         setStatus("Saved", true);
+        // wait 3s then refetch
         setTimeout(refreshFromServer, 3000);
       }
     }catch{
       setStatus("Network error. Try again.");
+      hideOverlay();
     }finally{
       submitBtn.disabled = false;
     }
   });
 
-  // Refresh current values from server and update chips (no form wipe)
   async function refreshFromServer(){
     if (!locationId) return;
+    showOverlay("Refreshing…");
     const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
     try{
       const res = await fetch(urlWithBust, {
@@ -500,20 +510,21 @@
           notes:    a.notes ?? ""
         };
       }
-      renderCV();            // update chips for the agent you're on
+      renderCV();
       setStatus("Refreshed", true);
     }catch{
       setStatus("Could not refresh current values.", false);
+    }finally{
+      hideOverlay();
     }
   }
 
-  // Init
   (async function init(){
     for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
     if (!locationId) return;
 
-    setLoading("Loading current values…");
-    await refreshFromServer();
+    showOverlay("Loading current values…");
+    await refreshFromServer();  // refresh hides overlay
     switchAgent(1);
   })();
 </script>
