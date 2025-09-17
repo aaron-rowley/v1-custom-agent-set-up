@@ -11,9 +11,42 @@
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
   .wrap{ max-width:980px; margin:24px auto; padding:20px; }
-  .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
+
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
+
+  /* Sticky tab bar */
+  .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); }
+  .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
+  .tab{
+    border:1px solid var(--line);
+    padding:10px 14px;
+    border-radius:999px;
+    background:#0e1117;
+    cursor:pointer;
+    font-weight:700;
+    font-size:13px;
+    color:#cfd6e4;
+    transition:.15s;
+  }
+  .tab:hover{ border-color:#3a404a; }
+  .tab.active{
+    background:var(--orange);
+    color:#000;
+    border-color:var(--orange);
+    box-shadow:0 6px 16px rgba(237,108,3,.35);
+  }
+
+  /* Current agent chip */
+  .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px; font-weight:700;
+    background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45);
+  }
+
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
+
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
   input[type="text"], select, textarea{
     width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none;
@@ -21,14 +54,9 @@
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .actions{ display:flex; align-items:center; gap:12px; margin-top:14px; }
-  .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:600; cursor:pointer; }
+  .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:700; cursor:pointer; }
   .ghost{ background:transparent; color:#fff; border:1px solid var(--line); }
   .status{ font-size:13px; color:var(--muted); }
-
-  /* Tabs */
-  .tabs{ display:flex; gap:8px; margin:8px 0 14px; flex-wrap:wrap; }
-  .tab{ border:1px solid var(--line); padding:8px 12px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:600; }
-  .tab.active{ background:rgba(237,108,3,.18); border-color:rgba(237,108,3,.45); }
 
   /* Toggle */
   .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
@@ -63,7 +91,15 @@
     <div class="sub" id="locLine"></div>
 
     <!-- Tabs -->
-    <div class="tabs" id="tabs"></div>
+    <div class="tabs-wrap">
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <!-- Editing indicator -->
+    <div class="editing">
+      <span class="sub">Editing:</span>
+      <span class="chip" id="agentChip">Custom campaign agent 1</span>
+    </div>
 
     <div class="card">
       <!-- Active toggle -->
@@ -146,7 +182,7 @@
 
       <!-- Actions -->
       <div class="actions">
-        <button class="btn" id="submitBtn">Submit</button>
+        <button class="btn" id="submitBtn">Save Agent 1</button>
         <button class="btn ghost" id="resetBtn" type="button">Reset</button>
         <span class="status" id="status"></span>
       </div>
@@ -175,25 +211,27 @@
   for (let i=1;i<=AGENT_COUNT;i++){
     const t = document.createElement("button");
     t.className = "tab" + (i===1?" active":"");
-    t.textContent = `Custom campaign agent ${i}`;
+    t.textContent = `Agent ${i}`;
     t.dataset.agent = i;
+    t.setAttribute("aria-selected", i===1 ? "true" : "false");
     t.onclick = () => switchAgent(i);
     tabsEl.appendChild(t);
   }
 
   // Elements
-  const toggle = document.getElementById("activeToggle");
-  const activeLabel = document.getElementById("activeLabel");
+  const agentChip    = document.getElementById("agentChip");
+  const toggle       = document.getElementById("activeToggle");
+  const activeLabel  = document.getElementById("activeLabel");
   const campaignName = document.getElementById("campaignName");
-  const perDay = document.getElementById("perDay");
-  const cadence = document.getElementById("cadence");
+  const perDay       = document.getElementById("perDay");
+  const cadence      = document.getElementById("cadence");
   const firstMessage = document.getElementById("firstMessage");
-  const bump1 = document.getElementById("bump1");
-  const bump2 = document.getElementById("bump2");
-  const bump3 = document.getElementById("bump3");
-  const notes = document.getElementById("notes");
-  const statusEl = document.getElementById("status");
-  const submitBtn = document.getElementById("submitBtn");
+  const bump1        = document.getElementById("bump1");
+  const bump2        = document.getElementById("bump2");
+  const bump3        = document.getElementById("bump3");
+  const notes        = document.getElementById("notes");
+  const statusEl     = document.getElementById("status");
+  const submitBtn    = document.getElementById("submitBtn");
 
   // "Current value" labels
   const cv = {
@@ -208,9 +246,8 @@
     notes:   document.getElementById("cv_notes"),
   };
 
-  // Per-agent working state (what user is editing)
+  // Per-agent working state / current values
   const working = {};
-  // Per-agent "current values" (from your fetch webhook)
   const current = {};
 
   // Toggle helpers
@@ -224,7 +261,7 @@
 
   // Token insert
   let focusTarget = null;
-  [firstMessage, bump1, bump2, bump3].forEach(el=> el.addEventListener("focus", ()=> focusTarget = el));
+  [firstMessage, bump1, bump2, bump3].forEach(el=> el.addEventListener("focus", ()=> (focusTarget = el)));
   document.getElementById("insertToken").addEventListener("click", ()=>{
     const token = (document.getElementById("tokenSelect")).value;
     const el = focusTarget || firstMessage;
@@ -269,9 +306,6 @@
       notes:    base + "notes_about_campaign"
     };
   }
-
-  // Optional: allow URL overrides like key_active_3=your_custom_key
-  const qsAll = Object.fromEntries(qs.entries());
   function overrideKeysFromQuery(kmap, n){
     const map = {...kmap};
     for (const field of Object.keys(map)){
@@ -286,14 +320,22 @@
 
   // Switch tabs
   function switchAgent(n){
-    // Save working values of current tab
+    // Save from previous
     working[agent] = getFormValues();
 
-    // Activate tab
-    [...tabsEl.children].forEach(btn=> btn.classList.toggle("active", Number(btn.dataset.agent)===n));
-    agent = n;
+    // Activate tab styles
+    [...tabsEl.children].forEach(btn=>{
+      const is = Number(btn.dataset.agent)===n;
+      btn.classList.toggle("active", is);
+      btn.setAttribute("aria-selected", is ? "true" : "false");
+    });
 
-    // Hydrate form with user's working state if present, else show empty inputs
+    agent = n;
+    agentChip.textContent = `Custom campaign agent ${agent}`;
+    submitBtn.textContent = `Save Agent ${agent}`;
+    document.title = `Agent ${agent} • Custom agent set up`;
+
+    // Fill form with working or current
     const w = working[agent] || {};
     campaignName.value = w.campaign || "";
     perDay.value = w.perday || (current[agent]?.perday || "100");
@@ -303,10 +345,9 @@
     bump2.value = w.bump2 || "";
     bump3.value = w.bump3 || "";
     notes.innerHTML = w.notes || "";
-
     setActive( (w.active ?? (current[agent]?.active?.toLowerCase()==="yes")) ? true:false );
 
-    // Refresh "Current value" hints for this agent
+    // Current values
     setCV(cv.active,  current[agent]?.active);
     setCV(cv.campaign,current[agent]?.campaign);
     setCV(cv.perday,  current[agent]?.perday);
@@ -340,12 +381,8 @@
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
 
-    // keep working state up to date
     working[agent] = getFormValues();
-
-    // Build keys for this agent
-    let keys = cvKeys(agent);
-    keys = overrideKeysFromQuery(keys, agent);
+    let keys = overrideKeysFromQuery(cvKeys(agent), agent);
 
     const payload = {
       locationId,
@@ -370,10 +407,7 @@
 
     try{
       const res = await fetch(SUBMIT_URL, {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        credentials:"omit",
+        method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify(payload)
       });
@@ -394,23 +428,17 @@
     if (!locationId) return;
 
     setLoading("Loading current values…");
-
-    // Cache-buster to avoid CDN/Pages caching responses
     const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
 
     try{
       const res = await fetch(urlWithBust, {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        credentials:"omit",
+        method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ locationId })
       });
       if (!res.ok) throw new Error("Fetch failed: "+res.status);
       const json = await res.json().catch(()=> ({}));
 
-      // Expected shape: { agents: { "1": {active, campaign, perday, cadence, firstmsg, bump1, bump2, bump3, notes}, "2": {...}, ... } }
       const agents = json?.agents || {};
       for (let i=1;i<=AGENT_COUNT;i++){
         const a = agents[String(i)] || agents[i] || {};
@@ -431,7 +459,6 @@
       setStatus("Could not load current values (fetch webhook).", false);
     }
 
-    // Show Agent 1 after fetch
     switchAgent(1);
   })();
 </script>
