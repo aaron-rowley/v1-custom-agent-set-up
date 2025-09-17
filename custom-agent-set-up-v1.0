@@ -1,1 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Custom agent 1 set up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
+  .wrap{ max-width:920px; margin:24px auto; padding:20px; }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
+  h1{ margin:0 0 8px; font-size:22px; }
+  .sub{ color:var(--muted); font-size:13px; margin-bottom:16px; }
+  label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
+  input[type="text"], input[type="number"], select, textarea{
+    width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none;
+  }
+  textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .actions{ display:flex; align-items:center; gap:12px; margin-top:14px; }
+  .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:600; cursor:pointer; }
+  .ghost{ background:transparent; color:#fff; border:1px solid var(--line); }
+  .status{ font-size:13px; color:var(--muted); }
 
+  /* Toggle */
+  .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
+  .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
+  .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
+  .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
+  .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
+
+  /* Spinner */
+  .spinner{ width:18px; height:18px; border:3px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:50%; animation:spin .9s linear infinite; display:inline-block; vertical-align:-3px; margin-right:6px; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  /* Token inserter */
+  .tokenbar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+  .tokenbar select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
+  .tokenbar button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
+  .muted{ color:var(--muted); font-size:12px; }
+
+  /* Prompt editor */
+  .prompt{ background:#0e1117; border:1px solid var(--line); border-radius:14px; padding:10px; min-height:140px; }
+  .prompt[contenteditable="true"]:empty:before{ content:attr(data-placeholder); color:var(--muted); }
+  .toolbar{ display:flex; gap:8px; margin-bottom:8px; }
+  .tb-btn{ background:#10151c; color:#fff; border:1px solid var(--line); padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .small{ font-size:12px; color:var(--muted); }
+  code.badge{ background:#10151c; padding:2px 6px; border-radius:6px; border:1px solid var(--line); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Custom agent 1 set up</h1>
+    <div class="sub" id="locLine"></div>
+
+    <div class="card">
+      <!-- Active toggle -->
+      <label>Custom campaign agent 1 – Active? ("Yes" or leave blank)</label>
+      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0">
+        <div class="knob"></div>
+      </div>
+      <span class="toggle-label" id="activeLabel">No</span>
+
+      <!-- Campaign name -->
+      <label>Custom campaign agent 1 – Campaign name</label>
+      <input type="text" id="campaignName" placeholder="Campaign name" />
+
+      <!-- Per day + Cadence -->
+      <div class="row">
+        <div>
+          <label>Custom campaign agent 1 – How many per day (See SOP)</label>
+          <select id="perDay">
+            <!-- Options per your node headers -->
+            <option>10</option><option>25</option><option>50</option><option>75</option>
+            <option>150</option><option>200</option><option>250</option><option>300</option>
+            <option>350</option><option>500</option><option selected>100</option>
+          </select>
+        </div>
+        <div>
+          <label>Custom campaign agent 1 – Follow up cadence</label>
+          <select id="cadence">
+            <option>IM > 15m > 24h > 24h</option>
+            <option>IM > 24h > 24h > 24h</option>
+            <option>IM > 24h > 48h > 72h</option>
+            <option>IM > 48h > 48h > 48h</option>
+            <option>IM > 72h > 72h > 72h</option>
+            <option>IM > 7d > 7d > 7d</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Big text boxes + token insert -->
+      <div class="muted" style="margin-top:12px">Insert variable → will append into the currently focused text box.</div>
+      <div class="tokenbar">
+        <select id="tokenSelect">
+          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
+          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
+          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
+          <option value="{{contact.email}}">{{contact.email}}</option>
+          <option value="{{contact.phone}}">{{contact.phone}}</option>
+          <option value="{{location.name}}">{{location.name}}</option>
+        </select>
+        <button type="button" id="insertToken">Insert</button>
+      </div>
+
+      <label>Custom campaign agent 1 – First message</label>
+      <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
+
+      <label>Custom campaign agent 1 – Bump 1</label>
+      <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
+
+      <label>Custom campaign agent 1 – Bump 2</label>
+      <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
+
+      <label>Custom campaign agent 1 – Bump 3</label>
+      <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+
+      <!-- Prompt editor for notes -->
+      <label>Custom campaign agent 1 – Notes about campaign</label>
+      <div class="toolbar">
+        <button class="tb-btn" data-cmd="bold" type="button">Bold</button>
+        <button class="tb-btn" data-cmd="italic" type="button">Italic</button>
+        <button class="tb-btn" data-cmd="insertUnorderedList" type="button">Bullets</button>
+        <span class="small">Markdown-like text is fine; this saves HTML.</span>
+      </div>
+      <div id="notes" class="prompt" contenteditable="true" data-placeholder="Write notes/prompts here…"></div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn" id="submitBtn">Submit</button>
+        <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+        <span class="status" id="status"></span>
+      </div>
+    </div>
+
+    <p class="sub" style="margin-top:10px">
+      Keys passed via URL: 
+      <code class="badge" id="keysBadge"></code>
+    </p>
+  </div>
+
+<script>
+  // --- helpers
+  const qs = new URLSearchParams(location.search);
+  const get = k => qs.get(k) || "";
+
+  const locationId = get("locationId");
+  document.getElementById("locLine").textContent = locationId
+    ? `Location ID: ${locationId}`
+    : "Location ID not provided.";
+
+  // Keys (from URL): key_active, key_bump1, key_bump2, key_bump3, key_campaign, key_firstmsg, key_cadence, key_perday, key_notes
+  const keys = {
+    active:   get("key_active"),
+    bump1:    get("key_bump1"),
+    bump2:    get("key_bump2"),
+    bump3:    get("key_bump3"),
+    campaign: get("key_campaign"),
+    firstmsg: get("key_firstmsg"),
+    cadence:  get("key_cadence"),
+    perday:   get("key_perday"),
+    notes:    get("key_notes")
+  };
+  document.getElementById("keysBadge").textContent = Object.values(keys).filter(Boolean).join(" • ");
+
+  // Prefill values if provided (val_*)
+  const val = {
+    active:   get("val_active"),
+    bump1:    get("val_bump1"),
+    bump2:    get("val_bump2"),
+    bump3:    get("val_bump3"),
+    campaign: get("val_campaign"),
+    firstmsg: get("val_firstmsg"),
+    cadence:  get("val_cadence"),
+    perday:   get("val_perday"),
+    notes:    get("val_notes")
+  };
+
+  // Toggle logic
+  const toggle = document.getElementById("activeToggle");
+  const activeLabel = document.getElementById("activeLabel");
+  function setActive(on){
+    toggle.classList.toggle("on", !!on);
+    toggle.setAttribute("aria-checked", !!on);
+    activeLabel.textContent = on ? "Yes" : "No";
+  }
+  setActive((val.active || "").toLowerCase() === "yes");
+  toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
+  toggle.addEventListener("keydown", (e)=>{ if (e.key === " " || e.key === "Enter"){ e.preventDefault(); toggle.click(); }});
+
+  // Inputs
+  const campaignName = document.getElementById("campaignName");
+  const perDay = document.getElementById("perDay");
+  const cadence = document.getElementById("cadence");
+  const firstMessage = document.getElementById("firstMessage");
+  const bump1 = document.getElementById("bump1");
+  const bump2 = document.getElementById("bump2");
+  const bump3 = document.getElementById("bump3");
+  const notes = document.getElementById("notes");
+
+  if (val.campaign) campaignName.value = val.campaign;
+  if (val.perday) perDay.value = val.perday;
+  if (val.cadence) cadence.value = val.cadence;
+  if (val.firstmsg) firstMessage.value = val.firstmsg;
+  if (val.bump1) bump1.value = val.bump1;
+  if (val.bump2) bump2.value = val.bump2;
+  if (val.bump3) bump3.value = val.bump3;
+  if (val.notes) notes.innerHTML = val.notes;
+
+  // Token insert
+  let focusTarget = null;
+  [firstMessage, bump1, bump2, bump3].forEach(el=>{
+    el.addEventListener("focus", ()=> focusTarget = el);
+  });
+  document.getElementById("insertToken").addEventListener("click", ()=>{
+    const sel = document.getElementById("tokenSelect");
+    const token = sel.value;
+    const el = focusTarget || firstMessage;
+    const start = el.selectionStart || el.value.length;
+    const end = el.selectionEnd || el.value.length;
+    el.value = el.value.slice(0,start) + token + el.value.slice(end);
+    el.focus();
+    el.selectionStart = el.selectionEnd = start + token.length;
+  });
+
+  // Prompt toolbar
+  document.querySelectorAll(".tb-btn").forEach(b=>{
+    b.addEventListener("click", ()=> document.execCommand(b.dataset.cmd, false, null));
+  });
+
+  // Submit
+  const statusEl = document.getElementById("status");
+  const submitBtn = document.getElementById("submitBtn");
+  function setLoading(text="Updating…"){
+    statusEl.innerHTML = `<span class="spinner"></span>${text}`;
+  }
+  function setStatus(text, ok=false){
+    statusEl.textContent = text;
+    statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    [firstMessage,bump1,bump2,bump3].forEach(el=> el.value="");
+    notes.innerHTML="";
+    setActive(false);
+    campaignName.value="";
+    perDay.value="100";
+    cadence.selectedIndex=0;
+    setStatus("");
+  });
+
+  submitBtn.addEventListener("click", async (e)=>{
+    e.preventDefault();
+    if (!locationId){ setStatus("Missing locationId", false); return; }
+
+    const payload = {
+      locationId,
+      keys, // pass the Custom Value KEYS you’re targeting
+      data: {
+        "Custom campaign agent 1 – Active": toggle.classList.contains("on") ? "Yes" : "",
+        "Custom campaign agent 1 – Campaign name": campaignName.value,
+        "Custom campaign agent 1 – How many per day": perDay.value,
+        "Custom campaign agent 1 – Follow up cadence": cadence.value,
+        "Custom campaign agent 1 – First message": firstMessage.value,
+        "Custom campaign agent 1 – Bump 1": bump1.value,
+        "Custom campaign agent 1 – Bump 2": bump2.value,
+        "Custom campaign agent 1 – Bump 3": bump3.value,
+        "Custom campaign agent 1 – Notes about campaign": notes.innerHTML
+      }
+    };
+
+    submitBtn.disabled = true;
+    setLoading("Updating…");
+
+    try{
+      const res = await fetch("https://api.visquanta.com/webhook/custom-agent-set-up",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json().catch(()=> ({}));
+
+      if (String(json?.response).toLowerCase() === "complete"){
+        setStatus("Complete", true);
+      } else if (!res.ok){
+        setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`);
+      } else {
+        // Optional: poll if your backend returns {jobId:"..."} first
+        await poll(json?.jobId);
+      }
+    }catch(err){
+      setStatus("Network error. Try again.");
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+
+  async function poll(jobId, tries=20){
+    if (!jobId){ setStatus("Waiting…"); return; }
+    setLoading();
+    for (let i=0;i<tries;i++){
+      await new Promise(r=>setTimeout(r,1500));
+      try{
+        const r = await fetch(`https://api.visquanta.com/webhook/custom-agent-set-up?jobId=${encodeURIComponent(jobId)}`);
+        const j = await r.json().catch(()=> ({}));
+        if (String(j?.response).toLowerCase() === "complete"){
+          setStatus("Complete", true);
+          return;
+        }
+      }catch{}
+    }
+    setStatus("Timed out waiting for completion.");
+  }
+</script>
+</body>
+</html>
