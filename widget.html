@@ -51,6 +51,7 @@
   /* Actions */
   .actions{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:18px; }
   .btn{ background:var(--orange); color:#000; border:0; padding:14px 28px; border-radius:14px; font-weight:800; font-size:16px; cursor:pointer; }
+  .btn.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
   .status{ font-size:13px; color:var(--muted); text-align:center; display:block; margin-top:8px; }
 
   /* Toggle */
@@ -106,7 +107,11 @@
 
     <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
 
-    <div class="editing"><span class="sub">Editing:</span><span class="chip" id="agentChip">Custom campaign agent 1</span></div>
+    <div class="editing">
+      <span class="sub">Editing:</span>
+      <span class="chip" id="agentChip">Custom campaign agent 1</span>
+      <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
+    </div>
 
     <div class="card" id="formCard">
       <!-- Active -->
@@ -271,6 +276,7 @@
       <!-- Actions -->
       <div class="actions">
         <button class="btn" id="submitBtn">Save Agent 1</button>
+        <button class="btn secondary" id="saveNextBtn" title="Save then move to the next agent">Save & Next</button>
       </div>
       <span class="status" id="status"></span>
     </div>
@@ -372,6 +378,8 @@
   const notes        = document.getElementById("notes");
   const statusEl     = document.getElementById("status");
   const submitBtn    = document.getElementById("submitBtn");
+  const saveNextBtn  = document.getElementById("saveNextBtn");
+  const copyPrevBtn  = document.getElementById("copyPrevBtn");
 
   const cv = {
     active:  document.getElementById("cv_active"),
@@ -506,30 +514,41 @@
     };
   }
 
-  // Save + refresh
-  document.getElementById("submitBtn").addEventListener("click", async (e)=>{
+  // Save (single)
+  submitBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
+    await saveAgentThenRefresh(agent, { jumpToNext:false });
+  });
 
-    working[agent] = getFormValues();
-    let keys = overrideKeysFromQuery(cvKeys(agent), agent);
+  // Save & Next
+  saveNextBtn.addEventListener("click", async (e)=>{
+    e.preventDefault();
+    if (!locationId) return setStatus("Missing locationId", false);
+    await saveAgentThenRefresh(agent, { jumpToNext:true });
+  });
+
+  async function saveAgentThenRefresh(agentNum, { jumpToNext }){
+    working[agentNum] = getFormValues();
+    let keys = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
 
     const payload = {
-      locationId, businessName, agent, keys,
+      locationId, businessName, agent: agentNum, keys,
       data: {
-        ["Custom campaign agent " + agent + " – Active"]: working[agent].active,
-        ["Custom campaign agent " + agent + " – Campaign name"]: working[agent].campaign,
-        ["Custom campaign agent " + agent + " – How many per day"]: working[agent].perday,
-        ["Custom campaign agent " + agent + " – Follow up cadence"]: working[agent].cadence,
-        ["Custom campaign agent " + agent + " – First message"]: working[agent].firstmsg,
-        ["Custom campaign agent " + agent + " – Bump 1"]: working[agent].bump1,
-        ["Custom campaign agent " + agent + " – Bump 2"]: working[agent].bump2,
-        ["Custom campaign agent " + agent + " – Bump 3"]: working[agent].bump3,
-        ["Custom campaign agent " + agent + " – Notes about campaign"]: working[agent].notes
+        ["Custom campaign agent " + agentNum + " – Active"]: working[agentNum].active,
+        ["Custom campaign agent " + agentNum + " – Campaign name"]: working[agentNum].campaign,
+        ["Custom campaign agent " + agentNum + " – How many per day"]: working[agentNum].perday,
+        ["Custom campaign agent " + agentNum + " – Follow up cadence"]: working[agentNum].cadence,
+        ["Custom campaign agent " + agentNum + " – First message"]: working[agentNum].firstmsg,
+        ["Custom campaign agent " + agentNum + " – Bump 1"]: working[agentNum].bump1,
+        ["Custom campaign agent " + agentNum + " – Bump 2"]: working[agentNum].bump2,
+        ["Custom campaign agent " + agentNum + " – Bump 3"]: working[agentNum].bump3,
+        ["Custom campaign agent " + agentNum + " – Notes about campaign"]: working[agentNum].notes
       }
     };
 
     submitBtn.disabled = true;
+    saveNextBtn.disabled = true;
     showOverlay("Saving…");
 
     try{
@@ -538,22 +557,24 @@
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify(payload)
       });
-      const json = await res.json().catch(()=> ({}));
+      await res.json().catch(()=> ({}));
 
-      if (!res.ok){
-        setStatus(`Error ${res.status}: ${json?.message || "Request failed"}`);
-        hideOverlay();
-      } else {
-        setStatus("Saved", true);
-        setTimeout(refreshFromServer, 3000);
-      }
+      // After 3s refresh and (optionally) jump
+      setTimeout(async ()=>{
+        await refreshFromServer();
+        if (jumpToNext){
+          const next = agentNum === AGENT_COUNT ? 1 : agentNum + 1;
+          switchAgent(next);
+        }
+      }, 3000);
     }catch{
       setStatus("Network error. Try again.");
       hideOverlay();
     }finally{
       submitBtn.disabled = false;
+      saveNextBtn.disabled = false;
     }
-  });
+  }
 
   async function refreshFromServer(){
     if (!locationId) return;
@@ -589,6 +610,22 @@
       hideOverlay();
     }
   }
+
+  // Copy from previous agent (uses CURRENT values, not working edits)
+  copyPrevBtn.addEventListener("click", ()=>{
+    const prev = agent === 1 ? AGENT_COUNT : agent - 1;
+    const src = current[prev] || {};
+    setActive((src.active || "").toLowerCase()==="yes");
+    campaignName.value = src.campaign || "";
+    perDay.value       = src.perday   || perDay.value;
+    cadence.value      = src.cadence  || cadence.value;
+    firstMessage.value = src.firstmsg || "";
+    bump1.value        = src.bump1    || "";
+    bump2.value        = src.bump2    || "";
+    bump3.value        = src.bump3    || "";
+    notes.value        = src.notes    || "";
+    setStatus(`Copied values from Agent ${prev}`, true);
+  });
 
   // Examples modal logic
   const exModal = document.getElementById("exModal");
