@@ -7,7 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; --red:#ef4444; }
+  :root{
+    --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36;
+    --orange:#ed6c03; --red:#ef4444; --green:#10b981;
+  }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
   .wrap{ max-width:980px; margin:24px auto; padding:20px; }
@@ -20,47 +23,35 @@
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
 
-  /* Sticky tab bar */
+  /* Sticky tabs */
   .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); }
   .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
-  .tab{
-    border:1px solid var(--line);
-    padding:10px 14px;
-    border-radius:999px;
-    background:#0e1117;
-    cursor:pointer;
-    font-weight:700;
-    font-size:13px;
-    color:#cfd6e4;
-    transition:.15s;
-  }
+  .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
   .tab:hover{ border-color:#3a404a; }
-  .tab.active{
-    background:var(--orange);
-    color:#000;
-    border-color:var(--orange);
-    box-shadow:0 6px 16px rgba(237,108,3,.35);
-  }
+  .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
 
-  /* Current agent chip */
+  /* Editing chip */
   .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; }
   .chip{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 10px; border-radius:999px; font-weight:700;
+    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700;
     background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45);
   }
 
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
 
+  .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
   input[type="text"], select, textarea{
     width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none;
   }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
+
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .actions{ display:flex; align-items:center; gap:12px; margin-top:14px; }
-  .btn{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:700; cursor:pointer; }
-  .status{ font-size:13px; color:var(--muted); }
+
+  /* Actions */
+  .actions{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:18px; }
+  .btn{ background:var(--orange); color:#000; border:0; padding:14px 28px; border-radius:14px; font-weight:800; font-size:16px; cursor:pointer; }
+  .status{ font-size:13px; color:var(--muted); text-align:center; display:block; margin-top:8px; }
 
   /* Toggle */
   .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
@@ -69,7 +60,7 @@
   .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
   .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
 
-  /* Per-field token inserter */
+  /* Token inserter */
   .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
   .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
   .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
@@ -77,8 +68,11 @@
   /* Current value chip */
   .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
   .cv strong{ font-weight:800; }
-  .cv.has-value{ border-color:rgba(237,108,3,.5); background:rgba(237,108,3,.1); color:#ffd9b8; }
-  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
+  .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; } /* green */
+  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }  /* red */
+
+  /* Divider */
+  .divider{ height:1px; background:var(--line); margin:20px 0 16px; opacity:.8; }
 
   /* Overlay loader */
   .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
@@ -86,6 +80,18 @@
   .loading{ display:flex; flex-direction:column; align-items:center; gap:10px; }
   .bigspin{ width:46px; height:46px; border:5px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:999px; animation:spin .9s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  /* Examples modal */
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
+  .modal.show{ display:flex; }
+  .modal-card{ width:min(720px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); }
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .modal-title{ font-weight:800; }
+  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
+  .ex-list{ display:flex; flex-direction:column; gap:10px; }
+  .ex-item{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
+  .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
+  .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -98,28 +104,27 @@
     <div class="sub" id="bizLine"></div>
     <div class="sub" id="locLine"></div>
 
-    <!-- Tabs -->
-    <div class="tabs-wrap">
-      <div class="tabs" id="tabs"></div>
-    </div>
+    <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
 
-    <!-- Editing indicator -->
-    <div class="editing">
-      <span class="sub">Editing:</span>
-      <span class="chip" id="agentChip">Custom campaign agent 1</span>
-    </div>
+    <div class="editing"><span class="sub">Editing:</span><span class="chip" id="agentChip">Custom campaign agent 1</span></div>
 
     <div class="card" id="formCard">
-      <!-- Active toggle -->
-      <label>Active? ("Yes" or leave blank)</label>
+      <!-- Active -->
+      <div class="label-row">
+        <label>Active? ("Yes" or leave blank)</label>
+      </div>
       <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
       <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
 
-      <!-- Campaign name (NO token picker here) -->
-      <label>Campaign name</label>
+      <div class="divider"></div>
+
+      <!-- Campaign name (no token picker) -->
+      <div class="label-row"><label>Campaign name</label></div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
       <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
 
       <!-- Per day + Cadence -->
       <div class="row">
@@ -146,8 +151,13 @@
         </div>
       </div>
 
-      <!-- Messages -->
-      <label>First message</label>
+      <div class="divider"></div>
+
+      <!-- First message -->
+      <div class="label-row">
+        <label>First message</label>
+        <button class="xbtn ex-btn" data-target="firstMessage" data-kind="first">Examples</button>
+      </div>
       <div class="ti" data-target="firstMessage">
         <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -165,7 +175,13 @@
       <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
       <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
 
-      <label>Bump 1</label>
+      <div class="divider"></div>
+
+      <!-- Bump 1 -->
+      <div class="label-row">
+        <label>Bump 1</label>
+        <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
+      </div>
       <div class="ti" data-target="bump1">
         <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -183,7 +199,13 @@
       <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
       <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
 
-      <label>Bump 2</label>
+      <div class="divider"></div>
+
+      <!-- Bump 2 -->
+      <div class="label-row">
+        <label>Bump 2</label>
+        <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
+      </div>
       <div class="ti" data-target="bump2">
         <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -201,7 +223,13 @@
       <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
       <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
 
-      <label>Bump 3</label>
+      <div class="divider"></div>
+
+      <!-- Bump 3 -->
+      <div class="label-row">
+        <label>Bump 3</label>
+        <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
+      </div>
       <div class="ti" data-target="bump3">
         <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -219,8 +247,10 @@
       <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
       <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
 
-      <!-- Notes (plain text) -->
-      <label>Notes about campaign</label>
+      <div class="divider"></div>
+
+      <!-- Notes -->
+      <div class="label-row"><label>Notes about campaign</label></div>
       <div class="ti" data-target="notes">
         <select>
           <option value="{{contact.first_name}}">{{contact.first_name}}</option>
@@ -241,16 +271,24 @@
       <!-- Actions -->
       <div class="actions">
         <button class="btn" id="submitBtn">Save Agent 1</button>
-        <span class="status" id="status"></span>
       </div>
+      <span class="status" id="status"></span>
     </div>
   </div>
 
   <!-- Overlay loader -->
   <div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
-    <div class="loading">
-      <div class="bigspin"></div>
-      <div id="overlayText">Loading…</div>
+    <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
+  </div>
+
+  <!-- Examples modal -->
+  <div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="exTitle">Examples</div>
+        <button class="xbtn" id="exClose">Close</button>
+      </div>
+      <div class="ex-list" id="exList"></div>
     </div>
   </div>
 
@@ -260,6 +298,38 @@
   const SUBMIT_URL = "https://api.visquanta.com/webhook/custom-agent-set-up";
   const AGENT_COUNT = 5;
   /* ---------------------------------------------- */
+
+  // Example library
+  const EXAMPLES = {
+    first: [
+      "Hey, its Emily from ABC Cars. Is this the same {{contact.first_name}} who was looking for a vehicle recently?",
+      "Hi {{contact.first_name}}, Emily at ABC Cars — still in the market for a car?",
+      "{{contact.first_name}}, quick one from Emily at ABC Cars. Are you still shopping around?",
+      "Hello {{contact.first_name}} — Emily with ABC Cars here. Mind if I help with your search?",
+      "Hey {{contact.first_name}}! Emily @ ABC Cars. Are you the one who enquired about a vehicle?"
+    ],
+    bump1: [
+      "Hey, its Emily from ABC Cars. Is this the same {{contact.first_name}} who was looking for a vehicle recently?",
+      "Hi {{contact.first_name}}, just checking back in from ABC Cars — still looking?",
+      "Circling back {{contact.first_name}} — want me to send options?",
+      "{{contact.first_name}}, Emily here again from ABC Cars. Can I answer anything for you?",
+      "Quick follow-up, {{contact.first_name}}. Do you have a make/model in mind yet?"
+    ],
+    bump2: [
+      "Hopefully I have the right number, is this {{contact.first_name}}'s number still?",
+      "Just making sure I’ve got the right person — is this {{contact.first_name}}?",
+      "{{contact.first_name}}, is this still your number? Want to make sure I reach you with options.",
+      "Double checking contact info — is this {{contact.first_name}} of ABC Cars enquiry?",
+      "Hey {{contact.first_name}}, did I reach you okay? Happy to send vehicle suggestions."
+    ],
+    bump3: [
+      "Just circling back {{contact.first_name}}. Let me know if you need any help from us here at ABC cars :)",
+      "Last nudge from Emily at ABC Cars — want me to put together a shortlist for you?",
+      "{{contact.first_name}}, if timing’s not right just say so — happy to help when you’re ready.",
+      "No rush — I’ll be here when you need me. Want financing or trade-in options, {{contact.first_name}}?",
+      "Closing the loop — reply STOP if not interested, otherwise I’ll keep an eye out for matches."
+    ]
+  };
 
   // Helpers
   const qs = new URLSearchParams(location.search);
@@ -272,11 +342,11 @@
   const showOverlay = (t="Loading…") => { overlayText.textContent=t; overlay.classList.remove("hidden"); };
   const hideOverlay = () => overlay.classList.add("hidden");
 
-  // Header lines
+  // Header
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
   document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
-  // Build tabs
+  // Tabs
   const tabsEl = document.getElementById("tabs");
   for (let i=1;i<=AGENT_COUNT;i++){
     const t = document.createElement("button");
@@ -319,7 +389,7 @@
   const working = {};
   const current = {};
 
-  // Toggle
+  // Toggle behavior
   function setActive(on){
     toggle.classList.toggle("on", !!on);
     toggle.setAttribute("aria-checked", !!on);
@@ -328,7 +398,7 @@
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
-  // Token inserter for each .ti
+  // Token inserter
   function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
     const end   = el.selectionEnd ?? el.value.length;
@@ -356,6 +426,7 @@
     el.classList.toggle("empty", !has);
   }
 
+  // Keys for agent
   function cvKeys(n){
     const base = `custom_campaign_agent_${n}__`;
     return {
@@ -435,6 +506,7 @@
     };
   }
 
+  // Save + refresh
   document.getElementById("submitBtn").addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
@@ -473,7 +545,6 @@
         hideOverlay();
       } else {
         setStatus("Saved", true);
-        // wait 3s then refetch
         setTimeout(refreshFromServer, 3000);
       }
     }catch{
@@ -519,12 +590,47 @@
     }
   }
 
+  // Examples modal logic
+  const exModal = document.getElementById("exModal");
+  const exList  = document.getElementById("exList");
+  const exClose = document.getElementById("exClose");
+  document.querySelectorAll(".ex-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const kind = btn.dataset.kind;          // first | bump1 | bump2 | bump3
+      const targetId = btn.dataset.target;    // textarea id
+      const examples = EXAMPLES[kind] || [];
+      exList.innerHTML = "";
+      document.getElementById("exTitle").textContent = `Examples — ${kind.replace(/^./,c=>c.toUpperCase())}`;
+      examples.forEach(txt=>{
+        const row = document.createElement("div");
+        row.className = "ex-item";
+        const p = document.createElement("div");
+        p.className = "ex-text";
+        p.textContent = txt;
+        const use = document.createElement("button");
+        use.className = "usebtn";
+        use.textContent = "Use";
+        use.onclick = () => {
+          const field = document.getElementById(targetId);
+          field.value = txt;
+          exModal.classList.remove("show");
+          field.focus();
+        };
+        row.appendChild(p); row.appendChild(use);
+        exList.appendChild(row);
+      });
+      exModal.classList.add("show");
+    });
+  });
+  exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
+  exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
+
   (async function init(){
     for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
     if (!locationId) return;
 
     showOverlay("Loading current values…");
-    await refreshFromServer();  // refresh hides overlay
+    await refreshFromServer();  // hides overlay
     switchAgent(1);
   })();
 </script>
