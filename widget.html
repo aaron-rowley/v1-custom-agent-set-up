@@ -381,12 +381,18 @@
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
 
-  const FETCH_URL   = decodeURIComponent(get("fetchUrl")  || "");
-  const SUBMIT_URL  = decodeURIComponent(get("submitUrl") || "");
+  const RAW_FETCH_URL   = decodeURIComponent(get("fetchUrl")  || "");
+  const RAW_SUBMIT_URL  = decodeURIComponent(get("submitUrl") || "");
   const AUTH_HEADER = get("authHeader") || "";
   const AUTH_TOKEN  = get("authToken")  || "";
   const APIKEY_HEADER = get("apiKeyHeader") || "";
   const APIKEY_VALUE  = get("apiKey")      || "";
+  const PROXY = decodeURIComponent(get("proxy") || ""); // optional proxy
+
+  // Final URLs (optionally via proxy)
+  const FETCH_URL  = PROXY ? `${PROXY}?url=${encodeURIComponent(RAW_FETCH_URL)}`  : RAW_FETCH_URL;
+  const SUBMIT_URL = PROXY ? `${PROXY}?url=${encodeURIComponent(RAW_SUBMIT_URL)}` : RAW_SUBMIT_URL;
+
   const AGENTS = 5;
 
   function buildHeaders(){
@@ -627,7 +633,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     });
   }
 
-  // Build a preview that keeps variants visible.
   function previewCadence(full, n){
     const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
     const head = parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
@@ -949,8 +954,11 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       }
     } catch (err){
       hideOverlay();
+      const tip = (String(err).includes("Failed to fetch"))
+        ? "Likely CORS/preflight blocked by the API. Ask the API to allow Origin: " + location.origin + " and headers: Authorization, Content-Type."
+        : "";
       setStatus("Network error. Try again.", false);
-      showWebhookResponse({ error: String(err) }, { status: 0 });
+      showWebhookResponse({ error: String(err), hint: tip, submitUrl: SUBMIT_URL, origin: location.origin, headers: buildHeaders() }, { status: 0 });
     } finally {
       submitBtnTop.disabled = false;
       saveNextBtnTop.disabled = false;
@@ -1002,8 +1010,12 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       renderCV();
       recalcSaveVisibility();
       setStatus("Refreshed", true);
-    }catch{
+    }catch(err){
+      const tip = (String(err).includes("Failed to fetch"))
+        ? "Likely CORS/preflight blocked by the API. Ask the API to allow Origin: " + location.origin + " and headers: Authorization, Content-Type."
+        : "";
       setStatus("Could not refresh current values.", false);
+      showWebhookResponse({ error: String(err), hint: tip, fetchUrl: FETCH_URL, origin: location.origin, headers: buildHeaders() }, { status: 0 });
     }finally{
       hideOverlay();
     }
