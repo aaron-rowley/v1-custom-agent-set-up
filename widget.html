@@ -92,7 +92,7 @@
   /* Webhook response */
   .resp{ margin-top:14px; }
   .resp.hidden{ display:none; }
-  .resp pre{ background:#0b0f14; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:280px; }
+  .resp pre{ background:#0b0f14; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:320px; }
 </style>
 </head>
 <body>
@@ -530,16 +530,14 @@ One question at a time per interaction.
 
   const respBox = document.getElementById("respBox");
   const respPre = document.getElementById("respPre");
-  function showWebhookResponse(json){
-    // Try to present as: [ { data: [...] } ]
-    let out;
-    if (Array.isArray(json) && json.length && json[0].data) {
-      out = json;
-    } else if (json && Array.isArray(json.data)) {
-      out = [{ data: json.data }];
-    } else {
-      out = [json];
-    }
+  function showWebhookResponse(body, meta = {}) {
+    // Normalize to your preferred shape while keeping raw + meta for debugging
+    const normalized = (()=>{
+      if (Array.isArray(body) && body.length && body[0]?.data) return body;
+      if (body && Array.isArray(body.data)) return [{ data: body.data }];
+      return [{ data: body }];
+    })();
+    const out = { status: meta.status, headers: meta.headers, display: normalized, raw: body };
     respPre.textContent = JSON.stringify(out, null, 2);
     respBox.classList.remove("hidden");
   }
@@ -859,10 +857,15 @@ One question at a time per interaction.
         headers: buildHeaders(),
         body: JSON.stringify(payload)
       });
-      const json = await res.json().catch(()=> ({}));
+
+      const status  = res.status;
+      const headers = Object.fromEntries([...res.headers.entries()]);
+      const text    = await res.text();
+      let parsed; try { parsed = text ? JSON.parse(text) : { message: "No content" }; } catch { parsed = { raw: text }; }
+
       hideOverlay();
-      setStatus("Saved", true);
-      showWebhookResponse(json);
+      setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
+      showWebhookResponse(parsed, { status, headers });
 
       setTimeout(async ()=>{
         await refreshFromServer();
@@ -889,7 +892,8 @@ One question at a time per interaction.
         headers: buildHeaders(),
         body: JSON.stringify({ locationId })
       });
-      const json = await res.json().catch(()=> ({}));
+      const text = await res.text();
+      let json; try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
       const agents = json?.agents || {};
       for (let i=1;i<=AGENTS;i++){
         const a = agents[String(i)] || agents[i] || {};
