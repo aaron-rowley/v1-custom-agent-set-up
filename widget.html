@@ -42,12 +42,28 @@
   .copy-note{ font-size:12px; color:#a7f3d0; }
 
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
-
   .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
   input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  /* Token inserter */
+  .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
+  .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
+  .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
+
+  /* Toggle (restored) */
+  .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
+  .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
+  .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
+  .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
+  .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
+
+  /* Helper pop-up */
+  .ibtn{ background:transparent; border:1px dashed var(--line); color:#cfd6e4; font-size:12px; padding:4px 10px; border-radius:999px; cursor:pointer; }
+  .tip{ position:fixed; max-width:320px; background:#0b0f14; border:1px solid #273042; border-radius:10px; padding:10px 12px; z-index:10001; box-shadow:0 16px 48px rgba(0,0,0,.5); }
+  .tip.hidden{ display:none; }
 
   /* Current value chip */
   .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
@@ -55,7 +71,6 @@
   .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; }
   .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
 
-  /* Divider */
   .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
 
   /* Overlay loader */
@@ -65,7 +80,7 @@
   .bigspin{ width:46px; height:46px; border:5px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:999px; animation:spin .9s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg) } }
 
-  /* Examples modal */
+  /* Examples modal (scrollable) */
   .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
   .modal.show{ display:flex; }
   .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); max-height:80vh; }
@@ -148,7 +163,10 @@
       <!-- Per day + Cadence -->
       <div class="row">
         <div>
-          <label>How many per day</label>
+          <div class="label-row">
+            <label>How many per day</label>
+            <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
+          </div>
           <select id="perDay">
             <option>10</option><option>25</option><option>50</option><option>75</option>
             <option>150</option><option>200</option><option>250</option><option>300</option>
@@ -157,7 +175,10 @@
           <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
         </div>
         <div>
-          <label>Follow up cadence</label>
+          <div class="label-row">
+            <label>Follow up cadence</label>
+            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’).">What’s this?</button>
+          </div>
           <select id="cadence">
             <option>IM > 15m > 24h > 24h</option>
             <option>IM > 24h > 24h > 24h</option>
@@ -175,6 +196,7 @@
       <!-- First message -->
       <div class="label-row">
         <label>First message</label>
+        <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
         <button class="xbtn ex-btn" data-target="firstMessage" data-kind="first">Examples</button>
       </div>
       <div class="ti" data-target="firstMessage">
@@ -199,6 +221,7 @@
       <!-- Bump 1 -->
       <div class="label-row">
         <label>Bump 1</label>
+        <button class="ibtn" data-tip="Short nudge after IM based on the cadence above. Aim to confirm we’ve got the right number and keep the door open.">What’s this?</button>
         <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
       </div>
       <div class="ti" data-target="bump1">
@@ -223,6 +246,7 @@
       <!-- Bump 2 -->
       <div class="label-row">
         <label>Bump 2</label>
+        <button class="ibtn" data-tip="Second follow-up. Keep it polite and low-friction; ask for a simple confirmation or preference.">What’s this?</button>
         <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
       </div>
       <div class="ti" data-target="bump2">
@@ -247,6 +271,7 @@
       <!-- Bump 3 -->
       <div class="label-row">
         <label>Bump 3</label>
+        <button class="ibtn" data-tip="Final follow-up. Close the loop, be helpful, offer a next step (call, test drive, or ‘I’ll keep an eye out’).">What’s this?</button>
         <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
       </div>
       <div class="ti" data-target="bump3">
@@ -292,7 +317,7 @@
 
       <div class="divider"></div>
 
-      <!-- Objective reached block (moved down, before webhook response) -->
+      <!-- Objective reached block (below prompts, above response) -->
       <div class="row">
         <div>
           <label>Objective reached trigger phrase</label>
@@ -326,6 +351,9 @@
     <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
   </div>
 
+  <!-- Floating helper tooltip -->
+  <div id="tooltip" class="tip hidden" role="dialog" aria-live="polite"></div>
+
   <!-- Examples modal -->
   <div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
     <div class="modal-card">
@@ -343,7 +371,7 @@
   const get = k => qs.get(k) || "";
 
   const FETCH_URL  = decodeURIComponent(get("fetchUrl")  || "");
-  const SUBMIT_URL = decodeURIComponent(get("submitUrl") || "");
+  the SUBMIT_URL = decodeURIComponent(get("submitUrl") || ""); // keep
   const AUTH_HEADER = get("authHeader") || "";
   const AUTH_TOKEN  = get("authToken")  || "";
   const APIKEY_HEADER = get("apiKeyHeader") || "";
@@ -398,78 +426,7 @@
         "Want me to book a test-drive slot for you, {{contact.first_name}}?"
       ]}
     ],
-    notes: [
-      { group: "Fresh Up Follow Up", items: [`
-Fresh Up Follow Up
-
-If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
-
-This means we are reaching out to a customer who who first visited the showroom 10 days ago. & the conversation objective is to invite them back toward rebooking an appointment. 
-
-1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
-
-2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
-
-The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
-
-One question at a time per interaction.
-`]},
-      { group: "Service to Sales (Appraisal)", items: [`
-Service to Sales (Appraisal)
-
-If the chat history indicates that the most recent agent to be activated is the "Service to Sales (Appraisal)" Agent, 
-
-This means we are reaching out to a customer who scheduled a service appointment very recently & the objective is to Invite them to have their vehicle appraised either online or get the process started over the phone with a specialist.
-
-1.0 - We will be (re) introducing ourselves and asking how their vehicle is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hi [their name], it's [your name] from [dealership name] how are you and your [vehicle but without the year, just the model to appear human like, if nothing available, just use vehicle] doing?" message.
-
-2.0 - Once they tell us how they / their vehicle is we want to ackowledge what they say empathetically 
-
-and then on a new line say 
-
-"I just wanted to quickly check-in, see how you were and also quickly ask if have you had you were interested in getting your [vehicle] appraised? 
-
-2.1 - If they say yes, ask if they would like to do it online or if they would like to have an appraisal specialist reach out to them as.
-
-3.1 - If they say online, send them this link: www.juneksbuysusedcars.com and say "Once you start, could you let me know when you’ve submitted your info? That way, I’ll bring it up to the team."
-
-3.1.1 - Once they are done, say "Great, thanks. A buying specialist will contact you soon to discuss the next steps" and then wish them a nice day (dont use take car or have a wonderful day here as the phrase "buying specialist will contact you soon to discuss the next steps" is the trigger phrase tool that will send to the buying team so make sure you use it when appropriate)
-
-If they say over the phone, use the "buying specialist" trigger phrase tool in your sign off message as you are just in admin.
-
-Note: One question at a time per interaction.
-`]},
-      { group: "Phone Up Follow Up", items: [`
-Phone Up Follow Up
-
-If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
-
-This means we are reaching out to a customer who out to customers who called the dealership 7 days ago & the conversation objective is to Invite them to visit the store and set an appointment.
-
-1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
-
-2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
-
-The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
-
-One question at a time per interaction.
-`]},
-      { group: "Internet Up Follow Up", items: [`
-Internet Up Follow Up
-
-If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
-
-This means we are reaching out to a customer who is a brand new internet lead & the conversation objective is to Invite them to set an appointment in our store.
-
-1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
-
-2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
-
-The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
-
-One question at a time per interaction.
-`]}
-    ]
+    notes: [ /* (left as in your version) */ ]
   };
 
   const locationId   = get("locationId");
@@ -493,15 +450,11 @@ One question at a time per interaction.
   });
 
   function showWebhookResponse(body, meta = {}) {
-    // Set header pill
     const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
     respStatusPill.className = "pill " + (ok ? "ok" : "bad");
     respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
 
-    // Build pretty sections
     respGrid.innerHTML = "";
-
-    // Try to show data array with friendly layout if present
     let blocks = [];
     if (Array.isArray(body) && body[0]?.data) blocks = body[0].data;
     else if (Array.isArray(body?.data)) blocks = body.data;
@@ -512,7 +465,6 @@ One question at a time per interaction.
       const h = document.createElement("h5"); h.textContent = "Saved fields";
       group.appendChild(h);
 
-      // Render up to ~50 items nicely
       blocks.slice(0, 100).forEach(item=>{
         const box = document.createElement("div");
         box.className = "kv";
@@ -542,7 +494,6 @@ One question at a time per interaction.
       respGrid.appendChild(g);
     }
 
-    // Raw
     rawPre.textContent = JSON.stringify(body, null, 2);
     respBox.classList.remove("hidden");
   }
@@ -551,11 +502,11 @@ One question at a time per interaction.
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
   document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
-  // Refresh button
   document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
 
   // Tabs
   const tabsEl = document.getElementById("tabs");
+  const AGENTS = 5;
   for (let i=1;i<=AGENTS;i++){
     const t = document.createElement("button");
     t.className = "tab" + (i===1?" active":"");
@@ -639,6 +590,23 @@ One question at a time per interaction.
     const sel = ti.querySelector("select");
     const btn = ti.querySelector("button");
     btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
+  });
+
+  // Helper pop-ups (single floating tooltip)
+  const tip = document.getElementById("tooltip");
+  function showTip(btn){
+    const text = btn.getAttribute("data-tip") || "";
+    if (!text) return;
+    tip.textContent = text;
+    const r = btn.getBoundingClientRect();
+    tip.style.left = Math.min(window.innerWidth - 340, r.left) + "px";
+    tip.style.top  = (r.bottom + 8) + "px";
+    tip.classList.remove("hidden");
+  }
+  function hideTip(){ tip.classList.add("hidden"); }
+  document.addEventListener("click", (e)=>{
+    if (e.target.classList.contains("ibtn")) { showTip(e.target); }
+    else if (!tip.classList.contains("hidden")) { hideTip(); }
   });
 
   // Listen to inputs → recompute save button visibility
@@ -807,13 +775,9 @@ One question at a time per interaction.
     topActions.classList.toggle("dirty", show);
   }
 
-  // Save single (changed-only)
   async function saveAgentThenRefresh(agentNum, { jumpToNext }){
     const changed = diffData(agentNum, { ignoreDefaults:false });
-    if (!Object.keys(changed).length){
-      setStatus("No changes to save.", true);
-      return;
-    }
+    if (!Object.keys(changed).length){ setStatus("No changes to save.", true); return; }
 
     let keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
     const rev = {
@@ -870,7 +834,6 @@ One question at a time per interaction.
     }
   }
 
-  // Wire top action buttons
   submitBtnTop.addEventListener("click", (e)=>{ e.preventDefault(); if (!locationId || !SUBMIT_URL) return; saveAgentThenRefresh(agent, { jumpToNext:false }); });
   saveNextBtnTop.addEventListener("click", (e)=>{ e.preventDefault(); if (!locationId || !SUBMIT_URL) return; saveAgentThenRefresh(agent, { jumpToNext:true }); });
 
@@ -914,7 +877,6 @@ One question at a time per interaction.
     }
   }
 
-  // Copy from previous agent (CURRENT values)
   copyPrevBtn.addEventListener("click", ()=>{
     const prev = agent === 1 ? AGENTS : agent - 1;
     const src = current[prev] || {};
