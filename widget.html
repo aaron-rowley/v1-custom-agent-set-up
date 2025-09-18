@@ -342,6 +342,22 @@
 
       <div class="divider"></div>
 
+      <!-- Objective reached block (webhook controls) -->
+      <div class="row">
+        <div>
+          <label>Objective reached trigger phrase</label>
+          <input type="text" id="objTrigger" placeholder="e.g. ‘buying specialist will contact you soon to discuss the next steps’" />
+          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
+        </div>
+        <div>
+          <label>Objective reached webhook Endpoint</label>
+          <input type="text" id="objWebhook" placeholder="https://…" />
+          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
       <!-- Webhook response -->
       <div class="resp hidden" id="respBox">
         <div class="label-row"><label>Webhook response</label></div>
@@ -586,6 +602,10 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const bump2        = document.getElementById("bump2");
   const bump3        = document.getElementById("bump3");
   const notes        = document.getElementById("notes");
+
+  const objTrigger   = document.getElementById("objTrigger");
+  const objWebhook   = document.getElementById("objWebhook");
+
   const statusEl     = document.getElementById("status");
 
   // Sticky top actions
@@ -604,6 +624,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2:    document.getElementById("cv_bump2"),
     bump3:    document.getElementById("cv_bump3"),
     notes:    document.getElementById("cv_notes"),
+    objTrigger: document.getElementById("cv_objTrigger"),
+    objWebhook: document.getElementById("cv_objWebhook"),
   };
 
   // Working/current snapshots
@@ -627,7 +649,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     });
   }
 
-  // Build a preview that keeps variants visible.
   function previewCadence(full, n){
     const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
     const head = parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
@@ -724,7 +745,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   });
 
   // Inputs listeners
-  [campaignName, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
+  [campaignName, objTrigger, objWebhook, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
     el.addEventListener("input", recalcSaveVisibility);
     el.addEventListener("change", recalcSaveVisibility);
   });
@@ -753,7 +774,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       bump1:     base + "bump_1",
       bump2:     base + "bump_2",
       bump3:     base + "bump_3",
-      notes:     base + "notes_about_campaign"
+      notes:     base + "notes_about_campaign",
+      objTrigger: base + "objective_reached_trigger_phrase",
+      objWebhook: base + "objective_reached_webhook_endpoint"
     };
   }
   function overrideKeysFromQuery(kmap, n){
@@ -776,6 +799,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     setCV(cv.bump2,      current[agent]?.bump2);
     setCV(cv.bump3,      current[agent]?.bump3);
     setCV(cv.notes,      current[agent]?.notes);
+    setCV(cv.objTrigger, current[agent]?.objectiveTrigger);
+    setCV(cv.objWebhook, current[agent]?.objectiveWebhook);
   }
 
   function switchAgent(n){
@@ -799,7 +824,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const curA = current[agent] || {};
     const prevA = current[prevIndex] || {};
 
-    // prepare cadence options once
+    // prepare cadence option values once
     ensureCadenceValues();
 
     // Follow-ups first (affects cadence preview & per-day list)
@@ -814,6 +839,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || BUMP2_DEFAULT;
     bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || BUMP3_DEFAULT;
     notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
+
+    objTrigger.value   = w.objectiveTrigger || curA.objectiveTrigger || prevA.objectiveTrigger || "";
+    objWebhook.value   = w.objectiveWebhook || curA.objectiveWebhook || prevA.objectiveWebhook || "";
 
     const activeSeed = (w.active || curA.active || prevA.active || "");
     setActive( activeSeed.toLowerCase()==="yes" );
@@ -835,7 +863,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       bump1:    bump1.value,
       bump2:    bump2.value,
       bump3:    bump3.value,
-      notes:    notes.value
+      notes:    notes.value,
+      objectiveTrigger: objTrigger.value.trim(),
+      objectiveWebhook: objWebhook.value.trim()
     };
   }
 
@@ -844,6 +874,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const emptyActive = v.active==="";
     const emptyTexts =
       !v.campaign &&
+      !v.objectiveTrigger &&
+      !v.objectiveWebhook &&
       !v.firstmsg &&
       (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT) &&
       (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT) &&
@@ -865,7 +897,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       bump1:    `Custom campaign agent ${n} – Bump 1`,
       bump2:    `Custom campaign agent ${n} – Bump 2`,
       bump3:    `Custom campaign agent ${n} – Bump 3`,
-      notes:    `Custom campaign agent ${n} – Notes about campaign`
+      notes:    `Custom campaign agent ${n} – Notes about campaign`,
+      objectiveTrigger: `Custom campaign agent ${n} – Objective reached trigger phrase`,
+      objectiveWebhook: `Custom campaign agent ${n} – Objective reached webhook Endpoint`,
     };
 
     const changed = {};
@@ -908,7 +942,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       [`Custom campaign agent ${agentNum} – Bump 1`]               : "bump1",
       [`Custom campaign agent ${agentNum} – Bump 2`]               : "bump2",
       [`Custom campaign agent ${agentNum} – Bump 3`]               : "bump3",
-      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
+      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes",
+      [`Custom campaign agent ${agentNum} – Objective reached trigger phrase`] : "objTrigger",
+      [`Custom campaign agent ${agentNum} – Objective reached webhook Endpoint`] : "objWebhook",
     };
     const keysSubset = {};
     for (const label of Object.keys(changed)){
@@ -996,7 +1032,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
           bump1:    a.bump1 ?? "",
           bump2:    a.bump2 ?? "",
           bump3:    a.bump3 ?? "",
-          notes:    a.notes ?? ""
+          notes:    a.notes ?? "",
+          objectiveTrigger: a.objectiveTrigger ?? a.objective_trigger ?? "",
+          objectiveWebhook: a.objectiveWebhook ?? a.objective_webhook ?? ""
         };
       }
       renderCV();
@@ -1022,6 +1060,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2.value        = src.bump2    || BUMP2_DEFAULT;
     bump3.value        = src.bump3    || BUMP3_DEFAULT;
     notes.value        = src.notes    || "";
+    objTrigger.value   = src.objectiveTrigger || "";
+    objWebhook.value   = src.objectiveWebhook || "";
     copyNote.textContent = `Copied values from Agent ${prev}.`;
     setTimeout(()=> copyNote.textContent="", 3500);
     recalcSaveVisibility();
