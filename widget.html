@@ -21,12 +21,20 @@
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
 
-  /* Sticky tabs */
-  .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); }
+  /* Sticky tabs + top actions */
+  .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); border-bottom:1px solid var(--line); }
+  .tabsbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
   .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
   .tab:hover{ border-color:#3a404a; }
   .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
+
+  .top-actions{ display:flex; align-items:center; gap:10px; }
+  .top-actions.hidden{ display:none; }
+  .btn-sm{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; }
+  .btn-sm.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
+  .dirty-dot{ width:8px; height:8px; border-radius:99px; background:var(--orange); box-shadow:0 0 0 4px rgba(237,108,3,.25); display:none; }
+  .top-actions.dirty .dirty-dot{ display:inline-block; }
 
   /* Editing bar */
   .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; flex-wrap:wrap; }
@@ -40,25 +48,6 @@
   input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-
-  /* Actions */
-  .actions{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:18px; }
-  .actions.hidden{ display:none; }
-  .btn{ background:var(--orange); color:#000; border:0; padding:14px 28px; border-radius:14px; font-weight:800; font-size:16px; cursor:pointer; }
-  .btn.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
-  .status{ font-size:13px; color:var(--muted); text-align:center; display:block; margin-top:8px; }
-
-  /* Toggle */
-  .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
-  .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
-  .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
-  .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
-  .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
-
-  /* Token inserter */
-  .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
-  .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
-  .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
 
   /* Current value chip */
   .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
@@ -79,20 +68,34 @@
   /* Examples modal */
   .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
   .modal.show{ display:flex; }
-  .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); }
+  .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); max-height:80vh; }
   .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
   .modal-title{ font-weight:800; }
-  .ex-list{ display:flex; flex-direction:column; gap:14px; }
+  .ex-list{ display:flex; flex-direction:column; gap:14px; max-height:65vh; overflow:auto; padding-right:6px; }
   .ex-group{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; }
   .ex-group h4{ margin:0 0 8px; font-size:13px; color:#a7b0c0; letter-spacing:.2px; }
   .ex-item{ border:1px solid #263142; border-radius:10px; padding:10px; background:#0f141a; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
   .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
   .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
 
-  /* Webhook response */
+  /* Webhook response (pretty) */
   .resp{ margin-top:14px; }
   .resp.hidden{ display:none; }
-  .resp pre{ background:#0b0f14; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:320px; }
+  .resp-card{ border:1px solid #263142; background:#0b0f14; border-radius:14px; padding:14px; }
+  .resp-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .pill{ font-size:12px; padding:6px 10px; border-radius:999px; font-weight:800; }
+  .ok{ background:rgba(16,185,129,.15); color:#a7f3d0; border:1px solid rgba(16,185,129,.45); }
+  .bad{ background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.45); }
+  .resp-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
+  .kvt{ border:1px solid #273042; border-radius:10px; padding:10px; background:#0f141a; }
+  .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
+  .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
+  .rawtoggle{ background:transparent; border:1px dashed #2b2f36; color:#cfd6e4; padding:6px 10px; border-radius:10px; cursor:pointer; font-size:12px; }
+  .rawbox{ margin-top:8px; display:none; }
+  .rawbox pre{ background:#090d12; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:260px; }
+
+  /* Hide the old bottom actions (we moved to sticky) */
+  .actions{ display:none !important; }
 </style>
 </head>
 <body>
@@ -106,13 +109,24 @@
     <div class="sub" id="bizLine"></div>
     <div class="sub" id="locLine"></div>
 
-    <div class="tabs-wrap"><div class="tabs" id="tabs"></div></div>
+    <!-- Sticky tabs + actions -->
+    <div class="tabs-wrap">
+      <div class="tabsbar">
+        <div class="tabs" id="tabs"></div>
+        <div class="top-actions hidden" id="topActions">
+          <span class="dirty-dot" title="Unsaved changes"></span>
+          <button class="btn-sm" id="submitBtnTop">Save</button>
+          <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next</button>
+        </div>
+      </div>
+    </div>
 
     <div class="editing">
       <span class="sub">Editing:</span>
       <span class="chip" id="agentChip">Custom campaign agent 1</span>
       <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
       <span class="copy-note" id="copyNote"></span>
+      <span class="sub" id="status" style="margin-left:auto;"></span>
     </div>
 
     <div class="card" id="formCard">
@@ -128,22 +142,6 @@
       <div class="label-row"><label>Campaign name</label></div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
       <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
-
-      <!-- Objective reached block -->
-      <div class="row">
-        <div>
-          <label>Objective reached trigger phrase</label>
-          <input type="text" id="objTrigger" placeholder="e.g. 'buying specialist will contact you soon to discuss the next steps'" />
-          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
-        </div>
-        <div>
-          <label>Objective reached webhook Endpoint</label>
-          <input type="text" id="objWebhook" placeholder="https://…" />
-          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
-        </div>
-      </div>
 
       <div class="divider"></div>
 
@@ -292,17 +290,33 @@
       <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
       <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
-      <!-- Actions -->
-      <div class="actions" id="actionsRow">
-        <button class="btn" id="submitBtn">Save Agent 1</button>
-        <button class="btn secondary" id="saveNextBtn" title="Save then move to the next agent">Save & Next</button>
+      <div class="divider"></div>
+
+      <!-- Objective reached block (moved down, before webhook response) -->
+      <div class="row">
+        <div>
+          <label>Objective reached trigger phrase</label>
+          <input type="text" id="objTrigger" placeholder="e.g. ‘buying specialist will contact you soon to discuss the next steps’" />
+          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
+        </div>
+        <div>
+          <label>Objective reached webhook Endpoint</label>
+          <input type="text" id="objWebhook" placeholder="https://…" />
+          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
+        </div>
       </div>
-      <span class="status" id="status"></span>
 
       <!-- Webhook response -->
       <div class="resp hidden" id="respBox">
         <div class="label-row"><label>Webhook response</label></div>
-        <pre id="respPre"></pre>
+        <div class="resp-card">
+          <div class="resp-head">
+            <div id="respStatusPill" class="pill ok">200 OK</div>
+            <button class="rawtoggle" id="rawToggle">View raw JSON</button>
+          </div>
+          <div class="resp-grid" id="respGrid"></div>
+          <div class="rawbox" id="rawBox"><pre id="rawPre"></pre></div>
+        </div>
       </div>
     </div>
   </div>
@@ -344,106 +358,44 @@
   }
   /* ----------------------------------------------------------------------- */
 
-  // Example library (all bumps have dialect sets)
+  // Human-sounding example library
   const EXAMPLES = {
     first: [
-      { group: "Dealership — conversational ‘blast’", items: [
-        "Hey {{contact.first_name}}, it’s {{location.name}} — want a short list of great {{contact.year_of_vehicle_manufacture}} {{contact.make}} {{contact.model}} matches?",
-        "Hi {{contact.first_name}}, quick one from {{location.name}} — still open to options if I text you a few?",
-        "{{contact.first_name}}, it’s {{location.name}}. 1-minute chat to nail down make/model & budget?",
-        "Hello {{contact.first_name}} — if you tell me year/make/style, I’ll send 3 options that fit.",
-        "Hey {{contact.first_name}}! I can price-match and hold a test drive slot. Want me to text times?"
+      { group: "Simple & human", items: [
+        "Hey {{contact.first_name}}, it’s {{location.name}}. Still shopping or did you already find something you like?",
+        "Hi {{contact.first_name}}, quick follow-up from {{location.name}} — want me to text a few good options that fit what you told us?",
+        "{{contact.first_name}}, this is {{location.name}}. If you share budget and style, I’ll send 2–3 solid picks you can actually see this week.",
+        "Hey {{contact.first_name}} — did you still want to come by for a quick look? I can hold a time if that helps."
       ] }
     ],
     bump1: [
-      { group: "Default", items: [
-        "Hopefully I have the right number — is this {{contact.first_name}}?"
+      { group: "Light touch", items: [
+        "Just checking I’ve got the right person — is this {{contact.first_name}}?",
+        "Hey {{contact.first_name}}, quick confirm this is the best number to reach you?"
       ]},
-      { group: "US — Southern", items: [
-        "Howdy {{contact.first_name}} — making sure I’ve got the right person. This you?",
-        "Hi there {{contact.first_name}}! Quick tap-back to confirm I reached ya?"
-      ]},
-      { group: "US — Eastern", items: [
-        "Hey {{contact.first_name}}, checking I’ve got the right number. You good to text here?",
-        "{{contact.first_name}} — quick confirm this is you so I can send options?"
-      ]},
-      { group: "US — Western", items: [
-        "Hi {{contact.first_name}}! Just confirming this is your best number to text a few picks.",
-        "Hey {{contact.first_name}}, pinging you here — still you?"
-      ]},
-      { group: "UK — South", items: [
-        "Hello {{contact.first_name}}, quick check this is you — happy to send a shortlist.",
-        "Hi {{contact.first_name}}, is this the right number to share options?"
-      ]},
-      { group: "UK — North", items: [
-        "Hiya {{contact.first_name}}, that you? I’ll pop over a few choices if so.",
-        "Alright {{contact.first_name}} — this your number? I can send some motors to consider."
-      ]},
-      { group: "Canada", items: [
-        "Hey {{contact.first_name}} — just confirming I’ve reached you. Want me to text options, eh?",
-        "Hi {{contact.first_name}}, checking this is your number — I can send a couple of picks."
+      { group: "Friendly", items: [
+        "Hi {{contact.first_name}}! Did I catch you on the right line here?",
+        "{{contact.first_name}} — is this you? I’ve got a couple vehicles you might like."
       ]}
     ],
     bump2: [
-      { group: "Polite follow-up", items: [
-        "Just making sure I’ve got the right person — is this {{contact.first_name}}?",
-        "{{contact.first_name}}, is this still your number? Want to make sure I reach you.",
-        "Double-checking contact info — still you, {{contact.first_name}}?"
+      { group: "Polite nudge", items: [
+        "Mind confirming this is still your number, {{contact.first_name}}?",
+        "Is it okay if I text a couple options here, {{contact.first_name}}?"
       ]},
-      { group: "US — Southern", items: [
-        "Quick check, {{contact.first_name}} — this still your cell so I can send details?",
-        "Mind confirming I’ve got ya, {{contact.first_name}}?"
-      ]},
-      { group: "US — Eastern", items: [
-        "Can you confirm this number’s best for you, {{contact.first_name}}?",
-        "Is this still you on text, {{contact.first_name}}?"
-      ]},
-      { group: "US — Western", items: [
-        "Just verifying this is still the right line for you, {{contact.first_name}}.",
-        "All good to text you here, {{contact.first_name}}?"
-      ]},
-      { group: "UK — South", items: [
-        "Could you confirm this is your number, {{contact.first_name}}?",
-        "Is this still the best number for you, {{contact.first_name}}?"
-      ]},
-      { group: "UK — North", items: [
-        "Is this your best number, {{contact.first_name}}?",
-        "Give us a quick yes if this is still you, {{contact.first_name}}."
-      ]},
-      { group: "Canada", items: [
-        "Mind confirming this is your number, {{contact.first_name}}?",
-        "Is this still the right number to reach you, {{contact.first_name}}?"
+      { group: "Direct", items: [
+        "Still good to text you on this line, {{contact.first_name}}?",
+        "Can I send availability for a quick visit, {{contact.first_name}}?"
       ]}
     ],
     bump3: [
-      { group: "Close loop / helpful", items: [
-        "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?",
-        "If timing’s not right, no worries — I’ll be here when you’re ready, {{contact.first_name}}.",
-        "Want me to book a call or set a test drive, {{contact.first_name}}?"
+      { group: "Close the loop", items: [
+        "Circling back, {{contact.first_name}} — want me to lock a quick time to pop in?",
+        "If you’ve moved on, no worries at all. Want me to keep an eye out for matches and text you when one hits?"
       ]},
-      { group: "US — Southern", items: [
-        "Checking in one last time, {{contact.first_name}} — want a hand lining up a test drive?",
-        "Happy to help anytime. Shall I have a specialist ring you, {{contact.first_name}}?"
-      ]},
-      { group: "US — Eastern", items: [
-        "Last check-in, {{contact.first_name}} — want me to slot a quick call?",
-        "No rush — if you want options or an appointment, I can set it up."
-      ]},
-      { group: "US — Western", items: [
-        "Looping back once more — want me to line up times for you, {{contact.first_name}}?",
-        "I can get a specialist to reach out if you’d like me to."
-      ]},
-      { group: "UK — South", items: [
-        "One final check, {{contact.first_name}} — fancy a quick chat with a specialist?",
-        "Happy to arrange a test drive when it suits you."
-      ]},
-      { group: "UK — North", items: [
-        "Last nudge, {{contact.first_name}} — want me to sort a quick call?",
-        "Give us a shout if you want me to get something booked."
-      ]},
-      { group: "Canada", items: [
-        "Circling back once more — want me to book a chat with a specialist, {{contact.first_name}}?",
-        "I can set up a test drive when you’re ready."
+      { group: "Helpful", items: [
+        "Happy to set a quick call with a specialist if that’s easier.",
+        "Want me to book a test-drive slot for you, {{contact.first_name}}?"
       ]}
     ],
     notes: [
@@ -528,17 +480,70 @@ One question at a time per interaction.
   const showOverlay = (t="Loading…") => { overlayText.textContent=t; overlay.classList.remove("hidden"); };
   const hideOverlay = () => overlay.classList.add("hidden");
 
-  const respBox = document.getElementById("respBox");
-  const respPre = document.getElementById("respPre");
+  // Pretty webhook display elements
+  const respBox   = document.getElementById("respBox");
+  const respGrid  = document.getElementById("respGrid");
+  const rawBox    = document.getElementById("rawBox");
+  const rawPre    = document.getElementById("rawPre");
+  const rawToggle = document.getElementById("rawToggle");
+  const respStatusPill = document.getElementById("respStatusPill");
+  rawToggle.addEventListener("click", ()=>{
+    rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
+    rawToggle.textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
+  });
+
   function showWebhookResponse(body, meta = {}) {
-    // Normalize to your preferred shape while keeping raw + meta for debugging
-    const normalized = (()=>{
-      if (Array.isArray(body) && body.length && body[0]?.data) return body;
-      if (body && Array.isArray(body.data)) return [{ data: body.data }];
-      return [{ data: body }];
-    })();
-    const out = { status: meta.status, headers: meta.headers, display: normalized, raw: body };
-    respPre.textContent = JSON.stringify(out, null, 2);
+    // Set header pill
+    const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
+    respStatusPill.className = "pill " + (ok ? "ok" : "bad");
+    respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
+
+    // Build pretty sections
+    respGrid.innerHTML = "";
+
+    // Try to show data array with friendly layout if present
+    let blocks = [];
+    if (Array.isArray(body) && body[0]?.data) blocks = body[0].data;
+    else if (Array.isArray(body?.data)) blocks = body.data;
+
+    if (Array.isArray(blocks) && blocks.length) {
+      const group = document.createElement("div");
+      group.className = "kvt";
+      const h = document.createElement("h5"); h.textContent = "Saved fields";
+      group.appendChild(h);
+
+      // Render up to ~50 items nicely
+      blocks.slice(0, 100).forEach(item=>{
+        const box = document.createElement("div");
+        box.className = "kv";
+        const pairs = [
+          ["Custom value name", item["Custom value name"]],
+          ["Field key", item["Custom value field key"]],
+          ["Value", item["Custom value - Value"]],
+          ["Custom value ID", item["Custom value ID"]],
+          ["Trace", item["GHL Trace ID"]],
+        ];
+        pairs.forEach(([k,v])=>{
+          if (v===undefined || v===null) return;
+          const kEl=document.createElement("div"); kEl.style.color="#a7b0c0"; kEl.textContent=k;
+          const vEl=document.createElement("div"); vEl.textContent=String(v);
+          box.appendChild(kEl); box.appendChild(vEl);
+        });
+        group.appendChild(box);
+      });
+      respGrid.appendChild(group);
+    } else {
+      const g = document.createElement("div");
+      g.className="kvt";
+      const h=document.createElement("h5"); h.textContent="Response";
+      const p=document.createElement("div"); p.className="kv";
+      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
+      g.appendChild(h); g.appendChild(p);
+      respGrid.appendChild(g);
+    }
+
+    // Raw
+    rawPre.textContent = JSON.stringify(body, null, 2);
     respBox.classList.remove("hidden");
   }
 
@@ -579,9 +584,11 @@ One question at a time per interaction.
   const bump3        = document.getElementById("bump3");
   const notes        = document.getElementById("notes");
   const statusEl     = document.getElementById("status");
-  const actionsRow   = document.getElementById("actionsRow");
-  const submitBtn    = document.getElementById("submitBtn");
-  const saveNextBtn  = document.getElementById("saveNextBtn");
+
+  // Sticky top actions
+  const topActions   = document.getElementById("topActions");
+  const submitBtnTop = document.getElementById("submitBtnTop");
+  const saveNextBtnTop = document.getElementById("saveNextBtnTop");
 
   const cv = {
     active:   document.getElementById("cv_active"),
@@ -641,8 +648,7 @@ One question at a time per interaction.
   });
 
   function setStatus(text, ok){
-    if (!text){ statusEl.textContent=""; return; }
-    statusEl.textContent = text;
+    statusEl.textContent = text || "";
     statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
   }
   function setCV(el, value){
@@ -693,10 +699,8 @@ One question at a time per interaction.
   }
 
   function switchAgent(n){
-    // persist working draft for current agent
     working[agent] = getFormValues();
 
-    // switch tab highlight
     [...tabsEl.children].forEach(btn=>{
       const is = Number(btn.dataset.agent)===n;
       btn.classList.toggle("active", is);
@@ -705,7 +709,6 @@ One question at a time per interaction.
 
     agent = n;
     agentChip.textContent = `Custom campaign agent ${agent}`;
-    submitBtn.textContent = `Save Agent ${agent}`;
     document.title = `Agent ${agent} • Custom agent set up`;
 
     copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
@@ -733,7 +736,7 @@ One question at a time per interaction.
     renderCV();
     recalcSaveVisibility();
     setStatus("");
-    respBox.classList.add("hidden"); // hide old webhook output when switching
+    respBox.classList.add("hidden");
   }
 
   function getFormValues(){
@@ -753,7 +756,6 @@ One question at a time per interaction.
   }
 
   function isBlankTextFields(){
-    // "all empty" considers text inputs / textareas + active toggle; ignores selects
     const v = getFormValues();
     const emptyActive = v.active==="";
     const emptyTexts =
@@ -801,25 +803,11 @@ One question at a time per interaction.
     const noChanges = Object.keys(diffData(agent, { ignoreDefaults:true })).length===0;
     const allEmpty  = isBlankTextFields();
     const show = !(noChanges || allEmpty);
-    actionsRow.classList.toggle("hidden", !show);
+    topActions.classList.toggle("hidden", !show);
+    topActions.classList.toggle("dirty", show);
   }
 
   // Save single (changed-only)
-  submitBtn.addEventListener("click", async (e)=>{
-    e.preventDefault();
-    if (!locationId) return setStatus("Missing locationId", false);
-    if (!SUBMIT_URL) return setStatus("Missing submitUrl in query string.", false);
-    await saveAgentThenRefresh(agent, { jumpToNext:false });
-  });
-
-  // Save & Next
-  saveNextBtn.addEventListener("click", async (e)=>{
-    e.preventDefault();
-    if (!locationId) return setStatus("Missing locationId", false);
-    if (!SUBMIT_URL) return setStatus("Missing submitUrl in query string.", false);
-    await saveAgentThenRefresh(agent, { jumpToNext:true });
-  });
-
   async function saveAgentThenRefresh(agentNum, { jumpToNext }){
     const changed = diffData(agentNum, { ignoreDefaults:false });
     if (!Object.keys(changed).length){
@@ -848,7 +836,7 @@ One question at a time per interaction.
 
     const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
 
-    submitBtn.disabled = true; saveNextBtn.disabled = true;
+    submitBtnTop.disabled = true; saveNextBtnTop.disabled = true;
     showOverlay("Saving…");
 
     try{
@@ -873,13 +861,18 @@ One question at a time per interaction.
           const next = agentNum === AGENTS ? 1 : agentNum + 1;
           switchAgent(next);
         }
-      }, 3000);
+      }, 1500);
     }catch{
       setStatus("Network error. Try again."); hideOverlay();
     }finally{
-      submitBtn.disabled = false; saveNextBtn.disabled = false;
+      submitBtnTop.disabled = false; saveNextBtnTop.disabled = false;
+      recalcSaveVisibility();
     }
   }
+
+  // Wire top action buttons
+  submitBtnTop.addEventListener("click", (e)=>{ e.preventDefault(); if (!locationId || !SUBMIT_URL) return; saveAgentThenRefresh(agent, { jumpToNext:false }); });
+  saveNextBtnTop.addEventListener("click", (e)=>{ e.preventDefault(); if (!locationId || !SUBMIT_URL) return; saveAgentThenRefresh(agent, { jumpToNext:true }); });
 
   async function refreshFromServer(){
     if (!locationId) return;
