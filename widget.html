@@ -389,164 +389,14 @@
   const APIKEY_VALUE  = get("apiKey")      || "";
   const AGENTS = 5;
 
-  function buildHeaders(simple=false){
-    // When simple=true, only use "simple request" headers to avoid preflight.
-    const h = simple ? {} : { "Content-Type":"application/json" };
-    if (!simple){
-      if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
-      if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
-    }
+  function buildHeaders(){
+    const h = { "Content-Type":"application/json" };
+    if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
+    if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
     return h;
   }
 
-  // fetch helper with n8n-friendly fallbacks: fetch -> sendBeacon -> img GET
-  async function postJSONWithFallback(url, obj){
-    const bodyStr = JSON.stringify(obj);
-
-    // 1) Try normal fetch (best UX, shows response)
-    try{
-      const controller = new AbortController();
-      const t = setTimeout(()=>controller.abort(), 15000);
-      const res = await fetch(url, {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        credentials:"omit",
-        headers: buildHeaders(false),
-        body: bodyStr,
-        signal: controller.signal
-      });
-      clearTimeout(t);
-      const text = await res.text();
-      let parsed; try{ parsed = text ? JSON.parse(text) : {}; }catch{ parsed = { raw:text }; }
-      return { ok:true, via:"fetch", status:res.status, headers:Object.fromEntries([...res.headers.entries()]), data:parsed };
-    } catch (err){
-      // continue to fallbacks
-    }
-
-    // 2) Try sendBeacon (fire-and-forget, often bypasses CORS preflight)
-    if (navigator.sendBeacon){
-      try{
-        const blob = new Blob([bodyStr], { type: "text/plain;charset=UTF-8" });
-        const ok = navigator.sendBeacon(url, blob);
-        if (ok) return { ok:true, via:"beacon", status:0, headers:{}, data:{ message:"Sent with sendBeacon (no response due to CORS)." } };
-      }catch(e){}
-    }
-
-    // 3) GET beacon fallback (payload in querystring)
-    try{
-      const q = encodeURIComponent(btoa(unescape(encodeURIComponent(bodyStr))).replace(/=+$/,""));
-      const img = new Image();
-      const done = new Promise(resolve=>{
-        let settled=false;
-        const finish = (ok) => { if (settled) return; settled=true; resolve(ok); };
-        img.onload  = ()=> finish(true);
-        img.onerror = ()=> finish(true); // still hits server
-        setTimeout(()=> finish(false), 6000);
-      });
-      img.src = url + (url.includes("?") ? "&" : "?") + "payload64=" + q + "&_t=" + Date.now();
-      await done;
-      return { ok:true, via:"img", status:0, headers:{}, data:{ message:"Sent with image beacon (no response due to CORS)." } };
-    }catch(e){}
-
-    return { ok:false, via:"failed", status:0, headers:{}, data:{ error:"All webhook send methods failed." } };
-  }
-
-  /* -------------------------------------------------- */
-
-  // Examples (same as before)
-  const EXAMPLES = {
-    first: [
-      { group: "Simple & human", items: [
-        "Hey {{contact.first_name}}, it’s {{location.name}}. Still shopping or did you already find something you like?",
-        "Hi {{contact.first_name}}, quick follow-up from {{location.name}} — want me to text a few good options that fit what you told us?",
-        "{{contact.first_name}}, this is {{location.name}}. If you share budget and style, I’ll send 2–3 solid picks you can actually see this week.",
-        "Hey {{contact.first_name}} — did you still want to come by for a quick look? I can hold a time if that helps."
-      ] }
-    ],
-    bump1: [
-      { group: "Light touch", items: [
-        "Just checking I’ve got the right person — is this {{contact.first_name}}?",
-        "Hey {{contact.first_name}}, quick confirm this is the best number to reach you?"
-      ]},
-      { group: "Friendly", items: [
-        "Hi {{contact.first_name}}! Did I catch you on the right line here?",
-        "{{contact.first_name}} — is this you? I’ve got a couple vehicles you might like."
-      ]}
-    ],
-    bump2: [
-      { group: "Polite nudge", items: [
-        "Mind confirming this is still your number, {{contact.first_name}}?",
-        "Is it okay if I text a couple options here, {{contact.first_name}}?"
-      ]},
-      { group: "Direct", items: [
-        "Still good to text you on this line, {{contact.first_name}}?",
-        "Can I send availability for a quick visit, {{contact.first_name}}?"
-      ]}
-    ],
-    bump3: [
-      { group: "Close the loop", items: [
-        "Circling back, {{contact.first_name}} — want me to lock a quick time to pop in?",
-        "If you’ve moved on, no worries at all. Want me to keep an eye out for matches and text you when one hits?"
-      ]},
-      { group: "Helpful", items: [
-        "Happy to set a quick call with a specialist if that’s easier.",
-        "Want me to book a test-drive slot for you, {{contact.first_name}}?"
-      ]}
-    ],
-    notes: [
-      { group: "Fresh Up Follow Up", items: [`
-Fresh Up Follow Up
-
-Most recent agent: "Fresh Up Follow Up".
-Customer visited showroom ~10 days ago. Objective: invite back & rebook.
-
-1) Re-introduce briefly (skip WFH assistant bit here).
-2) Ask how their search is going; acknowledge what they say.
-3) Move into qualified prospect questions + any booking criteria.
-Best path is to schedule a call with a specialist to walk final steps.
-One question at a time per interaction.`]},
-      { group: "Service to Sales (Appraisal)", items: [`
-Service to Sales (Appraisal)
-
-Most recent agent: "Service to Sales (Appraisal)".
-Customer recently scheduled service; invite them to get an appraisal (online or phone).
-
-1) Re-introduce. Ask how the vehicle is doing (use model only if available).
-2) Acknowledge; then ask if they'd like an appraisal.
-3) If online: send link www.juneksbuysusedcars.com and ask them to ping when submitted so you can raise it with the team.
-4) When done: say "Great, thanks. A buying specialist will contact you soon to discuss the next steps".
-5) If phone: offer a call with a specialist and use that trigger phrase in your sign-off.`]},
-      { group: "Phone Up Follow Up", items: [`
-Phone Up Follow Up
-
-Most recent agent: "Fresh Up Follow Up".
-Customer phoned dealership ~7 days ago. Objective: invite to visit & set appointment.
-
-1) Re-introduce; quick "how's the search going?"
-2) Acknowledge; then standard qualified prospect flow + booking criteria.
-3) Suggest a call with a specialist if helpful. One question at a time.`]},
-      { group: "Internet Up Follow Up", items: [`
-Internet Up Follow Up
-
-Most recent agent: "Fresh Up Follow Up".
-Brand-new internet lead. Objective: invite to set an appointment in-store.
-
-1) Re-introduce; quick "how's the search going?"
-2) Acknowledge; then qualified prospect + booking criteria.
-3) Offer to line up a call or test drive. One question at a time.`]}
-    ]
-  };
-
-  const locationId   = get("locationId");
-  const businessName = get("businessName");
-
-  const overlay = document.getElementById("overlay");
-  const overlayText = document.getElementById("overlayText");
-  const showOverlay = (t="Loading…") => { overlayText.textContent=t; overlay.classList.remove("hidden"); };
-  const hideOverlay = () => overlay.classList.add("hidden");
-
-  // Pretty webhook display elements
+  // Pretty webhook display helpers
   const respBox   = document.getElementById("respBox");
   const respGrid  = document.getElementById("respGrid");
   const rawBox    = document.getElementById("rawBox");
@@ -561,8 +411,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   function showWebhookResponse(body, meta = {}) {
     const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
     respStatusPill.className = "pill " + (ok ? "ok" : "bad");
-    const via = meta.via ? ` · ${meta.via}` : "";
-    respStatusPill.textContent = (meta.status ? `${meta.status}` : (ok ? "200" : "0")) + (ok ? " OK" : " Error") + via;
+    respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
 
     respGrid.innerHTML = "";
     let blocks = [];
@@ -599,7 +448,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       g.className="kvt";
       const h=document.createElement("h5"); h.textContent="Response";
       const p=document.createElement("div"); p.className="kv";
-      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : (body?.message || 'Complete')}</div>`;
+      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
       g.appendChild(h); g.appendChild(p);
       respGrid.appendChild(g);
     }
@@ -609,6 +458,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   }
 
   // Header
+  const locationId   = get("locationId");
+  const businessName = get("businessName");
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
   document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
@@ -746,10 +597,10 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
-  // Token inserter
+  // Token inserter (FIXED: removed stray 'a')
   function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
-    aconst end   = el.selectionEnd ?? el.value.length;
+    const end   = el.selectionEnd ?? el.value.length;  /* <-- fixed line */
     const cur   = el.value || "";
     el.value = cur.slice(0,start) + token + cur.slice(end);
     el.focus();
@@ -978,37 +829,44 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     saveNextBtnTop.disabled = true;
     showOverlay("Saving…");
 
-    // Try to POST with fallbacks that still hit n8n even if CORS blocks
-    const result = await postJSONWithFallback(SUBMIT_URL, payload);
+    try{
+      const res = await fetch(SUBMIT_URL, {
+        method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
+        headers: buildHeaders(),
+        body: JSON.stringify(payload)
+      });
 
-    hideOverlay();
+      const status  = res.status;
+      const headers = Object.fromEntries([...res.headers.entries()]);
+      const text    = await res.text();
+      const parsed  = parseMaybeJSON(text);
 
-    if (result.ok){
-      setStatus(result.via==="fetch" ? "Saved" : "Sent (no response due to CORS)", true);
-      showWebhookResponse(result.data, { status: result.status, headers: result.headers, via: result.via });
+      hideOverlay();
+      setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
+      showWebhookResponse(parsed, { status, headers });
 
-      // If we got a readable response, refresh immediately; otherwise still refresh to pull latest if fetchUrl allows it.
-      try { await refreshFromServer(); } catch {}
+      await refreshFromServer();
       if (jumpToNext){
         const next = agentNum === AGENTS ? 1 : agentNum + 1;
         switchAgent(next);
       }
-    }else{
-      setStatus("Could not send to webhook.", false);
-      showWebhookResponse(result.data, { status: 0, via: result.via });
+    } catch (err){
+      hideOverlay();
+      setStatus("Network error. Try again.", false);
+      showWebhookResponse({ error: String(err) }, { status: 0 });
+    } finally {
+      submitBtnTop.disabled = false;
+      saveNextBtnTop.disabled = false;
+      recalcSaveVisibility();
     }
-
-    submitBtnTop.disabled = false;
-    saveNextBtnTop.disabled = false;
-    recalcSaveVisibility();
   }
 
-  submitBtnTop.addEventListener("click", (e)=>{
+  document.getElementById("submitBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
     if (!locationId || !SUBMIT_URL) return;
     saveAgentThenRefresh(agent, { jumpToNext:false });
   });
-  saveNextBtnTop.addEventListener("click", (e)=>{
+  document.getElementById("saveNextBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
     if (!locationId || !SUBMIT_URL) return;
     saveAgentThenRefresh(agent, { jumpToNext:true });
@@ -1023,7 +881,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     try{
       const res = await fetch(urlWithBust, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(false),
+        headers: buildHeaders(),
         body: JSON.stringify({ locationId })
       });
       const text = await res.text();
@@ -1054,7 +912,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     }
   }
 
-  copyPrevBtn.addEventListener("click", ()=>{
+  document.getElementById("copyPrevBtn").addEventListener("click", ()=>{
     const prev = agent === 1 ? AGENTS : agent - 1;
     const src = current[prev] || {};
     setActive((src.active || "").toLowerCase()==="yes");
@@ -1072,53 +930,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     recalcSaveVisibility();
   });
 
-  // Examples modal logic
-  const exModal = document.getElementById("exModal");
-  const exList  = document.getElementById("exList");
-  const exClose = document.getElementById("exClose");
-  document.querySelectorAll(".ex-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const kind = btn.dataset.kind;       // first | bump1 | bump2 | bump3 | notes
-      const targetId = btn.dataset.target; // textarea id
-      const groups = EXAMPLES[kind] || [];
-      exList.innerHTML = "";
-      document.getElementById("exTitle").textContent = `Examples — ${kind.replace(/^./,c=>c.toUpperCase())}`;
-      groups.forEach(g=>{
-        const block = document.createElement("div");
-        block.className = "ex-group";
-        const h = document.createElement("h4"); h.textContent = g.group;
-        block.appendChild(h);
-        (g.items||[]).forEach(txt=>{
-          const row = document.createElement("div");
-          row.className = "ex-item";
-          const p = document.createElement("div");
-          p.className = "ex-text";
-          p.textContent = txt.trim();
-          const use = document.createElement("button");
-          use.className = "usebtn";
-          use.textContent = "Use";
-          use.onclick = () => {
-            const field = document.getElementById(targetId);
-            field.value = txt.trim();
-            exModal.classList.remove("show");
-            field.focus();
-            recalcSaveVisibility();
-          };
-          row.appendChild(p); row.appendChild(use);
-          block.appendChild(row);
-        });
-        exList.appendChild(block);
-      });
-      exModal.classList.add("show");
-    });
-  });
-  exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
-  exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
-
   (async function init(){
-    // normalize cadence option values for full-string saving
     ensureCadenceValues();
-
     for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
     if (!locationId){ setStatus("Missing locationId", false); return; }
     showOverlay("Loading current values…");
