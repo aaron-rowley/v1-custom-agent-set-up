@@ -7,10 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36;
-    --orange:#ed6c03; --red:#ef4444; --green:#10b981;
-  }
+  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; --red:#ef4444; --green:#10b981; }
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
   .wrap{ max-width:980px; margin:24px auto; padding:20px; }
@@ -19,6 +16,7 @@
   .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
   .sop{ background:var(--red); color:#000; font-weight:800; border:none; text-decoration:none; padding:8px 12px; border-radius:12px; box-shadow:0 6px 14px rgba(239,68,68,.35); }
   .sop:hover{ filter:brightness(1.05); }
+  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
 
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
@@ -32,20 +30,15 @@
 
   /* Editing bar */
   .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; flex-wrap:wrap; }
-  .chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700;
-    background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45); }
-  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
+  .chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45); }
   .copy-note{ font-size:12px; color:#a7f3d0; }
 
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
 
   .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
-  input[type="text"], select, textarea{
-    width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none;
-  }
+  input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
-
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
   /* Actions */
@@ -70,10 +63,10 @@
   /* Current value chip */
   .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
   .cv strong{ font-weight:800; }
-  .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; } /* green */
-  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }  /* red */
+  .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; }
+  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
 
-  /* Divider (extra space) */
+  /* Divider */
   .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
 
   /* Overlay loader */
@@ -95,12 +88,18 @@
   .ex-item{ border:1px solid #263142; border-radius:10px; padding:10px; background:#0f141a; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
   .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
   .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
+
+  /* Webhook response */
+  .resp{ margin-top:14px; }
+  .resp.hidden{ display:none; }
+  .resp pre{ background:#0b0f14; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:280px; }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <a class="sop" href="https://airtable.com/appZY3R7wWCzEsIZT/pagMdmBUMsAVRNYMe?ZHpwB=recPcFlbdOVjRopk2" target="_blank" rel="noopener">Link to SOP</a>
+      <button class="xbtn" id="refreshBtn" title="Reload widget">Refresh</button>
     </div>
 
     <h1>Custom agent set up</h1>
@@ -118,9 +117,7 @@
 
     <div class="card" id="formCard">
       <!-- Active -->
-      <div class="label-row">
-        <label>Active? ("Yes" or leave blank)</label>
-      </div>
+      <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
       <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
       <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
@@ -138,7 +135,7 @@
       <div class="row">
         <div>
           <label>Objective reached trigger phrase</label>
-          <input type="text" id="objTrigger" placeholder="e.g. booked, deposit, sold…" />
+          <input type="text" id="objTrigger" placeholder="e.g. 'buying specialist will contact you soon to discuss the next steps'" />
           <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
         </div>
         <div>
@@ -274,7 +271,10 @@
       <div class="divider"></div>
 
       <!-- Notes -->
-      <div class="label-row"><label>Notes about campaign</label></div>
+      <div class="label-row">
+        <label>Notes about campaign</label>
+        <button class="xbtn ex-btn" data-target="notes" data-kind="notes">Examples</button>
+      </div>
       <div class="ti" data-target="notes">
         <select>
           <option value="{{contact.first_name}}">First name</option>
@@ -298,6 +298,12 @@
         <button class="btn secondary" id="saveNextBtn" title="Save then move to the next agent">Save & Next</button>
       </div>
       <span class="status" id="status"></span>
+
+      <!-- Webhook response -->
+      <div class="resp hidden" id="respBox">
+        <div class="label-row"><label>Webhook response</label></div>
+        <pre id="respPre"></pre>
+      </div>
     </div>
   </div>
 
@@ -324,11 +330,11 @@
 
   const FETCH_URL  = decodeURIComponent(get("fetchUrl")  || "");
   const SUBMIT_URL = decodeURIComponent(get("submitUrl") || "");
-  const AUTH_HEADER = get("authHeader") || "";        // e.g. Authorization
-  const AUTH_TOKEN  = get("authToken")  || "";        // e.g. Bearer abc123
-  const APIKEY_HEADER = get("apiKeyHeader") || "";    // e.g. x-api-key
-  const APIKEY_VALUE  = get("apiKey")      || "";     // key value
-  const AGENT_COUNT = 5;
+  const AUTH_HEADER = get("authHeader") || "";
+  const AUTH_TOKEN  = get("authToken")  || "";
+  const APIKEY_HEADER = get("apiKeyHeader") || "";
+  const APIKEY_VALUE  = get("apiKey")      || "";
+  const AGENTS = 5;
 
   function buildHeaders(){
     const h = { "Content-Type":"application/json" };
@@ -338,13 +344,13 @@
   }
   /* ----------------------------------------------------------------------- */
 
-  // Example library
+  // Example library (all bumps have dialect sets)
   const EXAMPLES = {
     first: [
       { group: "Dealership — conversational ‘blast’", items: [
         "Hey {{contact.first_name}}, it’s {{location.name}} — want a short list of great {{contact.year_of_vehicle_manufacture}} {{contact.make}} {{contact.model}} matches?",
         "Hi {{contact.first_name}}, quick one from {{location.name}} — still open to options if I text you a few?",
-        "{{contact.first_name}}, it’s {{location.name}}. 1 minute chat to nail down make/model & budget?",
+        "{{contact.first_name}}, it’s {{location.name}}. 1-minute chat to nail down make/model & budget?",
         "Hello {{contact.first_name}} — if you tell me year/make/style, I’ll send 3 options that fit.",
         "Hey {{contact.first_name}}! I can price-match and hold a test drive slot. Want me to text times?"
       ] }
@@ -382,15 +388,135 @@
       { group: "Polite follow-up", items: [
         "Just making sure I’ve got the right person — is this {{contact.first_name}}?",
         "{{contact.first_name}}, is this still your number? Want to make sure I reach you.",
-        "Double checking contact info — still you, {{contact.first_name}}?"
-      ] }
+        "Double-checking contact info — still you, {{contact.first_name}}?"
+      ]},
+      { group: "US — Southern", items: [
+        "Quick check, {{contact.first_name}} — this still your cell so I can send details?",
+        "Mind confirming I’ve got ya, {{contact.first_name}}?"
+      ]},
+      { group: "US — Eastern", items: [
+        "Can you confirm this number’s best for you, {{contact.first_name}}?",
+        "Is this still you on text, {{contact.first_name}}?"
+      ]},
+      { group: "US — Western", items: [
+        "Just verifying this is still the right line for you, {{contact.first_name}}.",
+        "All good to text you here, {{contact.first_name}}?"
+      ]},
+      { group: "UK — South", items: [
+        "Could you confirm this is your number, {{contact.first_name}}?",
+        "Is this still the best number for you, {{contact.first_name}}?"
+      ]},
+      { group: "UK — North", items: [
+        "Is this your best number, {{contact.first_name}}?",
+        "Give us a quick yes if this is still you, {{contact.first_name}}."
+      ]},
+      { group: "Canada", items: [
+        "Mind confirming this is your number, {{contact.first_name}}?",
+        "Is this still the right number to reach you, {{contact.first_name}}?"
+      ]}
     ],
     bump3: [
-      { group: "Close loop", items: [
+      { group: "Close loop / helpful", items: [
         "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?",
         "If timing’s not right, no worries — I’ll be here when you’re ready, {{contact.first_name}}.",
         "Want me to book a call or set a test drive, {{contact.first_name}}?"
-      ] }
+      ]},
+      { group: "US — Southern", items: [
+        "Checking in one last time, {{contact.first_name}} — want a hand lining up a test drive?",
+        "Happy to help anytime. Shall I have a specialist ring you, {{contact.first_name}}?"
+      ]},
+      { group: "US — Eastern", items: [
+        "Last check-in, {{contact.first_name}} — want me to slot a quick call?",
+        "No rush — if you want options or an appointment, I can set it up."
+      ]},
+      { group: "US — Western", items: [
+        "Looping back once more — want me to line up times for you, {{contact.first_name}}?",
+        "I can get a specialist to reach out if you’d like me to."
+      ]},
+      { group: "UK — South", items: [
+        "One final check, {{contact.first_name}} — fancy a quick chat with a specialist?",
+        "Happy to arrange a test drive when it suits you."
+      ]},
+      { group: "UK — North", items: [
+        "Last nudge, {{contact.first_name}} — want me to sort a quick call?",
+        "Give us a shout if you want me to get something booked."
+      ]},
+      { group: "Canada", items: [
+        "Circling back once more — want me to book a chat with a specialist, {{contact.first_name}}?",
+        "I can set up a test drive when you’re ready."
+      ]}
+    ],
+    notes: [
+      { group: "Fresh Up Follow Up", items: [`
+Fresh Up Follow Up
+
+If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
+
+This means we are reaching out to a customer who who first visited the showroom 10 days ago. & the conversation objective is to invite them back toward rebooking an appointment. 
+
+1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
+
+2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
+
+The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
+
+One question at a time per interaction.
+`]},
+      { group: "Service to Sales (Appraisal)", items: [`
+Service to Sales (Appraisal)
+
+If the chat history indicates that the most recent agent to be activated is the "Service to Sales (Appraisal)" Agent, 
+
+This means we are reaching out to a customer who scheduled a service appointment very recently & the objective is to Invite them to have their vehicle appraised either online or get the process started over the phone with a specialist.
+
+1.0 - We will be (re) introducing ourselves and asking how their vehicle is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hi [their name], it's [your name] from [dealership name] how are you and your [vehicle but without the year, just the model to appear human like, if nothing available, just use vehicle] doing?" message.
+
+2.0 - Once they tell us how they / their vehicle is we want to ackowledge what they say empathetically 
+
+and then on a new line say 
+
+"I just wanted to quickly check-in, see how you were and also quickly ask if have you had you were interested in getting your [vehicle] appraised? 
+
+2.1 - If they say yes, ask if they would like to do it online or if they would like to have an appraisal specialist reach out to them as.
+
+3.1 - If they say online, send them this link: www.juneksbuysusedcars.com and say "Once you start, could you let me know when you’ve submitted your info? That way, I’ll bring it up to the team."
+
+3.1.1 - Once they are done, say "Great, thanks. A buying specialist will contact you soon to discuss the next steps" and then wish them a nice day (dont use take car or have a wonderful day here as the phrase "buying specialist will contact you soon to discuss the next steps" is the trigger phrase tool that will send to the buying team so make sure you use it when appropriate)
+
+If they say over the phone, use the "buying specialist" trigger phrase tool in your sign off message as you are just in admin.
+
+Note: One question at a time per interaction.
+`]},
+      { group: "Phone Up Follow Up", items: [`
+Phone Up Follow Up
+
+If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
+
+This means we are reaching out to a customer who out to customers who called the dealership 7 days ago & the conversation objective is to Invite them to visit the store and set an appointment.
+
+1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
+
+2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
+
+The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
+
+One question at a time per interaction.
+`]},
+      { group: "Internet Up Follow Up", items: [`
+Internet Up Follow Up
+
+If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent, 
+
+This means we are reaching out to a customer who is a brand new internet lead & the conversation objective is to Invite them to set an appointment in our store.
+
+1.0 - We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.). This will be a short "Hey [their name], how are you? Its [your name] from [ dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
+
+2.0 - Once they tell us how they / their vehicle search is we want to ackowledge what they say empathetically and then continue with the defauklt qualified prospect section and any booking related criteria.
+
+The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
+
+One question at a time per interaction.
+`]}
     ]
   };
 
@@ -402,13 +528,32 @@
   const showOverlay = (t="Loading…") => { overlayText.textContent=t; overlay.classList.remove("hidden"); };
   const hideOverlay = () => overlay.classList.add("hidden");
 
+  const respBox = document.getElementById("respBox");
+  const respPre = document.getElementById("respPre");
+  function showWebhookResponse(json){
+    // Try to present as: [ { data: [...] } ]
+    let out;
+    if (Array.isArray(json) && json.length && json[0].data) {
+      out = json;
+    } else if (json && Array.isArray(json.data)) {
+      out = [{ data: json.data }];
+    } else {
+      out = [json];
+    }
+    respPre.textContent = JSON.stringify(out, null, 2);
+    respBox.classList.remove("hidden");
+  }
+
   // Header
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
   document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
+  // Refresh button
+  document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
+
   // Tabs
   const tabsEl = document.getElementById("tabs");
-  for (let i=1;i<=AGENT_COUNT;i++){
+  for (let i=1;i<=AGENTS;i++){
     const t = document.createElement("button");
     t.className = "tab" + (i===1?" active":"");
     t.textContent = `Agent ${i}`;
@@ -454,9 +599,15 @@
     notes:    document.getElementById("cv_notes"),
   };
 
-  // Working/current
+  // Working/current snapshots
   const working = {};
   const current = {};
+  let agent = 1;
+
+  // Defaults for bumps
+  const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
+  const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
+  const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?";
 
   // Toggle behavior
   function setActive(on){
@@ -485,7 +636,7 @@
     btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
   });
 
-  // Input listeners to control Save visibility
+  // Listen to inputs → recompute save button visibility
   [campaignName,objTrigger,objWebhook,perDay,cadence,firstMessage,bump1,bump2,bump3,notes].forEach(el=>{
     el.addEventListener("input", recalcSaveVisibility);
     el.addEventListener("change", recalcSaveVisibility);
@@ -529,8 +680,6 @@
     return map;
   }
 
-  let agent = 1;
-
   function renderCV(){
     setCV(cv.active,     current[agent]?.active);
     setCV(cv.campaign,   current[agent]?.campaign);
@@ -545,34 +694,11 @@
     setCV(cv.notes,      current[agent]?.notes);
   }
 
-  function isEmpty(v){ return !v || !String(v).trim(); }
-
-  function recalcSaveVisibility(){
-    const hasAny =
-      (toggle.classList.contains("on")) ||
-      !isEmpty(campaignName.value) ||
-      !isEmpty(objTrigger.value) ||
-      !isEmpty(objWebhook.value) ||
-      !isEmpty(perDay.value) ||
-      !isEmpty(cadence.value) ||
-      !isEmpty(firstMessage.value) ||
-      !isEmpty(bump1.value) ||
-      !isEmpty(bump2.value) ||
-      !isEmpty(bump3.value) ||
-      !isEmpty(notes.value);
-    actionsRow.classList.toggle("hidden", !hasAny && areAllCurrentEmpty(agent));
-  }
-  function areAllCurrentEmpty(n){
-    const a = current[n] || {};
-    return ["active","campaign","objectiveTrigger","objectiveWebhook","perday","cadence","firstmsg","bump1","bump2","bump3","notes"]
-      .every(k => isEmpty(a[k]));
-  }
-
   function switchAgent(n){
-    // Save edits for current tab
+    // persist working draft for current agent
     working[agent] = getFormValues();
 
-    // Highlight tab
+    // switch tab highlight
     [...tabsEl.children].forEach(btn=>{
       const is = Number(btn.dataset.agent)===n;
       btn.classList.toggle("active", is);
@@ -584,14 +710,11 @@
     submitBtn.textContent = `Save Agent ${agent}`;
     document.title = `Agent ${agent} • Custom agent set up`;
 
-    // Hide Copy button on Agent 1, show otherwise
     copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
     copyNote.textContent = "";
 
-    // Prefill precedence: edits → current[agent] → previous agent → defaults
     const w = working[agent] || {};
-    const prevIndex = agent === 1 ? AGENT_COUNT : agent - 1;
-
+    const prevIndex = agent === 1 ? AGENTS : agent - 1;
     const curA = current[agent] || {};
     const prevA = current[prevIndex] || {};
 
@@ -601,11 +724,9 @@
     perDay.value       = w.perday   || curA.perday   || prevA.perday   || perDay.value;
     cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || cadence.value;
     firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || "";
-    // Bump1 default if totally empty:
-    const bump1Default = "Hopefully I have the right number — is this {{contact.first_name}}?";
-    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || bump1Default;
-    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || "";
-    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || "";
+    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || BUMP1_DEFAULT;
+    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || BUMP2_DEFAULT;
+    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || BUMP3_DEFAULT;
     notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
 
     const activeSeed = (w.active || curA.active || prevA.active || "");
@@ -614,6 +735,7 @@
     renderCV();
     recalcSaveVisibility();
     setStatus("");
+    respBox.classList.add("hidden"); // hide old webhook output when switching
   }
 
   function getFormValues(){
@@ -632,11 +754,24 @@
     };
   }
 
-  // Build subsets of changed data + keys (only send what changed)
-  function diffData(n){
+  function isBlankTextFields(){
+    // "all empty" considers text inputs / textareas + active toggle; ignores selects
+    const v = getFormValues();
+    const emptyActive = v.active==="";
+    const emptyTexts =
+      !v.campaign && !v.objectiveTrigger && !v.objectiveWebhook &&
+      !v.firstmsg &&
+      (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT) &&
+      (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT) &&
+      (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT) &&
+      !v.notes;
+    return emptyActive && emptyTexts;
+  }
+
+  function diffData(n, { ignoreDefaults=false } = {}){
     const now = getFormValues();
     const cur = current[n] || {};
-    const mapLabel = {
+    const labels = {
       active:   `Custom campaign agent ${n} – Active`,
       campaign: `Custom campaign agent ${n} – Campaign name`,
       objectiveTrigger: `Custom campaign agent ${n} – Objective reached trigger phrase`,
@@ -650,18 +785,28 @@
       notes:    `Custom campaign agent ${n} – Notes about campaign`
     };
 
-    const changedData = {};
-    for (const k of Object.keys(mapLabel)){
-      const before = (cur[k] ?? "");
-      const after  = (now[k] ?? "");
-      if (String(before) !== String(after)){
-        changedData[ mapLabel[k] ] = after;
+    const changed = {};
+    for (const k of Object.keys(labels)){
+      let after = now[k] ?? "";
+      const before = cur[k] ?? "";
+      if (ignoreDefaults){
+        if (k==="bump1" && after.trim()===BUMP1_DEFAULT.trim() && !before.trim()) continue;
+        if (k==="bump2" && after.trim()===BUMP2_DEFAULT.trim() && !before.trim()) continue;
+        if (k==="bump3" && after.trim()===BUMP3_DEFAULT.trim() && !before.trim()) continue;
       }
+      if (String(before) !== String(after)) changed[ labels[k] ] = after;
     }
-    return changedData;
+    return changed;
   }
 
-  // Save (single)
+  function recalcSaveVisibility(){
+    const noChanges = Object.keys(diffData(agent, { ignoreDefaults:true })).length===0;
+    const allEmpty  = isBlankTextFields();
+    const show = !(noChanges || allEmpty);
+    actionsRow.classList.toggle("hidden", !show);
+  }
+
+  // Save single (changed-only)
   submitBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
@@ -678,16 +823,14 @@
   });
 
   async function saveAgentThenRefresh(agentNum, { jumpToNext }){
-    // changed-only payload
-    const changed = diffData(agentNum);
+    const changed = diffData(agentNum, { ignoreDefaults:false });
     if (!Object.keys(changed).length){
       setStatus("No changes to save.", true);
       return;
     }
 
     let keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
-    // Reduce keys map to only the fields we’re sending
-    const reverseLabelToKey = {
+    const rev = {
       [`Custom campaign agent ${agentNum} – Active`] : "active",
       [`Custom campaign agent ${agentNum} – Campaign name`] : "campaign",
       [`Custom campaign agent ${agentNum} – Objective reached trigger phrase`] : "objTrigger",
@@ -702,18 +845,12 @@
     };
     const keysSubset = {};
     for (const label of Object.keys(changed)){
-      const k = reverseLabelToKey[label];
-      if (k) keysSubset[k] = keysFull[k];
+      const k = rev[label]; if (k) keysSubset[k] = keysFull[k];
     }
 
-    const payload = {
-      locationId, businessName, agent: agentNum,
-      keys: keysSubset,
-      data: changed
-    };
+    const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
 
-    submitBtn.disabled = true;
-    saveNextBtn.disabled = true;
+    submitBtn.disabled = true; saveNextBtn.disabled = true;
     showOverlay("Saving…");
 
     try{
@@ -722,22 +859,22 @@
         headers: buildHeaders(),
         body: JSON.stringify(payload)
       });
-      await res.json().catch(()=> ({}));
+      const json = await res.json().catch(()=> ({}));
+      hideOverlay();
+      setStatus("Saved", true);
+      showWebhookResponse(json);
 
-      // After 3s refresh and (optionally) jump
       setTimeout(async ()=>{
         await refreshFromServer();
         if (jumpToNext){
-          const next = agentNum === AGENT_COUNT ? 1 : agentNum + 1;
+          const next = agentNum === AGENTS ? 1 : agentNum + 1;
           switchAgent(next);
         }
       }, 3000);
     }catch{
-      setStatus("Network error. Try again.");
-      hideOverlay();
+      setStatus("Network error. Try again."); hideOverlay();
     }finally{
-      submitBtn.disabled = false;
-      saveNextBtn.disabled = false;
+      submitBtn.disabled = false; saveNextBtn.disabled = false;
     }
   }
 
@@ -754,7 +891,7 @@
       });
       const json = await res.json().catch(()=> ({}));
       const agents = json?.agents || {};
-      for (let i=1;i<=AGENT_COUNT;i++){
+      for (let i=1;i<=AGENTS;i++){
         const a = agents[String(i)] || agents[i] || {};
         current[i] = {
           active:   a.active ?? "",
@@ -780,9 +917,9 @@
     }
   }
 
-  // Copy from previous agent (uses CURRENT values)
+  // Copy from previous agent (CURRENT values)
   copyPrevBtn.addEventListener("click", ()=>{
-    const prev = agent === 1 ? AGENT_COUNT : agent - 1;
+    const prev = agent === 1 ? AGENTS : agent - 1;
     const src = current[prev] || {};
     setActive((src.active || "").toLowerCase()==="yes");
     campaignName.value = src.campaign || "";
@@ -791,9 +928,9 @@
     perDay.value       = src.perday   || perDay.value;
     cadence.value      = src.cadence  || cadence.value;
     firstMessage.value = src.firstmsg || "";
-    bump1.value        = src.bump1    || bump1.value;
-    bump2.value        = src.bump2    || "";
-    bump3.value        = src.bump3    || "";
+    bump1.value        = src.bump1    || BUMP1_DEFAULT;
+    bump2.value        = src.bump2    || BUMP2_DEFAULT;
+    bump3.value        = src.bump3    || BUMP3_DEFAULT;
     notes.value        = src.notes    || "";
     copyNote.textContent = `Copied values from Agent ${prev}.`;
     setTimeout(()=> copyNote.textContent="", 3500);
@@ -806,8 +943,8 @@
   const exClose = document.getElementById("exClose");
   document.querySelectorAll(".ex-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      const kind = btn.dataset.kind;          // first | bump1 | bump2 | bump3
-      const targetId = btn.dataset.target;    // textarea id
+      const kind = btn.dataset.kind;             // first | bump1 | bump2 | bump3 | notes
+      const targetId = btn.dataset.target;       // textarea id
       const groups = EXAMPLES[kind] || [];
       exList.innerHTML = "";
       document.getElementById("exTitle").textContent = `Examples — ${kind.replace(/^./,c=>c.toUpperCase())}`;
@@ -821,13 +958,13 @@
           row.className = "ex-item";
           const p = document.createElement("div");
           p.className = "ex-text";
-          p.textContent = txt;
+          p.textContent = txt.trim();
           const use = document.createElement("button");
           use.className = "usebtn";
           use.textContent = "Use";
           use.onclick = () => {
             const field = document.getElementById(targetId);
-            field.value = txt;
+            field.value = txt.trim();
             exModal.classList.remove("show");
             field.focus();
             recalcSaveVisibility();
@@ -844,9 +981,8 @@
   exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
   (async function init(){
-    for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
+    for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
     if (!locationId){ setStatus("Missing locationId", false); return; }
-
     showOverlay("Loading current values…");
     await refreshFromServer();  // hides overlay
     switchAgent(1);
