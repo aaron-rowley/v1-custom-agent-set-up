@@ -30,12 +30,14 @@
   .tab:hover{ border-color:#3a404a; }
   .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
 
-  /* Editing chip */
-  .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; }
+  /* Editing bar */
+  .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; flex-wrap:wrap; }
   .chip{
     display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700;
     background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45);
   }
+  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
+  .copy-note{ font-size:12px; color:#a7f3d0; }
 
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
 
@@ -72,8 +74,8 @@
   .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; } /* green */
   .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }  /* red */
 
-  /* Divider */
-  .divider{ height:1px; background:var(--line); margin:20px 0 16px; opacity:.8; }
+  /* Divider (more space) */
+  .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
 
   /* Overlay loader */
   .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
@@ -88,7 +90,6 @@
   .modal-card{ width:min(720px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); }
   .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
   .modal-title{ font-weight:800; }
-  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
   .ex-list{ display:flex; flex-direction:column; gap:10px; }
   .ex-item{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
   .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
@@ -111,6 +112,7 @@
       <span class="sub">Editing:</span>
       <span class="chip" id="agentChip">Custom campaign agent 1</span>
       <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
+      <span class="copy-note" id="copyNote"></span>
     </div>
 
     <div class="card" id="formCard">
@@ -299,11 +301,25 @@
   </div>
 
 <script>
-  /* ------------------- CONFIG ------------------- */
-  const FETCH_URL  = "https://api.visquanta.com/webhook/call-value-data";
-  const SUBMIT_URL = "https://api.visquanta.com/webhook/custom-agent-set-up";
+  /* ------------------- URL CONFIG (no secrets in code!) ------------------- */
+  const qs = new URLSearchParams(location.search);
+  const get = k => qs.get(k) || "";
+
+  const FETCH_URL  = decodeURIComponent(get("fetchUrl")  || "");
+  const SUBMIT_URL = decodeURIComponent(get("submitUrl") || "");
+  const AUTH_HEADER = get("authHeader") || "";        // e.g. Authorization
+  const AUTH_TOKEN  = get("authToken")  || "";        // e.g. Bearer abc123
+  const APIKEY_HEADER = get("apiKeyHeader") || "";    // e.g. x-api-key
+  const APIKEY_VALUE  = get("apiKey")      || "";     // key value
   const AGENT_COUNT = 5;
-  /* ---------------------------------------------- */
+
+  function buildHeaders(){
+    const h = { "Content-Type":"application/json" };
+    if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
+    if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
+    return h;
+  }
+  /* ----------------------------------------------------------------------- */
 
   // Example library
   const EXAMPLES = {
@@ -337,9 +353,6 @@
     ]
   };
 
-  // Helpers
-  const qs = new URLSearchParams(location.search);
-  const get = k => qs.get(k) || "";
   const locationId   = get("locationId");
   const businessName = get("businessName");
 
@@ -366,6 +379,9 @@
 
   // Elements
   const agentChip    = document.getElementById("agentChip");
+  const copyPrevBtn  = document.getElementById("copyPrevBtn");
+  const copyNote     = document.getElementById("copyNote");
+
   const toggle       = document.getElementById("activeToggle");
   const activeLabel  = document.getElementById("activeLabel");
   const campaignName = document.getElementById("campaignName");
@@ -379,7 +395,6 @@
   const statusEl     = document.getElementById("status");
   const submitBtn    = document.getElementById("submitBtn");
   const saveNextBtn  = document.getElementById("saveNextBtn");
-  const copyPrevBtn  = document.getElementById("copyPrevBtn");
 
   const cv = {
     active:  document.getElementById("cv_active"),
@@ -472,29 +487,48 @@
     setCV(cv.notes,   current[agent]?.notes);
   }
 
+  function valueFromPrevIfEmpty(primary, prevVal, fallback=""){
+    return (primary ?? "").toString().length ? primary : (prevVal ?? fallback);
+  }
+
   function switchAgent(n){
+    // Save edits for current tab
     working[agent] = getFormValues();
 
+    // Highlight tab
     [...tabsEl.children].forEach(btn=>{
       const is = Number(btn.dataset.agent)===n;
       btn.classList.toggle("active", is);
       btn.setAttribute("aria-selected", is ? "true" : "false");
     });
+
     agent = n;
     agentChip.textContent = `Custom campaign agent ${agent}`;
     submitBtn.textContent = `Save Agent ${agent}`;
     document.title = `Agent ${agent} • Custom agent set up`;
 
+    // Hide Copy button on Agent 1, show otherwise
+    copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
+    copyNote.textContent = "";
+
+    // Prefill precedence: edits → current[agent] → current[prev]
     const w = working[agent] || {};
-    campaignName.value = w.campaign || "";
-    perDay.value = w.perday || (current[agent]?.perday || "100");
-    cadence.value = w.cadence || (current[agent]?.cadence || "IM > 15m > 24h > 24h");
-    firstMessage.value = w.firstmsg || "";
-    bump1.value = w.bump1 || "";
-    bump2.value = w.bump2 || "";
-    bump3.value = w.bump3 || "";
-    notes.value = w.notes || "";
-    setActive( (w.active ?? (current[agent]?.active?.toLowerCase()==="yes")) ? true:false );
+    const prevIndex = agent === 1 ? AGENT_COUNT : agent - 1;
+
+    const curA = current[agent] || {};
+    const prevA = current[prevIndex] || {};
+
+    campaignName.value = w.campaign || curA.campaign || prevA.campaign || "";
+    perDay.value       = w.perday   || curA.perday   || prevA.perday   || perDay.value;
+    cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || cadence.value;
+    firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || "";
+    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || "";
+    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || "";
+    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || "";
+    notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
+
+    const activeSeed = (w.active || curA.active || prevA.active || "");
+    setActive( activeSeed.toLowerCase()==="yes" );
 
     renderCV();
     setStatus("");
@@ -518,6 +552,7 @@
   submitBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
+    if (!SUBMIT_URL) return setStatus("Missing submitUrl in query string.", false);
     await saveAgentThenRefresh(agent, { jumpToNext:false });
   });
 
@@ -525,6 +560,7 @@
   saveNextBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!locationId) return setStatus("Missing locationId", false);
+    if (!SUBMIT_URL) return setStatus("Missing submitUrl in query string.", false);
     await saveAgentThenRefresh(agent, { jumpToNext:true });
   });
 
@@ -554,7 +590,7 @@
     try{
       const res = await fetch(SUBMIT_URL, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers:{ "Content-Type":"application/json" },
+        headers: buildHeaders(),
         body: JSON.stringify(payload)
       });
       await res.json().catch(()=> ({}));
@@ -578,12 +614,13 @@
 
   async function refreshFromServer(){
     if (!locationId) return;
+    if (!FETCH_URL){ setStatus("Missing fetchUrl in query string.", false); return; }
     showOverlay("Refreshing…");
     const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
     try{
       const res = await fetch(urlWithBust, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers:{ "Content-Type":"application/json" },
+        headers: buildHeaders(),
         body: JSON.stringify({ locationId })
       });
       const json = await res.json().catch(()=> ({}));
@@ -611,7 +648,7 @@
     }
   }
 
-  // Copy from previous agent (uses CURRENT values, not working edits)
+  // Copy from previous agent (uses CURRENT values)
   copyPrevBtn.addEventListener("click", ()=>{
     const prev = agent === 1 ? AGENT_COUNT : agent - 1;
     const src = current[prev] || {};
@@ -624,7 +661,8 @@
     bump2.value        = src.bump2    || "";
     bump3.value        = src.bump3    || "";
     notes.value        = src.notes    || "";
-    setStatus(`Copied values from Agent ${prev}`, true);
+    copyNote.textContent = `Copied values from Agent ${prev}.`;
+    setTimeout(()=> copyNote.textContent="", 3500);
   });
 
   // Examples modal logic
@@ -664,7 +702,7 @@
 
   (async function init(){
     for (let i=1;i<=AGENT_COUNT;i++){ working[i]={}; current[i]={}; }
-    if (!locationId) return;
+    if (!locationId){ setStatus("Missing locationId", false); return; }
 
     showOverlay("Loading current values…");
     await refreshFromServer();  // hides overlay
