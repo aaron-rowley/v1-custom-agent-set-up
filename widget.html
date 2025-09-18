@@ -46,14 +46,17 @@
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
   input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
+
+  /* Rows */
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .row-follow{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:end; }
 
   /* Token inserter */
   .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
   .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
   .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
 
-  /* Toggle (restored) */
+  /* Toggle */
   .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
   .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
   .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
@@ -72,6 +75,11 @@
   .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
 
   .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
+
+  /* Segmented control (follow ups) */
+  .seg{ display:flex; gap:6px; background:#0e1117; border:1px solid var(--line); border-radius:999px; padding:4px; }
+  .segbtn{ background:transparent; border:none; color:#cfd6e4; font-weight:800; padding:8px 12px; border-radius:999px; cursor:pointer; }
+  .segbtn.seg-on{ background:var(--orange); color:#000; box-shadow:0 6px 14px rgba(237,108,3,.35); }
 
   /* Overlay loader */
   .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
@@ -109,7 +117,6 @@
   .rawbox{ margin-top:8px; display:none; }
   .rawbox pre{ background:#090d12; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:260px; }
 
-  /* Hide the old bottom actions (we moved to sticky) */
   .actions{ display:none !important; }
 </style>
 </head>
@@ -160,8 +167,9 @@
 
       <div class="divider"></div>
 
-      <!-- Per day + Cadence -->
-      <div class="row">
+      <!-- Per day + Followups + Cadence -->
+      <div class="row-follow">
+        <!-- Per-day -->
         <div>
           <div class="label-row">
             <label>How many per day</label>
@@ -169,15 +177,32 @@
           </div>
           <select id="perDay">
             <option>10</option><option>25</option><option>50</option><option>75</option>
-            <option>150</option><option>200</option><option>250</option><option>300</option>
-            <option>350</option><option>500</option><option selected>100</option>
+            <option>100</option><option>150</option><option>200</option><option>250</option>
+            <option>300</option><option>350</option><option>500</option>
           </select>
           <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
         </div>
+
+        <!-- Follow-ups (segmented) -->
+        <div>
+          <div class="label-row">
+            <label>Number of follow ups</label>
+            <button class="ibtn" data-tip="How many follow-up bumps after the IM (initial message) to schedule.">What’s this?</button>
+          </div>
+          <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
+            <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
+            <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
+            <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
+            <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
+          </div>
+          <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
+        </div>
+
+        <!-- Cadence -->
         <div>
           <div class="label-row">
             <label>Follow up cadence</label>
-            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’).">What’s this?</button>
+            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display truncates based on follow-ups; saving still uses the FULL cadence string.">What’s this?</button>
           </div>
           <select id="cadence">
             <option>IM > 15m > 24h > 24h</option>
@@ -317,20 +342,6 @@
 
       <div class="divider"></div>
 
-      <!-- Objective reached block (below prompts, above response) -->
-      <div class="row">
-        <div>
-          <label>Objective reached trigger phrase</label>
-          <input type="text" id="objTrigger" placeholder="e.g. ‘buying specialist will contact you soon to discuss the next steps’" />
-          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
-        </div>
-        <div>
-          <label>Objective reached webhook Endpoint</label>
-          <input type="text" id="objWebhook" placeholder="https://…" />
-          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
-        </div>
-      </div>
-
       <!-- Webhook response -->
       <div class="resp hidden" id="respBox">
         <div class="label-row"><label>Webhook response</label></div>
@@ -366,7 +377,7 @@
   </div>
 
 <script>
-  /* ------------------- URL CONFIG (no secrets in code!) ------------------- */
+  /* ------------------- URL CONFIG ------------------- */
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
 
@@ -384,9 +395,9 @@
     if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
     return h;
   }
-  /* ----------------------------------------------------------------------- */
+  /* -------------------------------------------------- */
 
-  // Human-sounding example library
+  // Examples (same as before)
   const EXAMPLES = {
     first: [
       { group: "Simple & human", items: [
@@ -565,10 +576,11 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const toggle       = document.getElementById("activeToggle");
   const activeLabel  = document.getElementById("activeLabel");
   const campaignName = document.getElementById("campaignName");
-  const objTrigger   = document.getElementById("objTrigger");
-  const objWebhook   = document.getElementById("objWebhook");
+
   const perDay       = document.getElementById("perDay");
   const cadence      = document.getElementById("cadence");
+  const followupsSeg = document.getElementById("followupsSeg");
+
   const firstMessage = document.getElementById("firstMessage");
   const bump1        = document.getElementById("bump1");
   const bump2        = document.getElementById("bump2");
@@ -584,9 +596,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const cv = {
     active:   document.getElementById("cv_active"),
     campaign: document.getElementById("cv_campaign"),
-    objTrigger: document.getElementById("cv_objTrigger"),
-    objWebhook: document.getElementById("cv_objWebhook"),
     perday:   document.getElementById("cv_perday"),
+    followups:document.getElementById("cv_followups"),
     cadence:  document.getElementById("cv_cadence"),
     firstmsg: document.getElementById("cv_firstmsg"),
     bump1:    document.getElementById("cv_bump1"),
@@ -604,6 +615,65 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
   const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
   const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?";
+
+  /* ---------- Cadence preview + per-day cap ---------- */
+  const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
+  const CADENCE_PREVIEW = {
+    0: "IM",
+    1: "IM > 15m",
+    2: "IM > 15m > 24h",
+    3: "IM > 15m > 24h > 24h"
+  };
+  function ensureCadenceValues(){
+    [...cadence.options].forEach(opt=>{
+      const full = opt.textContent.trim();
+      opt.value = full;
+      opt.dataset.full = full;
+    });
+  }
+  function applyCadencePreview(n){
+    const label = CADENCE_PREVIEW[n] || "";
+    [...cadence.options].forEach(opt=>{
+      // Show truncated text but keep full value for saving
+      opt.textContent = label || opt.dataset.full;
+    });
+  }
+  function restrictPerDay(n){
+    let max = 500;
+    if (n===1) max=250;
+    else if (n===2) max=200;
+    else if (n>=3) max=150;
+    const cur = Number(perDay.value) || 100;
+    const allowed = PERDAY_FULL.filter(v=>v<=max);
+    perDay.innerHTML = "";
+    allowed.forEach(v=>{
+      const o=document.createElement("option");
+      o.value=String(v); o.textContent=String(v);
+      perDay.appendChild(o);
+    });
+    const target = allowed.includes(cur) ? cur : Math.max(...allowed);
+    perDay.value = String(target);
+  }
+
+  // Follow-ups segmented control
+  let followups = 3;
+  function setFollowups(n){
+    followups = Math.max(0, Math.min(3, Number(n)||0));
+    [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
+      const on = Number(b.dataset.n)===followups;
+      b.classList.toggle('seg-on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    setCV(cv.followups, followups);
+    applyCadencePreview(followups);
+    restrictPerDay(followups);
+    recalcSaveVisibility();
+  }
+  followupsSeg.addEventListener('click', e=>{
+    const btn = e.target.closest('.segbtn');
+    if (!btn) return;
+    setFollowups(Number(btn.dataset.n));
+  });
 
   // Toggle behavior
   function setActive(on){
@@ -632,7 +702,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
   });
 
-  // Helper pop-ups (single floating tooltip)
+  // Helper pop-ups
   const tip = document.getElementById("tooltip");
   function showTip(btn){
     const text = btn.getAttribute("data-tip") || "";
@@ -649,8 +719,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     else if (!tip.classList.contains("hidden")) { hideTip(); }
   });
 
-  // Listen to inputs → recompute save button visibility
-  [campaignName,objTrigger,objWebhook,perDay,cadence,firstMessage,bump1,bump2,bump3,notes].forEach(el=>{
+  // Inputs listeners
+  [campaignName, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
     el.addEventListener("input", recalcSaveVisibility);
     el.addEventListener("change", recalcSaveVisibility);
   });
@@ -660,27 +730,26 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
   }
   function setCV(el, value){
-    const has = !!(value && String(value).trim());
+    const has = value !== undefined && value !== null && String(value).trim() !== "";
     el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
     el.classList.toggle("has-value", has);
     el.classList.toggle("empty", !has);
   }
 
-  // Keys for agent
+  // Keys for agent (override via key_*_N)
   function cvKeys(n){
     const base = `custom_campaign_agent_${n}__`;
     return {
-      active:   base + "active_yes_or_leave_blank",
-      bump1:    base + "bump_1",
-      bump2:    base + "bump_2",
-      bump3:    base + "bump_3",
-      campaign: base + "campaign_name",
-      firstmsg: base + "first_message",
-      cadence:  base + "follow_up_cadence",
-      perday:   base + "how_many_per_day_see_sop",
-      notes:    base + "notes_about_campaign",
-      objTrigger: base + "objective_reached_trigger_phrase",
-      objWebhook: base + "objective_reached_webhook_endpoint"
+      active:    base + "active_yes_or_leave_blank",
+      campaign:  base + "campaign_name",
+      perday:    base + "how_many_per_day_see_sop",
+      followups: base + "number_of_follow_ups",
+      cadence:   base + "follow_up_cadence",
+      firstmsg:  base + "first_message",
+      bump1:     base + "bump_1",
+      bump2:     base + "bump_2",
+      bump3:     base + "bump_3",
+      notes:     base + "notes_about_campaign"
     };
   }
   function overrideKeysFromQuery(kmap, n){
@@ -695,9 +764,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   function renderCV(){
     setCV(cv.active,     current[agent]?.active);
     setCV(cv.campaign,   current[agent]?.campaign);
-    setCV(cv.objTrigger, current[agent]?.objectiveTrigger);
-    setCV(cv.objWebhook, current[agent]?.objectiveWebhook);
     setCV(cv.perday,     current[agent]?.perday);
+    setCV(cv.followups,  current[agent]?.followups);
     setCV(cv.cadence,    current[agent]?.cadence);
     setCV(cv.firstmsg,   current[agent]?.firstmsg);
     setCV(cv.bump1,      current[agent]?.bump1);
@@ -727,10 +795,15 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const curA = current[agent] || {};
     const prevA = current[prevIndex] || {};
 
+    // prepare cadence options once
+    ensureCadenceValues();
+
+    // Follow-ups first (affects cadence preview & per-day list)
+    const fuSeed = Number(w.followups ?? curA.followups ?? prevA.followups ?? 3);
+    setFollowups(fuSeed);
+
     campaignName.value = w.campaign || curA.campaign || prevA.campaign || "";
-    objTrigger.value   = w.objectiveTrigger || curA.objectiveTrigger || prevA.objectiveTrigger || "";
-    objWebhook.value   = w.objectiveWebhook || curA.objectiveWebhook || prevA.objectiveWebhook || "";
-    perDay.value       = w.perday   || curA.perday   || prevA.perday   || perDay.value;
+    perDay.value       = String(w.perday   || curA.perday   || prevA.perday || perDay.value);
     cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || cadence.value;
     firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || "";
     bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || BUMP1_DEFAULT;
@@ -751,10 +824,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     return {
       active:   toggle.classList.contains("on") ? "Yes" : "",
       campaign: campaignName.value.trim(),
-      objectiveTrigger: objTrigger.value.trim(),
-      objectiveWebhook: objWebhook.value.trim(),
       perday:   perDay.value,
-      cadence:  cadence.value,
+      followups: String(followups),
+      cadence:  cadence.value,             // full string (value) even while option text is truncated
       firstmsg: firstMessage.value,
       bump1:    bump1.value,
       bump2:    bump2.value,
@@ -767,7 +839,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const v = getFormValues();
     const emptyActive = v.active==="";
     const emptyTexts =
-      !v.campaign && !v.objectiveTrigger && !v.objectiveWebhook &&
+      !v.campaign &&
       !v.firstmsg &&
       (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT) &&
       (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT) &&
@@ -782,9 +854,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const labels = {
       active:   `Custom campaign agent ${n} – Active`,
       campaign: `Custom campaign agent ${n} – Campaign name`,
-      objectiveTrigger: `Custom campaign agent ${n} – Objective reached trigger phrase`,
-      objectiveWebhook: `Custom campaign agent ${n} – Objective reached webhook Endpoint`,
       perday:   `Custom campaign agent ${n} – How many per day`,
+      followups:`Custom campaign agent ${n} – Number of follow ups`,
       cadence:  `Custom campaign agent ${n} – Follow up cadence`,
       firstmsg: `Custom campaign agent ${n} – First message`,
       bump1:    `Custom campaign agent ${n} – Bump 1`,
@@ -823,9 +894,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const rev = {
       [`Custom campaign agent ${agentNum} – Active`] : "active",
       [`Custom campaign agent ${agentNum} – Campaign name`] : "campaign",
-      [`Custom campaign agent ${agentNum} – Objective reached trigger phrase`] : "objTrigger",
-      [`Custom campaign agent ${agentNum} – Objective reached webhook Endpoint`] : "objWebhook",
       [`Custom campaign agent ${agentNum} – How many per day`] : "perday",
+      [`Custom campaign agent ${agentNum} – Number of follow ups`] : "followups",
       [`Custom campaign agent ${agentNum} – Follow up cadence`] : "cadence",
       [`Custom campaign agent ${agentNum} – First message`] : "firstmsg",
       [`Custom campaign agent ${agentNum} – Bump 1`] : "bump1",
@@ -896,9 +966,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
         current[i] = {
           active:   a.active ?? "",
           campaign: a.campaign ?? "",
-          objectiveTrigger: a.objectiveTrigger ?? a.objective_trigger ?? "",
-          objectiveWebhook: a.objectiveWebhook ?? a.objective_webhook ?? "",
           perday:   a.perday ?? "",
+          followups:a.followups ?? a.number_of_follow_ups ?? "",
           cadence:  a.cadence ?? "",
           firstmsg: a.firstmsg ?? "",
           bump1:    a.bump1 ?? "",
@@ -921,9 +990,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const prev = agent === 1 ? AGENTS : agent - 1;
     const src = current[prev] || {};
     setActive((src.active || "").toLowerCase()==="yes");
+    setFollowups(Number(src.followups ?? 3));
     campaignName.value = src.campaign || "";
-    objTrigger.value   = src.objectiveTrigger || "";
-    objWebhook.value   = src.objectiveWebhook || "";
     perDay.value       = src.perday   || perDay.value;
     cadence.value      = src.cadence  || cadence.value;
     firstMessage.value = src.firstmsg || "";
@@ -942,8 +1010,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const exClose = document.getElementById("exClose");
   document.querySelectorAll(".ex-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
-      const kind = btn.dataset.kind;             // first | bump1 | bump2 | bump3 | notes
-      const targetId = btn.dataset.target;       // textarea id
+      const kind = btn.dataset.kind;       // first | bump1 | bump2 | bump3 | notes
+      const targetId = btn.dataset.target; // textarea id
       const groups = EXAMPLES[kind] || [];
       exList.innerHTML = "";
       document.getElementById("exTitle").textContent = `Examples — ${kind.replace(/^./,c=>c.toUpperCase())}`;
@@ -980,6 +1048,9 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
   (async function init(){
+    // normalize cadence option values for full-string saving
+    ensureCadenceValues();
+
     for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
     if (!locationId){ setStatus("Missing locationId", false); return; }
     showOverlay("Loading current values…");
