@@ -32,10 +32,8 @@
 
   /* Editing bar */
   .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; flex-wrap:wrap; }
-  .chip{
-    display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700;
-    background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45);
-  }
+  .chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700;
+    background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45); }
   .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
   .copy-note{ font-size:12px; color:#a7f3d0; }
 
@@ -52,6 +50,7 @@
 
   /* Actions */
   .actions{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:18px; }
+  .actions.hidden{ display:none; }
   .btn{ background:var(--orange); color:#000; border:0; padding:14px 28px; border-radius:14px; font-weight:800; font-size:16px; cursor:pointer; }
   .btn.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
   .status{ font-size:13px; color:var(--muted); text-align:center; display:block; margin-top:8px; }
@@ -74,7 +73,7 @@
   .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; } /* green */
   .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }  /* red */
 
-  /* Divider (more space) */
+  /* Divider (extra space) */
   .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
 
   /* Overlay loader */
@@ -87,11 +86,13 @@
   /* Examples modal */
   .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
   .modal.show{ display:flex; }
-  .modal-card{ width:min(720px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); }
+  .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); }
   .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
   .modal-title{ font-weight:800; }
-  .ex-list{ display:flex; flex-direction:column; gap:10px; }
-  .ex-item{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
+  .ex-list{ display:flex; flex-direction:column; gap:14px; }
+  .ex-group{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; }
+  .ex-group h4{ margin:0 0 8px; font-size:13px; color:#a7b0c0; letter-spacing:.2px; }
+  .ex-item{ border:1px solid #263142; border-radius:10px; padding:10px; background:#0f141a; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
   .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
   .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
 </style>
@@ -126,17 +127,33 @@
 
       <div class="divider"></div>
 
-      <!-- Campaign name (no token picker) -->
+      <!-- Campaign name -->
       <div class="label-row"><label>Campaign name</label></div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
       <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
 
       <div class="divider"></div>
 
+      <!-- Objective reached block -->
+      <div class="row">
+        <div>
+          <label>Objective reached trigger phrase</label>
+          <input type="text" id="objTrigger" placeholder="e.g. booked, deposit, sold…" />
+          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
+        </div>
+        <div>
+          <label>Objective reached webhook Endpoint</label>
+          <input type="text" id="objWebhook" placeholder="https://…" />
+          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
       <!-- Per day + Cadence -->
       <div class="row">
         <div>
-          <label>How many per day (See SOP)</label>
+          <label>How many per day</label>
           <select id="perDay">
             <option>10</option><option>25</option><option>50</option><option>75</option>
             <option>150</option><option>200</option><option>250</option><option>300</option>
@@ -167,15 +184,15 @@
       </div>
       <div class="ti" data-target="firstMessage">
         <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
-          <option value="{{contact.make}}">{{contact.make}}</option>
-          <option value="{{contact.model}}">{{contact.model}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="{{location.name}}">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -191,15 +208,15 @@
       </div>
       <div class="ti" data-target="bump1">
         <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
-          <option value="{{contact.make}}">{{contact.make}}</option>
-          <option value="{{contact.model}}">{{contact.model}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="{{location.name}}">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -215,15 +232,15 @@
       </div>
       <div class="ti" data-target="bump2">
         <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
-          <option value="{{contact.make}}">{{contact.make}}</option>
-          <option value="{{contact.model}}">{{contact.model}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="{{location.name}}">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -239,15 +256,15 @@
       </div>
       <div class="ti" data-target="bump3">
         <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
-          <option value="{{contact.make}}">{{contact.make}}</option>
-          <option value="{{contact.model}}">{{contact.model}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="{{location.name}}">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -260,15 +277,15 @@
       <div class="label-row"><label>Notes about campaign</label></div>
       <div class="ti" data-target="notes">
         <select>
-          <option value="{{contact.first_name}}">{{contact.first_name}}</option>
-          <option value="{{contact.last_name}}">{{contact.last_name}}</option>
-          <option value="{{contact.full_name}}">{{contact.full_name}}</option>
-          <option value="{{contact.email}}">{{contact.email}}</option>
-          <option value="{{contact.phone}}">{{contact.phone}}</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">{{contact.year_of_vehicle_manufacture}}</option>
-          <option value="{{contact.make}}">{{contact.make}}</option>
-          <option value="{{contact.model}}">{{contact.model}}</option>
-          <option value="{{location.name}}">{{location.name}}</option>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="{{location.name}}">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -276,7 +293,7 @@
       <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
       <!-- Actions -->
-      <div class="actions">
+      <div class="actions" id="actionsRow">
         <button class="btn" id="submitBtn">Save Agent 1</button>
         <button class="btn secondary" id="saveNextBtn" title="Save then move to the next agent">Save & Next</button>
       </div>
@@ -324,32 +341,56 @@
   // Example library
   const EXAMPLES = {
     first: [
-      "Hey, its Emily from ABC Cars. Is this the same {{contact.first_name}} who was looking for a vehicle recently?",
-      "Hi {{contact.first_name}}, Emily at ABC Cars — still in the market for a car?",
-      "{{contact.first_name}}, quick one from Emily at ABC Cars. Are you still shopping around?",
-      "Hello {{contact.first_name}} — Emily with ABC Cars here. Mind if I help with your search?",
-      "Hey {{contact.first_name}}! Emily @ ABC Cars. Are you the one who enquired about a vehicle?"
+      { group: "Dealership — conversational ‘blast’", items: [
+        "Hey {{contact.first_name}}, it’s {{location.name}} — want a short list of great {{contact.year_of_vehicle_manufacture}} {{contact.make}} {{contact.model}} matches?",
+        "Hi {{contact.first_name}}, quick one from {{location.name}} — still open to options if I text you a few?",
+        "{{contact.first_name}}, it’s {{location.name}}. 1 minute chat to nail down make/model & budget?",
+        "Hello {{contact.first_name}} — if you tell me year/make/style, I’ll send 3 options that fit.",
+        "Hey {{contact.first_name}}! I can price-match and hold a test drive slot. Want me to text times?"
+      ] }
     ],
     bump1: [
-      "Hey, its Emily from ABC Cars. Is this the same {{contact.first_name}} who was looking for a vehicle recently?",
-      "Hi {{contact.first_name}}, just checking back in from ABC Cars — still looking?",
-      "Circling back {{contact.first_name}} — want me to send options?",
-      "{{contact.first_name}}, Emily here again from ABC Cars. Can I answer anything for you?",
-      "Quick follow-up, {{contact.first_name}}. Do you have a make/model in mind yet?"
+      { group: "Default", items: [
+        "Hopefully I have the right number — is this {{contact.first_name}}?"
+      ]},
+      { group: "US — Southern", items: [
+        "Howdy {{contact.first_name}} — making sure I’ve got the right person. This you?",
+        "Hi there {{contact.first_name}}! Quick tap-back to confirm I reached ya?"
+      ]},
+      { group: "US — Eastern", items: [
+        "Hey {{contact.first_name}}, checking I’ve got the right number. You good to text here?",
+        "{{contact.first_name}} — quick confirm this is you so I can send options?"
+      ]},
+      { group: "US — Western", items: [
+        "Hi {{contact.first_name}}! Just confirming this is your best number to text a few picks.",
+        "Hey {{contact.first_name}}, pinging you here — still you?"
+      ]},
+      { group: "UK — South", items: [
+        "Hello {{contact.first_name}}, quick check this is you — happy to send a shortlist.",
+        "Hi {{contact.first_name}}, is this the right number to share options?"
+      ]},
+      { group: "UK — North", items: [
+        "Hiya {{contact.first_name}}, that you? I’ll pop over a few choices if so.",
+        "Alright {{contact.first_name}} — this your number? I can send some motors to consider."
+      ]},
+      { group: "Canada", items: [
+        "Hey {{contact.first_name}} — just confirming I’ve reached you. Want me to text options, eh?",
+        "Hi {{contact.first_name}}, checking this is your number — I can send a couple of picks."
+      ]}
     ],
     bump2: [
-      "Hopefully I have the right number, is this {{contact.first_name}}'s number still?",
-      "Just making sure I’ve got the right person — is this {{contact.first_name}}?",
-      "{{contact.first_name}}, is this still your number? Want to make sure I reach you with options.",
-      "Double checking contact info — is this {{contact.first_name}} of ABC Cars enquiry?",
-      "Hey {{contact.first_name}}, did I reach you okay? Happy to send vehicle suggestions."
+      { group: "Polite follow-up", items: [
+        "Just making sure I’ve got the right person — is this {{contact.first_name}}?",
+        "{{contact.first_name}}, is this still your number? Want to make sure I reach you.",
+        "Double checking contact info — still you, {{contact.first_name}}?"
+      ] }
     ],
     bump3: [
-      "Just circling back {{contact.first_name}}. Let me know if you need any help from us here at ABC cars :)",
-      "Last nudge from Emily at ABC Cars — want me to put together a shortlist for you?",
-      "{{contact.first_name}}, if timing’s not right just say so — happy to help when you’re ready.",
-      "No rush — I’ll be here when you need me. Want financing or trade-in options, {{contact.first_name}}?",
-      "Closing the loop — reply STOP if not interested, otherwise I’ll keep an eye out for matches."
+      { group: "Close loop", items: [
+        "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?",
+        "If timing’s not right, no worries — I’ll be here when you’re ready, {{contact.first_name}}.",
+        "Want me to book a call or set a test drive, {{contact.first_name}}?"
+      ] }
     ]
   };
 
@@ -385,6 +426,8 @@
   const toggle       = document.getElementById("activeToggle");
   const activeLabel  = document.getElementById("activeLabel");
   const campaignName = document.getElementById("campaignName");
+  const objTrigger   = document.getElementById("objTrigger");
+  const objWebhook   = document.getElementById("objWebhook");
   const perDay       = document.getElementById("perDay");
   const cadence      = document.getElementById("cadence");
   const firstMessage = document.getElementById("firstMessage");
@@ -393,19 +436,22 @@
   const bump3        = document.getElementById("bump3");
   const notes        = document.getElementById("notes");
   const statusEl     = document.getElementById("status");
+  const actionsRow   = document.getElementById("actionsRow");
   const submitBtn    = document.getElementById("submitBtn");
   const saveNextBtn  = document.getElementById("saveNextBtn");
 
   const cv = {
-    active:  document.getElementById("cv_active"),
-    campaign:document.getElementById("cv_campaign"),
-    perday:  document.getElementById("cv_perday"),
-    cadence: document.getElementById("cv_cadence"),
-    firstmsg:document.getElementById("cv_firstmsg"),
-    bump1:   document.getElementById("cv_bump1"),
-    bump2:   document.getElementById("cv_bump2"),
-    bump3:   document.getElementById("cv_bump3"),
-    notes:   document.getElementById("cv_notes"),
+    active:   document.getElementById("cv_active"),
+    campaign: document.getElementById("cv_campaign"),
+    objTrigger: document.getElementById("cv_objTrigger"),
+    objWebhook: document.getElementById("cv_objWebhook"),
+    perday:   document.getElementById("cv_perday"),
+    cadence:  document.getElementById("cv_cadence"),
+    firstmsg: document.getElementById("cv_firstmsg"),
+    bump1:    document.getElementById("cv_bump1"),
+    bump2:    document.getElementById("cv_bump2"),
+    bump3:    document.getElementById("cv_bump3"),
+    notes:    document.getElementById("cv_notes"),
   };
 
   // Working/current
@@ -417,6 +463,7 @@
     toggle.classList.toggle("on", !!on);
     toggle.setAttribute("aria-checked", !!on);
     activeLabel.textContent = on ? "Yes" : "No";
+    recalcSaveVisibility();
   }
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
@@ -429,6 +476,7 @@
     el.value = cur.slice(0,start) + token + cur.slice(end);
     el.focus();
     el.selectionStart = el.selectionEnd = start + token.length;
+    recalcSaveVisibility();
   }
   document.querySelectorAll(".ti").forEach(ti=>{
     const target = document.getElementById(ti.dataset.target);
@@ -437,13 +485,19 @@
     btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
   });
 
+  // Input listeners to control Save visibility
+  [campaignName,objTrigger,objWebhook,perDay,cadence,firstMessage,bump1,bump2,bump3,notes].forEach(el=>{
+    el.addEventListener("input", recalcSaveVisibility);
+    el.addEventListener("change", recalcSaveVisibility);
+  });
+
   function setStatus(text, ok){
     if (!text){ statusEl.textContent=""; return; }
     statusEl.textContent = text;
     statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
   }
   function setCV(el, value){
-    const has = !!value;
+    const has = !!(value && String(value).trim());
     el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
     el.classList.toggle("has-value", has);
     el.classList.toggle("empty", !has);
@@ -461,7 +515,9 @@
       firstmsg: base + "first_message",
       cadence:  base + "follow_up_cadence",
       perday:   base + "how_many_per_day_see_sop",
-      notes:    base + "notes_about_campaign"
+      notes:    base + "notes_about_campaign",
+      objTrigger: base + "objective_reached_trigger_phrase",
+      objWebhook: base + "objective_reached_webhook_endpoint"
     };
   }
   function overrideKeysFromQuery(kmap, n){
@@ -476,19 +532,40 @@
   let agent = 1;
 
   function renderCV(){
-    setCV(cv.active,  current[agent]?.active);
-    setCV(cv.campaign,current[agent]?.campaign);
-    setCV(cv.perday,  current[agent]?.perday);
-    setCV(cv.cadence, current[agent]?.cadence);
-    setCV(cv.firstmsg,current[agent]?.firstmsg);
-    setCV(cv.bump1,   current[agent]?.bump1);
-    setCV(cv.bump2,   current[agent]?.bump2);
-    setCV(cv.bump3,   current[agent]?.bump3);
-    setCV(cv.notes,   current[agent]?.notes);
+    setCV(cv.active,     current[agent]?.active);
+    setCV(cv.campaign,   current[agent]?.campaign);
+    setCV(cv.objTrigger, current[agent]?.objectiveTrigger);
+    setCV(cv.objWebhook, current[agent]?.objectiveWebhook);
+    setCV(cv.perday,     current[agent]?.perday);
+    setCV(cv.cadence,    current[agent]?.cadence);
+    setCV(cv.firstmsg,   current[agent]?.firstmsg);
+    setCV(cv.bump1,      current[agent]?.bump1);
+    setCV(cv.bump2,      current[agent]?.bump2);
+    setCV(cv.bump3,      current[agent]?.bump3);
+    setCV(cv.notes,      current[agent]?.notes);
   }
 
-  function valueFromPrevIfEmpty(primary, prevVal, fallback=""){
-    return (primary ?? "").toString().length ? primary : (prevVal ?? fallback);
+  function isEmpty(v){ return !v || !String(v).trim(); }
+
+  function recalcSaveVisibility(){
+    const hasAny =
+      (toggle.classList.contains("on")) ||
+      !isEmpty(campaignName.value) ||
+      !isEmpty(objTrigger.value) ||
+      !isEmpty(objWebhook.value) ||
+      !isEmpty(perDay.value) ||
+      !isEmpty(cadence.value) ||
+      !isEmpty(firstMessage.value) ||
+      !isEmpty(bump1.value) ||
+      !isEmpty(bump2.value) ||
+      !isEmpty(bump3.value) ||
+      !isEmpty(notes.value);
+    actionsRow.classList.toggle("hidden", !hasAny && areAllCurrentEmpty(agent));
+  }
+  function areAllCurrentEmpty(n){
+    const a = current[n] || {};
+    return ["active","campaign","objectiveTrigger","objectiveWebhook","perday","cadence","firstmsg","bump1","bump2","bump3","notes"]
+      .every(k => isEmpty(a[k]));
   }
 
   function switchAgent(n){
@@ -511,7 +588,7 @@
     copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
     copyNote.textContent = "";
 
-    // Prefill precedence: edits → current[agent] → current[prev]
+    // Prefill precedence: edits → current[agent] → previous agent → defaults
     const w = working[agent] || {};
     const prevIndex = agent === 1 ? AGENT_COUNT : agent - 1;
 
@@ -519,10 +596,14 @@
     const prevA = current[prevIndex] || {};
 
     campaignName.value = w.campaign || curA.campaign || prevA.campaign || "";
+    objTrigger.value   = w.objectiveTrigger || curA.objectiveTrigger || prevA.objectiveTrigger || "";
+    objWebhook.value   = w.objectiveWebhook || curA.objectiveWebhook || prevA.objectiveWebhook || "";
     perDay.value       = w.perday   || curA.perday   || prevA.perday   || perDay.value;
     cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || cadence.value;
     firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || "";
-    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || "";
+    // Bump1 default if totally empty:
+    const bump1Default = "Hopefully I have the right number — is this {{contact.first_name}}?";
+    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || bump1Default;
     bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || "";
     bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || "";
     notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
@@ -531,6 +612,7 @@
     setActive( activeSeed.toLowerCase()==="yes" );
 
     renderCV();
+    recalcSaveVisibility();
     setStatus("");
   }
 
@@ -538,6 +620,8 @@
     return {
       active:   toggle.classList.contains("on") ? "Yes" : "",
       campaign: campaignName.value.trim(),
+      objectiveTrigger: objTrigger.value.trim(),
+      objectiveWebhook: objWebhook.value.trim(),
       perday:   perDay.value,
       cadence:  cadence.value,
       firstmsg: firstMessage.value,
@@ -546,6 +630,35 @@
       bump3:    bump3.value,
       notes:    notes.value
     };
+  }
+
+  // Build subsets of changed data + keys (only send what changed)
+  function diffData(n){
+    const now = getFormValues();
+    const cur = current[n] || {};
+    const mapLabel = {
+      active:   `Custom campaign agent ${n} – Active`,
+      campaign: `Custom campaign agent ${n} – Campaign name`,
+      objectiveTrigger: `Custom campaign agent ${n} – Objective reached trigger phrase`,
+      objectiveWebhook: `Custom campaign agent ${n} – Objective reached webhook Endpoint`,
+      perday:   `Custom campaign agent ${n} – How many per day`,
+      cadence:  `Custom campaign agent ${n} – Follow up cadence`,
+      firstmsg: `Custom campaign agent ${n} – First message`,
+      bump1:    `Custom campaign agent ${n} – Bump 1`,
+      bump2:    `Custom campaign agent ${n} – Bump 2`,
+      bump3:    `Custom campaign agent ${n} – Bump 3`,
+      notes:    `Custom campaign agent ${n} – Notes about campaign`
+    };
+
+    const changedData = {};
+    for (const k of Object.keys(mapLabel)){
+      const before = (cur[k] ?? "");
+      const after  = (now[k] ?? "");
+      if (String(before) !== String(after)){
+        changedData[ mapLabel[k] ] = after;
+      }
+    }
+    return changedData;
   }
 
   // Save (single)
@@ -565,22 +678,38 @@
   });
 
   async function saveAgentThenRefresh(agentNum, { jumpToNext }){
-    working[agentNum] = getFormValues();
-    let keys = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+    // changed-only payload
+    const changed = diffData(agentNum);
+    if (!Object.keys(changed).length){
+      setStatus("No changes to save.", true);
+      return;
+    }
+
+    let keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+    // Reduce keys map to only the fields we’re sending
+    const reverseLabelToKey = {
+      [`Custom campaign agent ${agentNum} – Active`] : "active",
+      [`Custom campaign agent ${agentNum} – Campaign name`] : "campaign",
+      [`Custom campaign agent ${agentNum} – Objective reached trigger phrase`] : "objTrigger",
+      [`Custom campaign agent ${agentNum} – Objective reached webhook Endpoint`] : "objWebhook",
+      [`Custom campaign agent ${agentNum} – How many per day`] : "perday",
+      [`Custom campaign agent ${agentNum} – Follow up cadence`] : "cadence",
+      [`Custom campaign agent ${agentNum} – First message`] : "firstmsg",
+      [`Custom campaign agent ${agentNum} – Bump 1`] : "bump1",
+      [`Custom campaign agent ${agentNum} – Bump 2`] : "bump2",
+      [`Custom campaign agent ${agentNum} – Bump 3`] : "bump3",
+      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
+    };
+    const keysSubset = {};
+    for (const label of Object.keys(changed)){
+      const k = reverseLabelToKey[label];
+      if (k) keysSubset[k] = keysFull[k];
+    }
 
     const payload = {
-      locationId, businessName, agent: agentNum, keys,
-      data: {
-        ["Custom campaign agent " + agentNum + " – Active"]: working[agentNum].active,
-        ["Custom campaign agent " + agentNum + " – Campaign name"]: working[agentNum].campaign,
-        ["Custom campaign agent " + agentNum + " – How many per day"]: working[agentNum].perday,
-        ["Custom campaign agent " + agentNum + " – Follow up cadence"]: working[agentNum].cadence,
-        ["Custom campaign agent " + agentNum + " – First message"]: working[agentNum].firstmsg,
-        ["Custom campaign agent " + agentNum + " – Bump 1"]: working[agentNum].bump1,
-        ["Custom campaign agent " + agentNum + " – Bump 2"]: working[agentNum].bump2,
-        ["Custom campaign agent " + agentNum + " – Bump 3"]: working[agentNum].bump3,
-        ["Custom campaign agent " + agentNum + " – Notes about campaign"]: working[agentNum].notes
-      }
+      locationId, businessName, agent: agentNum,
+      keys: keysSubset,
+      data: changed
     };
 
     submitBtn.disabled = true;
@@ -630,6 +759,8 @@
         current[i] = {
           active:   a.active ?? "",
           campaign: a.campaign ?? "",
+          objectiveTrigger: a.objectiveTrigger ?? a.objective_trigger ?? "",
+          objectiveWebhook: a.objectiveWebhook ?? a.objective_webhook ?? "",
           perday:   a.perday ?? "",
           cadence:  a.cadence ?? "",
           firstmsg: a.firstmsg ?? "",
@@ -640,6 +771,7 @@
         };
       }
       renderCV();
+      recalcSaveVisibility();
       setStatus("Refreshed", true);
     }catch{
       setStatus("Could not refresh current values.", false);
@@ -654,15 +786,18 @@
     const src = current[prev] || {};
     setActive((src.active || "").toLowerCase()==="yes");
     campaignName.value = src.campaign || "";
+    objTrigger.value   = src.objectiveTrigger || "";
+    objWebhook.value   = src.objectiveWebhook || "";
     perDay.value       = src.perday   || perDay.value;
     cadence.value      = src.cadence  || cadence.value;
     firstMessage.value = src.firstmsg || "";
-    bump1.value        = src.bump1    || "";
+    bump1.value        = src.bump1    || bump1.value;
     bump2.value        = src.bump2    || "";
     bump3.value        = src.bump3    || "";
     notes.value        = src.notes    || "";
     copyNote.textContent = `Copied values from Agent ${prev}.`;
     setTimeout(()=> copyNote.textContent="", 3500);
+    recalcSaveVisibility();
   });
 
   // Examples modal logic
@@ -673,26 +808,34 @@
     btn.addEventListener("click", ()=>{
       const kind = btn.dataset.kind;          // first | bump1 | bump2 | bump3
       const targetId = btn.dataset.target;    // textarea id
-      const examples = EXAMPLES[kind] || [];
+      const groups = EXAMPLES[kind] || [];
       exList.innerHTML = "";
       document.getElementById("exTitle").textContent = `Examples — ${kind.replace(/^./,c=>c.toUpperCase())}`;
-      examples.forEach(txt=>{
-        const row = document.createElement("div");
-        row.className = "ex-item";
-        const p = document.createElement("div");
-        p.className = "ex-text";
-        p.textContent = txt;
-        const use = document.createElement("button");
-        use.className = "usebtn";
-        use.textContent = "Use";
-        use.onclick = () => {
-          const field = document.getElementById(targetId);
-          field.value = txt;
-          exModal.classList.remove("show");
-          field.focus();
-        };
-        row.appendChild(p); row.appendChild(use);
-        exList.appendChild(row);
+      groups.forEach(g=>{
+        const block = document.createElement("div");
+        block.className = "ex-group";
+        const h = document.createElement("h4"); h.textContent = g.group;
+        block.appendChild(h);
+        (g.items||[]).forEach(txt=>{
+          const row = document.createElement("div");
+          row.className = "ex-item";
+          const p = document.createElement("div");
+          p.className = "ex-text";
+          p.textContent = txt;
+          const use = document.createElement("button");
+          use.className = "usebtn";
+          use.textContent = "Use";
+          use.onclick = () => {
+            const field = document.getElementById(targetId);
+            field.value = txt;
+            exModal.classList.remove("show");
+            field.focus();
+            recalcSaveVisibility();
+          };
+          row.appendChild(p); row.appendChild(use);
+          block.appendChild(row);
+        });
+        exList.appendChild(block);
       });
       exModal.classList.add("show");
     });
