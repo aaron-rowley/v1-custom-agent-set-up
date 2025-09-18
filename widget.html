@@ -370,8 +370,8 @@
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
 
-  const FETCH_URL  = decodeURIComponent(get("fetchUrl")  || "");
-  the SUBMIT_URL = decodeURIComponent(get("submitUrl") || ""); // keep
+  const FETCH_URL   = decodeURIComponent(get("fetchUrl")  || "");
+  const SUBMIT_URL  = decodeURIComponent(get("submitUrl") || "");
   const AUTH_HEADER = get("authHeader") || "";
   const AUTH_TOKEN  = get("authToken")  || "";
   const APIKEY_HEADER = get("apiKeyHeader") || "";
@@ -426,7 +426,48 @@
         "Want me to book a test-drive slot for you, {{contact.first_name}}?"
       ]}
     ],
-    notes: [ /* (left as in your version) */ ]
+    notes: [
+      { group: "Fresh Up Follow Up", items: [`
+Fresh Up Follow Up
+
+Most recent agent: "Fresh Up Follow Up".
+Customer visited showroom ~10 days ago. Objective: invite back & rebook.
+
+1) Re-introduce briefly (skip WFH assistant bit here).
+2) Ask how their search is going; acknowledge what they say.
+3) Move into qualified prospect questions + any booking criteria.
+Best path is to schedule a call with a specialist to walk final steps.
+One question at a time per interaction.`]},
+      { group: "Service to Sales (Appraisal)", items: [`
+Service to Sales (Appraisal)
+
+Most recent agent: "Service to Sales (Appraisal)".
+Customer recently scheduled service; invite them to get an appraisal (online or phone).
+
+1) Re-introduce. Ask how the vehicle is doing (use model only if available).
+2) Acknowledge; then ask if they'd like an appraisal.
+3) If online: send link www.juneksbuysusedcars.com and ask them to ping when submitted so you can raise it with the team.
+4) When done: say "Great, thanks. A buying specialist will contact you soon to discuss the next steps".
+5) If phone: offer a call with a specialist and use that trigger phrase in your sign-off.`]},
+      { group: "Phone Up Follow Up", items: [`
+Phone Up Follow Up
+
+Most recent agent: "Fresh Up Follow Up".
+Customer phoned dealership ~7 days ago. Objective: invite to visit & set appointment.
+
+1) Re-introduce; quick "how's the search going?"
+2) Acknowledge; then standard qualified prospect flow + booking criteria.
+3) Suggest a call with a specialist if helpful. One question at a time.`]},
+      { group: "Internet Up Follow Up", items: [`
+Internet Up Follow Up
+
+Most recent agent: "Fresh Up Follow Up".
+Brand-new internet lead. Objective: invite to set an appointment in-store.
+
+1) Re-introduce; quick "how's the search going?"
+2) Acknowledge; then qualified prospect + booking criteria.
+3) Offer to line up a call or test drive. One question at a time.`]}
+    ]
   };
 
   const locationId   = get("locationId");
@@ -506,7 +547,6 @@
 
   // Tabs
   const tabsEl = document.getElementById("tabs");
-  const AGENTS = 5;
   for (let i=1;i<=AGENTS;i++){
     const t = document.createElement("button");
     t.className = "tab" + (i===1?" active":"");
