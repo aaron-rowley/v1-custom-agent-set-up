@@ -202,7 +202,7 @@
         <div>
           <div class="label-row">
             <label>Follow up cadence</label>
-            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). We preview up to the number of follow-ups you picked; the rest stays visible after a dot.">What’s this?</button>
+            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows the first N delays based on follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
           </div>
           <select id="cadence">
             <option>IM > 15m > 24h > 24h</option>
@@ -784,7 +784,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     [...tabsEl.children].forEach(btn=>{
       const is = Number(btn.dataset.agent)===n;
       btn.classList.toggle("active", is);
-      btn.setAttribute("aria-selected", is ? "true" : "false");
+      btn.setAttribute('aria-selected', is ? 'true' : 'false');
     });
 
     agent = n;
@@ -890,87 +890,85 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     topActions.classList.toggle("dirty", show);
   }
 
- // >>> SAVE HANDLER (drop-in replacement)
-function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
+  /* ---------------- SAVE HANDLER ---------------- */
+  function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
 
-async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
-  const changed = diffData(agentNum, { ignoreDefaults:false });
-  if (!Object.keys(changed).length){ setStatus("No changes to save.", true); return; }
+  async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
+    const changed = diffData(agentNum, { ignoreDefaults:false });
+    if (!Object.keys(changed).length){ setStatus("No changes to save.", true); return; }
 
-  // map labels -> keys (unchanged)
-  const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
-  const rev = {
-    [`Custom campaign agent ${agentNum} – Active`]               : "active",
-    [`Custom campaign agent ${agentNum} – Campaign name`]        : "campaign",
-    [`Custom campaign agent ${agentNum} – How many per day`]     : "perday",
-    [`Custom campaign agent ${agentNum} – Number of follow ups`] : "followups",
-    [`Custom campaign agent ${agentNum} – Follow up cadence`]    : "cadence",
-    [`Custom campaign agent ${agentNum} – First message`]        : "firstmsg",
-    [`Custom campaign agent ${agentNum} – Bump 1`]               : "bump1",
-    [`Custom campaign agent ${agentNum} – Bump 2`]               : "bump2",
-    [`Custom campaign agent ${agentNum} – Bump 3`]               : "bump3",
-    [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
-  };
-  const keysSubset = {};
-  for (const label of Object.keys(changed)){
-    const k = rev[label]; if (k) keysSubset[k] = keysFull[k];
-  }
-
-  const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
-
-  submitBtnTop.disabled = true;
-  saveNextBtnTop.disabled = true;
-  showOverlay("Saving…");
-
-  try{
-    const res = await fetch(SUBMIT_URL, {
-      method:"POST",
-      mode:"cors",
-      cache:"no-store",
-      credentials:"omit",
-      headers: buildHeaders(),
-      body: JSON.stringify(payload)
-    });
-
-    const status  = res.status;
-    const headers = Object.fromEntries([...res.headers.entries()]);
-    const text    = await res.text();
-    const parsed  = parseMaybeJSON(text);
-
-    hideOverlay();
-    setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
-    showWebhookResponse(parsed, { status, headers });
-
-    // refresh chips so “Current value” matches server
-    await refreshFromServer();
-
-    if (jumpToNext){
-      const next = agentNum === AGENTS ? 1 : agentNum + 1;
-      switchAgent(next);
+    const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+    const rev = {
+      [`Custom campaign agent ${agentNum} – Active`]               : "active",
+      [`Custom campaign agent ${agentNum} – Campaign name`]        : "campaign",
+      [`Custom campaign agent ${agentNum} – How many per day`]     : "perday",
+      [`Custom campaign agent ${agentNum} – Number of follow ups`] : "followups",
+      [`Custom campaign agent ${agentNum} – Follow up cadence`]    : "cadence",
+      [`Custom campaign agent ${agentNum} – First message`]        : "firstmsg",
+      [`Custom campaign agent ${agentNum} – Bump 1`]               : "bump1",
+      [`Custom campaign agent ${agentNum} – Bump 2`]               : "bump2",
+      [`Custom campaign agent ${agentNum} – Bump 3`]               : "bump3",
+      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
+    };
+    const keysSubset = {};
+    for (const label of Object.keys(changed)){
+      const k = rev[label]; if (k) keysSubset[k] = keysFull[k];
     }
-  } catch (err){
-    hideOverlay();
-    setStatus("Network error. Try again.", false);
-    showWebhookResponse({ error: String(err) }, { status: 0 });
-  } finally {
-    submitBtnTop.disabled = false;
-    saveNextBtnTop.disabled = false;
-    recalcSaveVisibility();
+
+    const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
+
+    submitBtnTop.disabled = true;
+    saveNextBtnTop.disabled = true;
+    showOverlay("Saving…");
+
+    try{
+      const res = await fetch(SUBMIT_URL, {
+        method:"POST",
+        mode:"cors",
+        cache:"no-store",
+        credentials:"omit",
+        headers: buildHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      const status  = res.status;
+      const headers = Object.fromEntries([...res.headers.entries()]);
+      const text    = await res.text();
+      const parsed  = parseMaybeJSON(text);
+
+      hideOverlay();
+      setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
+      showWebhookResponse(parsed, { status, headers });
+
+      // immediately refresh so chips reflect server
+      await refreshFromServer();
+
+      if (jumpToNext){
+        const next = agentNum === AGENTS ? 1 : agentNum + 1;
+        switchAgent(next);
+      }
+    } catch (err){
+      hideOverlay();
+      setStatus("Network error. Try again.", false);
+      showWebhookResponse({ error: String(err) }, { status: 0 });
+    } finally {
+      submitBtnTop.disabled = false;
+      saveNextBtnTop.disabled = false;
+      recalcSaveVisibility();
+    }
   }
-}
 
-submitBtnTop.addEventListener("click", (e)=>{
-  e.preventDefault();
-  if (!locationId || !SUBMIT_URL) return;
-  saveAgentThenRefresh(agent, { jumpToNext:false });
-});
-saveNextBtnTop.addEventListener("click", (e)=>{
-  e.preventDefault();
-  if (!locationId || !SUBMIT_URL) return;
-  saveAgentThenRefresh(agent, { jumpToNext:true });
-});
-// <<< SAVE HANDLER
-
+  submitBtnTop.addEventListener("click", (e)=>{
+    e.preventDefault();
+    if (!locationId || !SUBMIT_URL) return;
+    saveAgentThenRefresh(agent, { jumpToNext:false });
+  });
+  saveNextBtnTop.addEventListener("click", (e)=>{
+    e.preventDefault();
+    if (!locationId || !SUBMIT_URL) return;
+    saveAgentThenRefresh(agent, { jumpToNext:true });
+  });
+  /* -------------- END SAVE HANDLER --------------- */
 
   async function refreshFromServer(){
     if (!locationId) return;
