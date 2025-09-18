@@ -342,22 +342,6 @@
 
       <div class="divider"></div>
 
-      <!-- Objective reached block (webhook controls) -->
-      <div class="row">
-        <div>
-          <label>Objective reached trigger phrase</label>
-          <input type="text" id="objTrigger" placeholder="e.g. ‘buying specialist will contact you soon to discuss the next steps’" />
-          <div class="cv empty" id="cv_objTrigger"><strong>Current value:</strong> (not set)</div>
-        </div>
-        <div>
-          <label>Objective reached webhook Endpoint</label>
-          <input type="text" id="objWebhook" placeholder="https://…" />
-          <div class="cv empty" id="cv_objWebhook"><strong>Current value:</strong> (not set)</div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
       <!-- Webhook response -->
       <div class="resp hidden" id="respBox">
         <div class="label-row"><label>Webhook response</label></div>
@@ -405,12 +389,69 @@
   const APIKEY_VALUE  = get("apiKey")      || "";
   const AGENTS = 5;
 
-  function buildHeaders(){
-    const h = { "Content-Type":"application/json" };
-    if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
-    if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
+  function buildHeaders(simple=false){
+    // When simple=true, only use "simple request" headers to avoid preflight.
+    const h = simple ? {} : { "Content-Type":"application/json" };
+    if (!simple){
+      if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
+      if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
+    }
     return h;
   }
+
+  // fetch helper with n8n-friendly fallbacks: fetch -> sendBeacon -> img GET
+  async function postJSONWithFallback(url, obj){
+    const bodyStr = JSON.stringify(obj);
+
+    // 1) Try normal fetch (best UX, shows response)
+    try{
+      const controller = new AbortController();
+      const t = setTimeout(()=>controller.abort(), 15000);
+      const res = await fetch(url, {
+        method:"POST",
+        mode:"cors",
+        cache:"no-store",
+        credentials:"omit",
+        headers: buildHeaders(false),
+        body: bodyStr,
+        signal: controller.signal
+      });
+      clearTimeout(t);
+      const text = await res.text();
+      let parsed; try{ parsed = text ? JSON.parse(text) : {}; }catch{ parsed = { raw:text }; }
+      return { ok:true, via:"fetch", status:res.status, headers:Object.fromEntries([...res.headers.entries()]), data:parsed };
+    } catch (err){
+      // continue to fallbacks
+    }
+
+    // 2) Try sendBeacon (fire-and-forget, often bypasses CORS preflight)
+    if (navigator.sendBeacon){
+      try{
+        const blob = new Blob([bodyStr], { type: "text/plain;charset=UTF-8" });
+        const ok = navigator.sendBeacon(url, blob);
+        if (ok) return { ok:true, via:"beacon", status:0, headers:{}, data:{ message:"Sent with sendBeacon (no response due to CORS)." } };
+      }catch(e){}
+    }
+
+    // 3) GET beacon fallback (payload in querystring)
+    try{
+      const q = encodeURIComponent(btoa(unescape(encodeURIComponent(bodyStr))).replace(/=+$/,""));
+      const img = new Image();
+      const done = new Promise(resolve=>{
+        let settled=false;
+        const finish = (ok) => { if (settled) return; settled=true; resolve(ok); };
+        img.onload  = ()=> finish(true);
+        img.onerror = ()=> finish(true); // still hits server
+        setTimeout(()=> finish(false), 6000);
+      });
+      img.src = url + (url.includes("?") ? "&" : "?") + "payload64=" + q + "&_t=" + Date.now();
+      await done;
+      return { ok:true, via:"img", status:0, headers:{}, data:{ message:"Sent with image beacon (no response due to CORS)." } };
+    }catch(e){}
+
+    return { ok:false, via:"failed", status:0, headers:{}, data:{ error:"All webhook send methods failed." } };
+  }
+
   /* -------------------------------------------------- */
 
   // Examples (same as before)
@@ -520,7 +561,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   function showWebhookResponse(body, meta = {}) {
     const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
     respStatusPill.className = "pill " + (ok ? "ok" : "bad");
-    respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
+    const via = meta.via ? ` · ${meta.via}` : "";
+    respStatusPill.textContent = (meta.status ? `${meta.status}` : (ok ? "200" : "0")) + (ok ? " OK" : " Error") + via;
 
     respGrid.innerHTML = "";
     let blocks = [];
@@ -557,7 +599,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       g.className="kvt";
       const h=document.createElement("h5"); h.textContent="Response";
       const p=document.createElement("div"); p.className="kv";
-      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
+      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : (body?.message || 'Complete')}</div>`;
       g.appendChild(h); g.appendChild(p);
       respGrid.appendChild(g);
     }
@@ -602,10 +644,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   const bump2        = document.getElementById("bump2");
   const bump3        = document.getElementById("bump3");
   const notes        = document.getElementById("notes");
-
-  const objTrigger   = document.getElementById("objTrigger");
-  const objWebhook   = document.getElementById("objWebhook");
-
   const statusEl     = document.getElementById("status");
 
   // Sticky top actions
@@ -624,8 +662,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2:    document.getElementById("cv_bump2"),
     bump3:    document.getElementById("cv_bump3"),
     notes:    document.getElementById("cv_notes"),
-    objTrigger: document.getElementById("cv_objTrigger"),
-    objWebhook: document.getElementById("cv_objWebhook"),
   };
 
   // Working/current snapshots
@@ -644,8 +680,8 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   function ensureCadenceValues(){
     [...cadence.options].forEach(opt=>{
       const full = opt.textContent.trim();
-      opt.value = full;            // save the full string
-      opt.dataset.full = full;     // keep original text
+      opt.value = full;
+      opt.dataset.full = full;
     });
   }
 
@@ -713,7 +749,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   // Token inserter
   function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
-    const end   = el.selectionEnd ?? el.value.length;
+    aconst end   = el.selectionEnd ?? el.value.length;
     const cur   = el.value || "";
     el.value = cur.slice(0,start) + token + cur.slice(end);
     el.focus();
@@ -745,7 +781,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
   });
 
   // Inputs listeners
-  [campaignName, objTrigger, objWebhook, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
+  [campaignName, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
     el.addEventListener("input", recalcSaveVisibility);
     el.addEventListener("change", recalcSaveVisibility);
   });
@@ -774,9 +810,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       bump1:     base + "bump_1",
       bump2:     base + "bump_2",
       bump3:     base + "bump_3",
-      notes:     base + "notes_about_campaign",
-      objTrigger: base + "objective_reached_trigger_phrase",
-      objWebhook: base + "objective_reached_webhook_endpoint"
+      notes:     base + "notes_about_campaign"
     };
   }
   function overrideKeysFromQuery(kmap, n){
@@ -799,8 +833,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     setCV(cv.bump2,      current[agent]?.bump2);
     setCV(cv.bump3,      current[agent]?.bump3);
     setCV(cv.notes,      current[agent]?.notes);
-    setCV(cv.objTrigger, current[agent]?.objectiveTrigger);
-    setCV(cv.objWebhook, current[agent]?.objectiveWebhook);
   }
 
   function switchAgent(n){
@@ -824,7 +856,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const curA = current[agent] || {};
     const prevA = current[prevIndex] || {};
 
-    // prepare cadence option values once
+    // prepare cadence options once
     ensureCadenceValues();
 
     // Follow-ups first (affects cadence preview & per-day list)
@@ -839,9 +871,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || BUMP2_DEFAULT;
     bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || BUMP3_DEFAULT;
     notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
-
-    objTrigger.value   = w.objectiveTrigger || curA.objectiveTrigger || prevA.objectiveTrigger || "";
-    objWebhook.value   = w.objectiveWebhook || curA.objectiveWebhook || prevA.objectiveWebhook || "";
 
     const activeSeed = (w.active || curA.active || prevA.active || "");
     setActive( activeSeed.toLowerCase()==="yes" );
@@ -858,14 +887,12 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       campaign: campaignName.value.trim(),
       perday:   perDay.value,
       followups: String(followups),
-      cadence:  cadence.value,
+      cadence:  cadence.value,             // full string (value)
       firstmsg: firstMessage.value,
       bump1:    bump1.value,
       bump2:    bump2.value,
       bump3:    bump3.value,
-      notes:    notes.value,
-      objectiveTrigger: objTrigger.value.trim(),
-      objectiveWebhook: objWebhook.value.trim()
+      notes:    notes.value
     };
   }
 
@@ -874,8 +901,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     const emptyActive = v.active==="";
     const emptyTexts =
       !v.campaign &&
-      !v.objectiveTrigger &&
-      !v.objectiveWebhook &&
       !v.firstmsg &&
       (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT) &&
       (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT) &&
@@ -897,9 +922,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       bump1:    `Custom campaign agent ${n} – Bump 1`,
       bump2:    `Custom campaign agent ${n} – Bump 2`,
       bump3:    `Custom campaign agent ${n} – Bump 3`,
-      notes:    `Custom campaign agent ${n} – Notes about campaign`,
-      objectiveTrigger: `Custom campaign agent ${n} – Objective reached trigger phrase`,
-      objectiveWebhook: `Custom campaign agent ${n} – Objective reached webhook Endpoint`,
+      notes:    `Custom campaign agent ${n} – Notes about campaign`
     };
 
     const changed = {};
@@ -942,9 +965,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
       [`Custom campaign agent ${agentNum} – Bump 1`]               : "bump1",
       [`Custom campaign agent ${agentNum} – Bump 2`]               : "bump2",
       [`Custom campaign agent ${agentNum} – Bump 3`]               : "bump3",
-      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes",
-      [`Custom campaign agent ${agentNum} – Objective reached trigger phrase`] : "objTrigger",
-      [`Custom campaign agent ${agentNum} – Objective reached webhook Endpoint`] : "objWebhook",
+      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
     };
     const keysSubset = {};
     for (const label of Object.keys(changed)){
@@ -957,41 +978,29 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     saveNextBtnTop.disabled = true;
     showOverlay("Saving…");
 
-    try{
-      const res = await fetch(SUBMIT_URL, {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        credentials:"omit",
-        headers: buildHeaders(),
-        body: JSON.stringify(payload)
-      });
+    // Try to POST with fallbacks that still hit n8n even if CORS blocks
+    const result = await postJSONWithFallback(SUBMIT_URL, payload);
 
-      const status  = res.status;
-      const headers = Object.fromEntries([...res.headers.entries()]);
-      const text    = await res.text();
-      const parsed  = parseMaybeJSON(text);
+    hideOverlay();
 
-      hideOverlay();
-      setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
-      showWebhookResponse(parsed, { status, headers });
+    if (result.ok){
+      setStatus(result.via==="fetch" ? "Saved" : "Sent (no response due to CORS)", true);
+      showWebhookResponse(result.data, { status: result.status, headers: result.headers, via: result.via });
 
-      // immediately refresh so chips reflect server
-      await refreshFromServer();
-
+      // If we got a readable response, refresh immediately; otherwise still refresh to pull latest if fetchUrl allows it.
+      try { await refreshFromServer(); } catch {}
       if (jumpToNext){
         const next = agentNum === AGENTS ? 1 : agentNum + 1;
         switchAgent(next);
       }
-    } catch (err){
-      hideOverlay();
-      setStatus("Network error. Try again.", false);
-      showWebhookResponse({ error: String(err) }, { status: 0 });
-    } finally {
-      submitBtnTop.disabled = false;
-      saveNextBtnTop.disabled = false;
-      recalcSaveVisibility();
+    }else{
+      setStatus("Could not send to webhook.", false);
+      showWebhookResponse(result.data, { status: 0, via: result.via });
     }
+
+    submitBtnTop.disabled = false;
+    saveNextBtnTop.disabled = false;
+    recalcSaveVisibility();
   }
 
   submitBtnTop.addEventListener("click", (e)=>{
@@ -1014,7 +1023,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     try{
       const res = await fetch(urlWithBust, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(),
+        headers: buildHeaders(false),
         body: JSON.stringify({ locationId })
       });
       const text = await res.text();
@@ -1032,9 +1041,7 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
           bump1:    a.bump1 ?? "",
           bump2:    a.bump2 ?? "",
           bump3:    a.bump3 ?? "",
-          notes:    a.notes ?? "",
-          objectiveTrigger: a.objectiveTrigger ?? a.objective_trigger ?? "",
-          objectiveWebhook: a.objectiveWebhook ?? a.objective_webhook ?? ""
+          notes:    a.notes ?? ""
         };
       }
       renderCV();
@@ -1060,8 +1067,6 @@ Brand-new internet lead. Objective: invite to set an appointment in-store.
     bump2.value        = src.bump2    || BUMP2_DEFAULT;
     bump3.value        = src.bump3    || BUMP3_DEFAULT;
     notes.value        = src.notes    || "";
-    objTrigger.value   = src.objectiveTrigger || "";
-    objWebhook.value   = src.objectiveWebhook || "";
     copyNote.textContent = `Copied values from Agent ${prev}.`;
     setTimeout(()=> copyNote.textContent="", 3500);
     recalcSaveVisibility();
