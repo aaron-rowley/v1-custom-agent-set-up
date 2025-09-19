@@ -243,80 +243,83 @@
 
       <div class="divider"></div>
 
-      <!-- Bump 1 -->
-      <div class="label-row">
-        <label>Bump 1</label>
-        <button class="ibtn" data-tip="Short nudge after IM based on the cadence above. Aim to confirm we’ve got the right number and keep the door open.">What’s this?</button>
-        <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
-      </div>
-      <div class="ti" data-target="bump1">
-        <select>
-          <option value="{{contact.first_name}}">First name</option>
-          <option value="{{contact.last_name}}">Last name</option>
-          <option value="{{contact.full_name}}">Full name</option>
-          <option value="{{contact.email}}">Email</option>
-          <option value="{{contact.phone}}">Phone</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-          <option value="{{contact.make}}">Make</option>
-          <option value="{{contact.model}}">Model</option>
-          <option value="{{location.name}}">Business name</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
-      <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
-      <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
+      <!-- Bump 1 (wrapped so we can hide/show) -->
+      <section id="sec_bump1">
+        <div class="label-row">
+          <label>Bump 1</label>
+          <button class="ibtn" data-tip="Short nudge after IM based on the cadence above. Aim to confirm we’ve got the right number and keep the door open.">What’s this?</button>
+          <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
+        </div>
+        <div class="ti" data-target="bump1">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="{{location.name}}">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
+        <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
+      </section>
 
       <!-- Bump 2 -->
-      <div class="label-row">
-        <label>Bump 2</label>
-        <button class="ibtn" data-tip="Second follow-up. Keep it polite and low-friction; ask for a simple confirmation or preference.">What’s this?</button>
-        <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
-      </div>
-      <div class="ti" data-target="bump2">
-        <select>
-          <option value="{{contact.first_name}}">First name</option>
-          <option value="{{contact.last_name}}">Last name</option>
-          <option value="{{contact.full_name}}">Full name</option>
-          <option value="{{contact.email}}">Email</option>
-          <option value="{{contact.phone}}">Phone</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-          <option value="{{contact.make}}">Make</option>
-          <option value="{{contact.model}}">Model</option>
-          <option value="{{location.name}}">Business name</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
-      <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
-      <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
+      <section id="sec_bump2">
+        <div class="label-row">
+          <label>Bump 2</label>
+          <button class="ibtn" data-tip="Second follow-up. Keep it polite and low-friction; ask for a simple confirmation or preference.">What’s this?</button>
+          <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
+        </div>
+        <div class="ti" data-target="bump2">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="{{location.name}}">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
+        <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
+      </section>
 
       <!-- Bump 3 -->
-      <div class="label-row">
-        <label>Bump 3</label>
-        <button class="ibtn" data-tip="Final follow-up. Close the loop, be helpful, offer a next step (call, test drive, or ‘I’ll keep an eye out’).">What’s this?</button>
-        <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
-      </div>
-      <div class="ti" data-target="bump3">
-        <select>
-          <option value="{{contact.first_name}}">First name</option>
-          <option value="{{contact.last_name}}">Last name</option>
-          <option value="{{contact.full_name}}">Full name</option>
-          <option value="{{contact.email}}">Email</option>
-          <option value="{{contact.phone}}">Phone</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-          <option value="{{contact.make}}">Make</option>
-          <option value="{{contact.model}}">Model</option>
-          <option value="{{location.name}}">Business name</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
-      <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
-      <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
+      <section id="sec_bump3">
+        <div class="label-row">
+          <label>Bump 3</label>
+          <button class="ibtn" data-tip="Final follow-up. Close the loop, be helpful, offer a next step (call, test drive, or ‘I’ll keep an eye out’).">What’s this?</button>
+          <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
+        </div>
+        <div class="ti" data-target="bump3">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="{{location.name}}">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+        <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
+      </section>
 
       <!-- Notes -->
       <div class="label-row">
@@ -587,8 +590,20 @@
     perDay.value = String(target);
   }
 
-  // Follow-ups segmented control
+  /* ------------------- Follow-ups segmented control ------------------- */
   let followups = 3;
+
+  // follow-up sections (for visibility toggling)
+  const secB1 = document.getElementById("sec_bump1");
+  const secB2 = document.getElementById("sec_bump2");
+  const secB3 = document.getElementById("sec_bump3");
+
+  function updateFollowupVisibility(n){
+    if (secB1) secB1.style.display = n >= 1 ? "" : "none";
+    if (secB2) secB2.style.display = n >= 2 ? "" : "none";
+    if (secB3) secB3.style.display = n >= 3 ? "" : "none";
+  }
+
   function setFollowups(n){
     followups = Math.max(0, Math.min(3, Number(n)||0));
     [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
@@ -599,6 +614,7 @@
     setCV(cv.followups, followups);
     applyCadencePreview(followups);
     restrictPerDay(followups);
+    updateFollowupVisibility(followups);
     recalcSaveVisibility();
   }
   followupsSeg.addEventListener('click', e=>{
@@ -676,7 +692,7 @@
       campaign:  base + "campaign_name",
       perday:    base + "how_many_per_day_see_sop",
       followups: base + "number_of_follow_ups",
-      cadence:  base + "follow_up_cadence",
+      cadence:   base + "follow_up_cadence",
       firstmsg:  base + "first_message",
       bump1:     base + "bump_1",
       bump2:     base + "bump_2",
@@ -980,6 +996,96 @@
   function hideOverlay(){
     document.getElementById("overlay").classList.add("hidden");
   }
+
+  /* ---------------- EXAMPLES ---------------- */
+  const exModal   = document.getElementById("exModal");
+  const exTitle   = document.getElementById("exTitle");
+  const exList    = document.getElementById("exList");
+  const exClose   = document.getElementById("exClose");
+
+  const EXAMPLES = {
+    first: [
+      { group: "Short + casual", items: [
+        "Hey {{contact.first_name}}, it’s {{location.name}}. Quick question about what you’re looking for?",
+        "Hi {{contact.first_name}} — saw your note. Got 1–2 options; want me to text them over?"
+      ]},
+      { group: "Dealer-specific", items: [
+        "{{contact.first_name}}, this is {{location.name}}. Still shopping? I can narrow by budget + must-haves."
+      ]}
+    ],
+    bump1: [
+      { group: "Polite nudge", items: [
+        "Hopefully I have the right number — is this {{contact.first_name}}?",
+        "{{contact.first_name}}, just circling back — do you want a couple of quick options?"
+      ]}
+    ],
+    bump2: [
+      { group: "Light check-in", items: [
+        "Could you confirm this is your number, {{contact.first_name}}?",
+        "Totally fine if timing’s off — want me to check back later?"
+      ]}
+    ],
+    bump3: [
+      { group: "Close the loop", items: [
+        "Last nudge, {{contact.first_name}} — want me to line up a quick call?",
+        "{{contact.first_name}}, I’ll leave it with you. Reply anytime and I’ll help."
+      ]}
+    ],
+    notes: [
+      { group: "Guidance", items: [
+        "Objective: book a call; qualify for budget, make/model; one question per message.",
+        "If they say ‘not now’, set a reminder for 2 weeks and tag as warm."
+      ]}
+    ]
+  };
+
+  function openExamples(kind, targetId){
+    exTitle.textContent = "Examples";
+    exList.innerHTML = "";
+    const packs = EXAMPLES[kind] || [];
+    packs.forEach(pack=>{
+      const group = document.createElement("div");
+      group.className = "ex-group";
+      const h = document.createElement("h4"); h.textContent = pack.group;
+      group.appendChild(h);
+      pack.items.forEach(txt=>{
+        const row = document.createElement("div");
+        row.className = "ex-item";
+        const p  = document.createElement("div");
+        p.className = "ex-text";
+        p.textContent = txt;
+        const btn = document.createElement("button");
+        btn.className = "usebtn";
+        btn.textContent = "Use";
+        btn.addEventListener("click", ()=>{
+          const ta = document.getElementById(targetId);
+          if (ta){
+            ta.value = txt;
+            ta.dispatchEvent(new Event("input", { bubbles:true }));
+            recalcSaveVisibility();
+          }
+          closeExamples();
+        });
+        row.appendChild(p); row.appendChild(btn);
+        group.appendChild(row);
+      });
+      exList.appendChild(group);
+    });
+    exModal.classList.add("show");
+  }
+  function closeExamples(){ exModal.classList.remove("show"); }
+  exClose.addEventListener("click", closeExamples);
+  document.addEventListener("keydown", e=>{ if (e.key === "Escape") closeExamples(); });
+
+  // Hook up all “Examples” buttons
+  document.querySelectorAll(".ex-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const kind = btn.getAttribute("data-kind");
+      const target = btn.getAttribute("data-target");
+      openExamples(kind, target);
+    });
+  });
+  /* -------------- END EXAMPLES -------------- */
 
   (async function init(){
     ensureCadenceValues();
