@@ -81,6 +81,9 @@
   .segbtn{ background:transparent; border:none; color:#cfd6e4; font-weight:800; padding:8px 12px; border-radius:999px; cursor:pointer; }
   .segbtn.seg-on{ background:var(--orange); color:#000; box-shadow:0 6px 14px rgba(237,108,3,.35); }
 
+  /* Hide helper */
+  .hidden{ display:none !important; }
+
   /* Overlay loader */
   .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
   .overlay.hidden{ display:none; }
@@ -234,7 +237,7 @@
           <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
           <option value="{{contact.make}}">Make</option>
           <option value="{{contact.model}}">Model</option>
-          <option value="{{location.name}}">Business name</option>
+          <option value="[Type business name here]">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -243,8 +246,8 @@
 
       <div class="divider"></div>
 
-      <!-- Bump 1 -->
-      <section id="sec_bump1">
+      <!-- Bumps (each wrapped so we can hide/show by follow-ups) -->
+      <div class="bump-block" data-b="1">
         <div class="label-row">
           <label>Bump 1</label>
           <button class="ibtn" data-tip="Short nudge after IM based on the cadence above. Aim to confirm we’ve got the right number and keep the door open.">What’s this?</button>
@@ -260,17 +263,16 @@
             <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
             <option value="{{contact.make}}">Make</option>
             <option value="{{contact.model}}">Model</option>
-            <option value="{{location.name}}">Business name</option>
+            <option value="[Type business name here]">Business name</option>
           </select>
           <button type="button">Insert</button>
         </div>
         <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
         <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
         <div class="divider"></div>
-      </section>
+      </div>
 
-      <!-- Bump 2 -->
-      <section id="sec_bump2">
+      <div class="bump-block" data-b="2">
         <div class="label-row">
           <label>Bump 2</label>
           <button class="ibtn" data-tip="Second follow-up. Keep it polite and low-friction; ask for a simple confirmation or preference.">What’s this?</button>
@@ -286,17 +288,16 @@
             <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
             <option value="{{contact.make}}">Make</option>
             <option value="{{contact.model}}">Model</option>
-            <option value="{{location.name}}">Business name</option>
+            <option value="[Type business name here]">Business name</option>
           </select>
           <button type="button">Insert</button>
         </div>
         <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
         <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
         <div class="divider"></div>
-      </section>
+      </div>
 
-      <!-- Bump 3 -->
-      <section id="sec_bump3">
+      <div class="bump-block" data-b="3">
         <div class="label-row">
           <label>Bump 3</label>
           <button class="ibtn" data-tip="Final follow-up. Close the loop, be helpful, offer a next step (call, test drive, or ‘I’ll keep an eye out’).">What’s this?</button>
@@ -312,14 +313,14 @@
             <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
             <option value="{{contact.make}}">Make</option>
             <option value="{{contact.model}}">Model</option>
-            <option value="{{location.name}}">Business name</option>
+            <option value="[Type business name here]">Business name</option>
           </select>
           <button type="button">Insert</button>
         </div>
         <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
         <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
         <div class="divider"></div>
-      </section>
+      </div>
 
       <!-- Notes -->
       <div class="label-row">
@@ -336,7 +337,7 @@
           <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
           <option value="{{contact.make}}">Make</option>
           <option value="{{contact.model}}">Model</option>
-          <option value="{{location.name}}">Business name</option>
+          <option value="[Type business name here]">Business name</option>
         </select>
         <button type="button">Insert</button>
       </div>
@@ -384,7 +385,6 @@
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
 
-  // tolerate either encoded or raw urls
   function getUrlMaybeEncoded(param){
     const v = get(param) || "";
     return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
@@ -421,7 +421,169 @@
     return h;
   }
 
-  // Pretty webhook display helpers
+  /* ------------------- EXAMPLES DATA ------------------- */
+  // Helper: replace {{location.name}} / agent placeholders in any legacy strings if needed
+  const swapPlaceholders = s =>
+    s.replaceAll("{{location.name}}","[Type business name here]")
+     .replaceAll("{{location.name}}","[Type business name here]")
+     .replaceAll("{{agent.first_name}}","[Type Agent name here]")
+     .replaceAll("{{agent.name}}","[Type Agent name here]")
+     .replaceAll("{{agent}}","[Type Agent name here]");
+
+  const EXAMPLES = {
+    // per-field lists grouped by campaign
+    first: [
+      {
+        title: "Fresh Up Follow Up (visited showroom ~10 days ago)",
+        sop: [
+          "Audience: visited showroom ~10 days ago; goal: invite back to rebook.",
+          "IM: re-introduce, quick ‘how’s the search?’ (one question).",
+          "Then: empathize, qualify, booking criteria; best path is a short call with a specialist.",
+          "Keep it human, short, and one question per interaction."
+        ],
+        items: [
+          "Hey {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here]. How’s the vehicle search going since you popped in?",
+          "Hi {{contact.first_name}} — quick check-in from your visit last week. Still exploring options?",
+          "{{contact.first_name}}, thanks again for stopping by. Want me to line up a quick return visit to narrow things down?"
+        ]
+      },
+      {
+        title: "Service to Sales (Appraisal)",
+        sop: [
+          "Audience: recently scheduled service; invite to get vehicle appraised.",
+          "Choice: online ([Paste appraisal link]) or phone with a buying specialist.",
+          "After online submission, say: “A buying specialist will contact you soon to discuss the next steps.”"
+        ],
+        items: [
+          "Hi {{contact.first_name}}, it’s [Type Agent name here] at [Type business name here]. How’s your vehicle running? Would you be open to a quick no-obligation appraisal?",
+          "Hey {{contact.first_name}} — quick one from [Type business name here]: want to see what your vehicle might be worth right now?"
+        ]
+      },
+      {
+        title: "Phone Up Follow Up (called ~7 days ago)",
+        sop: [
+          "Audience: inbound phone lead ~7 days ago; objective: invite to visit and set appointment."
+        ],
+        items: [
+          "Hey {{contact.first_name}}, [Type Agent name here] at [Type business name here]. Thanks for calling the other day — did you still want to stop by to take a closer look?",
+          "Hi {{contact.first_name}}, following up on your call last week. Are you still shopping?"
+        ]
+      },
+      {
+        title: "Internet Up Follow Up (brand-new lead)",
+        sop: [
+          "Audience: brand-new internet lead; objective: set an appointment in-store.",
+          "Keep to one question at a time."
+        ],
+        items: [
+          "Hi {{contact.first_name}}, [Type Agent name here] with [Type business name here]. Got your request online — which model should I prep info for?",
+          "{{contact.first_name}}, quick one — are you focused on new, pre-owned, or either?"
+        ]
+      }
+    ],
+    bump1: [
+      {
+        title: "Fresh Up Follow Up",
+        items: [
+          "Quick nudge, {{contact.first_name}} — want me to hold a 10-minute slot this week to revisit top picks?",
+          "Happy to help narrow it down. Would tomorrow or the next day work for a quick return visit?"
+        ]
+      },
+      {
+        title: "Service to Sales (Appraisal)",
+        items: [
+          "Still open to a quick appraisal? I can send a link for online or have a buying specialist call — which do you prefer?",
+          "If you’d like online, I’ll send a quick form. If phone is easier, I’ll have a buying specialist reach out."
+        ]
+      },
+      {
+        title: "Phone Up Follow Up",
+        items: [
+          "Just circling back on your call — want me to pencil you in for a quick walkthrough? Morning or afternoon?",
+          "I can block a time so you’re in and out. What’s better for you — today or tomorrow?"
+        ]
+      },
+      {
+        title: "Internet Up Follow Up",
+        items: [
+          "Still interested in chatting? I can line up a 10-minute call or a quick visit — what’s easier?",
+          "If you share must-haves (trim/mileage/budget), I’ll send 2–3 great matches."
+        ]
+      }
+    ],
+    bump2: [
+      {
+        title: "Fresh Up Follow Up",
+        items: [
+          "If nothing grabbed you yet, I can text 2–3 matches and hold one. Want me to do that?",
+          "Happy to park this if now’s not the time — should I check back next month instead?"
+        ]
+      },
+      {
+        title: "Service to Sales (Appraisal)",
+        items: [
+          "Online works great — I’ll send the link and when you submit, I’ll bring it up to the team. Want the link?",
+          "Prefer a call? I’ll have a buying specialist contact you soon to discuss the next steps."
+        ]
+      },
+      {
+        title: "Phone Up Follow Up",
+        items: [
+          "I can have a specialist ready for you when you pop in — would a quick 15-minute slot help?",
+          "If plans changed, no worries — want me to check back later this month?"
+        ]
+      },
+      {
+        title: "Internet Up Follow Up",
+        items: [
+          "I’ve got availability to show you options — would after-work today or tomorrow be better?",
+          "If you’d rather a call, I can have a specialist reach out this afternoon."
+        ]
+      }
+    ],
+    bump3: [
+      {
+        title: "Fresh Up Follow Up",
+        items: [
+          "Last check-in from [Type business name here] — want me to keep looking or should I close this out for now?",
+          "Totally fine either way — can I follow up next month with anything new that fits?"
+        ]
+      },
+      {
+        title: "Service to Sales (Appraisal)",
+        items: [
+          "No rush on the appraisal. If you’d like, I’ll send the link and a buying specialist will contact you soon to discuss the next steps.",
+          "Want me to pause for now and check back when it’s convenient?"
+        ]
+      },
+      {
+        title: "Phone Up Follow Up",
+        items: [
+          "I’ll step back unless you need me — would you like me to hold a time this weekend just in case?",
+          "Happy to close the loop here. Ping me anytime if plans change."
+        ]
+      },
+      {
+        title: "Internet Up Follow Up",
+        items: [
+          "If timing isn’t right, I can keep an eye out and text you only when a perfect match hits — sound good?",
+          "Want me to close this for now and follow up later?"
+        ]
+      }
+    ],
+    notes: [
+      {
+        title: "Notes / prompts",
+        items: [
+          "Voice: human, concise, empathetic. One question per message.",
+          "Goal: book a short call or quick return visit; low friction.",
+          "If appraisal online is chosen, include link and say: “A buying specialist will contact you soon to discuss the next steps.”"
+        ]
+      }
+    ]
+  };
+
+  /* ------------------- WEBHOOK UI HELPERS ------------------- */
   const respBox   = document.getElementById("respBox");
   const respGrid  = document.getElementById("respGrid");
   const rawBox    = document.getElementById("rawBox");
@@ -546,7 +708,7 @@
   // Defaults for bumps
   const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
   const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
-  const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at {{location.name}}?";
+  const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at [Type business name here]?";
 
   /* ---------- Cadence preview + per-day cap ---------- */
   const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
@@ -590,20 +752,15 @@
     perDay.value = String(target);
   }
 
-  /* ------------------- Follow-ups segmented control ------------------- */
+  // Follow-ups segmented control + visibility
   let followups = 3;
-
-  // follow-up sections (for visibility toggling)
-  const secB1 = document.getElementById("sec_bump1");
-  const secB2 = document.getElementById("sec_bump2");
-  const secB3 = document.getElementById("sec_bump3");
-
-  function updateFollowupVisibility(n){
-    if (secB1) secB1.style.display = n >= 1 ? "" : "none";
-    if (secB2) secB2.style.display = n >= 2 ? "" : "none";
-    if (secB3) secB3.style.display = n >= 3 ? "" : "none";
+  function updateBumpVisibility(){
+    const blocks = document.querySelectorAll('.bump-block');
+    blocks.forEach(b=>{
+      const idx = Number(b.getAttribute('data-b'));
+      b.classList.toggle('hidden', idx > followups);
+    });
   }
-
   function setFollowups(n){
     followups = Math.max(0, Math.min(3, Number(n)||0));
     [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
@@ -614,7 +771,7 @@
     setCV(cv.followups, followups);
     applyCadencePreview(followups);
     restrictPerDay(followups);
-    updateFollowupVisibility(followups);
+    updateBumpVisibility();
     recalcSaveVisibility();
   }
   followupsSeg.addEventListener('click', e=>{
@@ -743,10 +900,9 @@
     const curA = current[agent] || {};
     const prevA = current[prevIndex] || {};
 
-    // prepare cadence options once
     ensureCadenceValues();
 
-    // Follow-ups first (affects cadence preview & per-day list)
+    // Follow-ups first
     const fuSeed = Number(
       w.followups ?? curA.followups ?? prevA.followups ?? seedVals.followups ?? 3
     );
@@ -776,7 +932,7 @@
       campaign: campaignName.value.trim(),
       perday:   perDay.value,
       followups: String(followups),
-      cadence:  cadence.value,             // full string (value)
+      cadence:  cadence.value,
       firstmsg: firstMessage.value,
       bump1:    bump1.value,
       bump2:    bump2.value,
@@ -897,6 +1053,7 @@
       setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
       showWebhookResponse(parsed, { status, headers });
 
+      // refresh current values if possible
       if (FETCH_URL){
         await refreshFromServer();
       }
@@ -925,6 +1082,7 @@
     e.preventDefault();
     saveAgentThenRefresh(agent, { jumpToNext:true });
   });
+  /* -------------- END SAVE HANDLER --------------- */
 
   async function refreshFromServer(){
     if (!locationId) return;
@@ -949,14 +1107,15 @@
           perday:   a.perday ?? seedVals.perday ?? "",
           followups:a.followups ?? a.number_of_follow_ups ?? seedVals.followups ?? "",
           cadence:  a.cadence ?? seedVals.cadence ?? "",
-          firstmsg: a.firstmsg ?? seedVals.firstmsg ?? "",
-          bump1:    a.bump1 ?? seedVals.bump1 ?? "",
-          bump2:    a.bump2 ?? seedVals.bump2 ?? "",
-          bump3:    a.bump3 ?? seedVals.bump3 ?? "",
-          notes:    a.notes ?? seedVals.notes ?? ""
+          firstmsg: swapPlaceholders(a.firstmsg ?? seedVals.firstmsg ?? ""),
+          bump1:    swapPlaceholders(a.bump1 ?? seedVals.bump1 ?? ""),
+          bump2:    swapPlaceholders(a.bump2 ?? seedVals.bump2 ?? ""),
+          bump3:    swapPlaceholders(a.bump3 ?? seedVals.bump3 ?? ""),
+          notes:    swapPlaceholders(a.notes ?? seedVals.notes ?? "")
         };
       }
       renderCV();
+      updateBumpVisibility();
       recalcSaveVisibility();
       setStatus("Refreshed", true);
     }catch{
@@ -992,164 +1151,79 @@
     document.getElementById("overlay").classList.add("hidden");
   }
 
-  /* ---------------- EXAMPLES (rebuilt from your JSON + improved follow-ups) ---------------- */
-  const exModal   = document.getElementById("exModal");
-  const exTitle   = document.getElementById("exTitle");
-  const exList    = document.getElementById("exList");
-  const exClose   = document.getElementById("exClose");
-
-  const EXAMPLES = {
-    first: [
-      { group: "Fresh Up Follow Up (visited showroom ~10 days ago)", items: [
-        "Hey {{contact.first_name}}, it’s {{location.name}}. How’s the vehicle search going since you popped in?",
-        "Hi {{contact.first_name}} — {{location.name}} here. Quick check-in from your visit last week. Still exploring options?",
-        "{{contact.first_name}}, thanks again for stopping by. Want me to line up a quick return visit to narrow things down?"
-      ]},
-      { group: "Service to Sales (Appraisal)", items: [
-        "Hi {{contact.first_name}}, it’s {{location.name}}. How’s your vehicle running? Would you be open to a quick no-obligation appraisal?",
-        "Hey {{contact.first_name}} — quick one from {{location.name}}: want to see what your vehicle might be worth right now?"
-      ]},
-      { group: "Phone Up Follow Up (called ~7 days ago)", items: [
-        "Hey {{contact.first_name}}, {{location.name}} here. Thanks for calling the other day — did you still want to stop by to take a closer look?",
-        "Hi {{contact.first_name}}, following up on your call last week. Are you still shopping?"
-      ]},
-      { group: "Internet Up Follow Up (brand new web lead)", items: [
-        "Hi {{contact.first_name}}, it’s {{location.name}} — got your online inquiry. Are you free to come by for a quick look?",
-        "Hey {{contact.first_name}}, thanks for reaching out online. Do you prefer we set a time to visit or I text a couple of options?"
-      ]}
-    ],
-    bump1: [
-      { group: "Fresh Up Follow Up", items: [
-        "I noted a few arrivals that match what you saw. Want me to text 2 options or set a short visit?",
-        "If you came back, would weekday evening or Saturday morning be better?"
-      ]},
-      { group: "Service to Sales (Appraisal)", items: [
-        "We can appraise online or by phone — which do you prefer?",
-        "If online works, I’ll send the link now. Prefer a quick call with a buying specialist instead?"
-      ]},
-      { group: "Phone Up Follow Up", items: [
-        "I can hold a time for you — does later today or tomorrow work?",
-        "Would you rather I text you 2 options that fit what you mentioned on the call?"
-      ]},
-      { group: "Internet Up Follow Up", items: [
-        "Easiest next step is a quick visit — later today or tomorrow?",
-        "Would seeing 2 options that match what you sent help?"
-      ]}
-    ],
-    bump2: [
-      { group: "Fresh Up Follow Up", items: [
-        "What matters most so I can narrow: monthly payment range or exact model?",
-        "If we set a call with a specialist, do you prefer today PM or tomorrow AM?"
-      ]},
-      { group: "Service to Sales (Appraisal)", items: [
-        "If you’d like online, start here: www.juneksbuysusedcars.com — want me to text the link?",
-        "Prefer a quick phone appraisal instead? I can have a buying specialist call you."
-      ]},
-      { group: "Phone Up Follow Up", items: [
-        "If visiting, I’ll set a 10-min slot — what time works best?",
-        "Still browsing? What’s the one must-have so I can track matches?"
-      ]},
-      { group: "Internet Up Follow Up", items: [
-        "Do you want to lock a time and I’ll have a vehicle ready?",
-        "What’s your top priority: budget, mileage, or features?"
-      ]}
-    ],
-    bump3: [
-      { group: "Fresh Up Follow Up", items: [
-        "Happy to keep an eye out and text matches. Want me to check back next week?",
-        "No pressure — want me to pencil a quick visit or pause for now?"
-      ]},
-      { group: "Service to Sales (Appraisal)", items: [
-        "If you start the online appraisal at www.juneksbuysusedcars.com, reply \"sent\" and a buying specialist will contact you soon to discuss the next steps.",
-        "I can also have a buying specialist call you — which number is best?"
-      ]},
-      { group: "Phone Up Follow Up", items: [
-        "Shall I hold a spot this week or circle back later?",
-        "I’ll close the loop for now — want me to check in next week with any new matches?"
-      ]},
-      { group: "Internet Up Follow Up", items: [
-        "Last nudge — want me to book a quick visit or send a short list to review?",
-        "Totally fine if timing’s off. Should I follow up next week?"
-      ]}
-    ],
-    notes: [
-      { group: "Fresh Up Follow Up — condensed SOP", items: [
-        "Audience: visited showroom ~10 days ago; goal: invite back to rebook.",
-        "IM: re-introduce, quick ‘how’s the search?’ (one question).",
-        "Then: empathize, qualify, booking criteria; best path is a short call with a specialist.",
-        "Keep it human, short, and one question per interaction."
-      ]},
-      { group: "Service to Sales (Appraisal) — condensed SOP", items: [
-        "Audience: recently scheduled service; invite to get vehicle appraised.",
-        "IM: re-introduce; ask how the vehicle is; float appraisal offer.",
-        "Choice: online (www.juneksbuysusedcars.com) or phone with a buying specialist.",
-        "After online submission: say “A buying specialist will contact you soon to discuss the next steps.” (trigger phrase).",
-        "One question per interaction."
-      ]},
-      { group: "Phone Up Follow Up — condensed SOP", items: [
-        "Audience: called dealership ~7 days ago; invite to visit + set appointment.",
-        "IM: quick thanks + ‘still shopping?’",
-        "Then: empathize, qualify, booking; suggest brief call with specialist.",
-        "One question per interaction."
-      ]},
-      { group: "Internet Up Follow Up — condensed SOP", items: [
-        "Audience: brand-new internet lead; invite to set appointment.",
-        "IM: thank for inquiry; ask about visit preference.",
-        "Then: empathize, qualify, booking criteria; short call with specialist helps.",
-        "One question per interaction."
-      ]}
-    ]
-  };
+  /* ------------------- EXAMPLES MODAL ------------------- */
+  const exModal = document.getElementById("exModal");
+  const exList  = document.getElementById("exList");
+  const exClose = document.getElementById("exClose");
+  let exTargetEl = null;
 
   function openExamples(kind, targetId){
-    exTitle.textContent = "Examples";
+    exTargetEl = document.getElementById(targetId);
     exList.innerHTML = "";
-    const packs = EXAMPLES[kind] || [];
-    packs.forEach(pack=>{
+    const groups = EXAMPLES[kind] || [];
+
+    groups.forEach(g=>{
       const group = document.createElement("div");
       group.className = "ex-group";
-      const h = document.createElement("h4"); h.textContent = pack.group;
+
+      const h = document.createElement("h4");
+      h.textContent = g.title || "Examples";
       group.appendChild(h);
 
-      pack.items.forEach(txt=>{
+      // SOP bullets (no Use buttons — just guidance)
+      if (Array.isArray(g.sop) && g.sop.length){
+        g.sop.forEach(line=>{
+          const row = document.createElement("div");
+          row.className = "ex-item";
+          const txt = document.createElement("div");
+          txt.className = "ex-text";
+          txt.textContent = line;
+          row.appendChild(txt);
+          // NO button here — only one place we show Use buttons (on templates)
+          group.appendChild(row);
+        });
+      }
+
+      // Template items (each with its own Use button)
+      (g.items || []).forEach(text=>{
         const row = document.createElement("div");
         row.className = "ex-item";
-        const p  = document.createElement("div");
-        p.className = "ex-text";
-        p.textContent = txt;
+
+        const txt = document.createElement("div");
+        txt.className = "ex-text";
+        txt.textContent = text;
+        row.appendChild(txt);
+
         const btn = document.createElement("button");
         btn.className = "usebtn";
         btn.textContent = "Use";
         btn.addEventListener("click", ()=>{
-          const ta = document.getElementById(targetId);
-          if (ta){
-            ta.value = txt;
-            ta.dispatchEvent(new Event("input", { bubbles:true }));
-            recalcSaveVisibility();
-          }
-          closeExamples();
+          if (!exTargetEl) return;
+          exTargetEl.value = text;
+          exModal.classList.remove("show");
+          exTargetEl.focus();
+          recalcSaveVisibility();
         });
-        row.appendChild(p); row.appendChild(btn);
+        row.appendChild(btn);
+
         group.appendChild(row);
       });
 
       exList.appendChild(group);
     });
+
     exModal.classList.add("show");
   }
-  function closeExamples(){ exModal.classList.remove("show"); }
-  exClose.addEventListener("click", closeExamples);
-  document.addEventListener("keydown", e=>{ if (e.key === "Escape") closeExamples(); });
 
-  // Hook up all “Examples” buttons
-  document.querySelectorAll(".ex-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const kind = btn.getAttribute("data-kind");
-      const target = btn.getAttribute("data-target");
+  document.querySelectorAll(".ex-btn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const target = b.getAttribute("data-target");
+      const kind = b.getAttribute("data-kind");
       openExamples(kind, target);
     });
   });
-  /* ---------------- END EXAMPLES ---------------- */
+  exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
+  exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
   (async function init(){
     ensureCadenceValues();
@@ -1166,16 +1240,17 @@
           perday:   seedVals.perday ?? "",
           followups: seedVals.followups ?? "3",
           cadence:  seedVals.cadence || "IM > 15m > 24h > 24h",
-          firstmsg: seedVals.firstmsg ?? "",
-          bump1:    seedVals.bump1 || BUMP1_DEFAULT,
-          bump2:    seedVals.bump2 || BUMP2_DEFAULT,
-          bump3:    seedVals.bump3 || BUMP3_DEFAULT,
-          notes:    seedVals.notes ?? ""
+          firstmsg: swapPlaceholders(seedVals.firstmsg ?? ""),
+          bump1:    swapPlaceholders(seedVals.bump1 || BUMP1_DEFAULT),
+          bump2:    swapPlaceholders(seedVals.bump2 || BUMP2_DEFAULT),
+          bump3:    swapPlaceholders(seedVals.bump3 || BUMP3_DEFAULT),
+          notes:    swapPlaceholders(seedVals.notes ?? "")
         };
       }
       hideOverlay();
     }
     switchAgent(1);
+    updateBumpVisibility();
   })();
 </script>
 </body>
