@@ -723,9 +723,9 @@
 
   function previewCadence(full, n){
     const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
+    // Show ONLY the parts that will actually be sent: IM + n follow-ups (no trailing dot or hidden tail)
     const head = parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
-    const tail = parts.slice(n+1);
-    return tail.length ? `${head} · ${tail.join(" > ")}` : head;
+    return head;
   }
 
   function applyCadencePreview(n){
