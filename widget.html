@@ -381,13 +381,35 @@
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
 
-  const FETCH_URL   = decodeURIComponent(get("fetchUrl")  || "");
-  const SUBMIT_URL  = decodeURIComponent(get("submitUrl") || "");
-  const AUTH_HEADER = get("authHeader") || "";
-  const AUTH_TOKEN  = get("authToken")  || "";
-  const APIKEY_HEADER = get("apiKeyHeader") || "";
-  const APIKEY_VALUE  = get("apiKey")      || "";
+  // tolerate either encoded or raw urls
+  function getUrlMaybeEncoded(param){
+    const v = get(param) || "";
+    return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
+  }
+
+  const FETCH_URL      = getUrlMaybeEncoded("fetchUrl");
+  const SUBMIT_URL     = getUrlMaybeEncoded("submitUrl");
+  const AUTH_HEADER    = get("authHeader") || "";
+  const AUTH_TOKEN     = get("authToken")  || "";
+  const APIKEY_HEADER  = get("apiKeyHeader") || "";
+  const APIKEY_VALUE   = get("apiKey") || "";
   const AGENTS = 5;
+
+  const locationId   = get("locationId");
+  const businessName = get("businessName");
+
+  // optional per-field prefills (from loader: data-value-*)
+  const seedVals = {
+    active:   get("val_active"),
+    bump1:    get("val_bump1"),
+    bump2:    get("val_bump2"),
+    bump3:    get("val_bump3"),
+    campaign: get("val_campaign"),
+    firstmsg: get("val_firstmsg"),
+    cadence:  get("val_cadence"),
+    perday:   get("val_perday"),
+    notes:    get("val_notes"),
+  };
 
   function buildHeaders(){
     const h = { "Content-Type":"application/json" };
@@ -457,9 +479,7 @@
     respBox.classList.remove("hidden");
   }
 
-  // Header
-  const locationId   = get("locationId");
-  const businessName = get("businessName");
+  // Header text
   document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
   document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
 
@@ -510,7 +530,7 @@
     cadence:  document.getElementById("cv_cadence"),
     firstmsg: document.getElementById("cv_firstmsg"),
     bump1:    document.getElementById("cv_bump1"),
-    bump2:    document.getElementById("cv_bump2"),
+    bump2:    document.getElementById("cv_bump_2") || document.getElementById("cv_bump2"),
     bump3:    document.getElementById("cv_bump3"),
     notes:    document.getElementById("cv_notes"),
   };
@@ -597,10 +617,10 @@
   toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
   toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
 
-  // Token inserter (FIXED: removed stray 'a')
+  // Token inserter
   function insertTokenInto(el, token){
     const start = el.selectionStart ?? el.value.length;
-    const end   = el.selectionEnd ?? el.value.length;  /* <-- fixed line */
+    const end   = el.selectionEnd ?? el.value.length;
     const cur   = el.value || "";
     el.value = cur.slice(0,start) + token + cur.slice(end);
     el.focus();
@@ -656,7 +676,7 @@
       campaign:  base + "campaign_name",
       perday:    base + "how_many_per_day_see_sop",
       followups: base + "number_of_follow_ups",
-      cadence:   base + "follow_up_cadence",
+      cadence:  base + "follow_up_cadence",
       firstmsg:  base + "first_message",
       bump1:     base + "bump_1",
       bump2:     base + "bump_2",
@@ -667,7 +687,7 @@
   function overrideKeysFromQuery(kmap, n){
     const map = {...kmap};
     for (const field of Object.keys(map)){
-      const q = qs.get(`key_${field}_${n}`);
+      const q = qs.get(`key_${field}_${n}`) || qs.get(`key_${field}`); // allow generic or per-agent
       if (q) map[field] = q;
     }
     return map;
@@ -711,20 +731,22 @@
     ensureCadenceValues();
 
     // Follow-ups first (affects cadence preview & per-day list)
-    const fuSeed = Number(w.followups ?? curA.followups ?? prevA.followups ?? 3);
+    const fuSeed = Number(
+      w.followups ?? curA.followups ?? prevA.followups ?? seedVals.followups ?? 3
+    );
     setFollowups(fuSeed);
 
-    campaignName.value = w.campaign || curA.campaign || prevA.campaign || "";
-    perDay.value       = String(w.perday   || curA.perday   || prevA.perday || perDay.value);
-    cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || cadence.value;
-    firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || "";
-    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || BUMP1_DEFAULT;
-    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || BUMP2_DEFAULT;
-    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || BUMP3_DEFAULT;
-    notes.value        = w.notes    || curA.notes    || prevA.notes    || "";
+    campaignName.value = w.campaign || curA.campaign || prevA.campaign || seedVals.campaign || "";
+    perDay.value       = String(w.perday   || curA.perday   || prevA.perday || seedVals.perday || perDay.value);
+    cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || seedVals.cadence || cadence.value;
+    firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || seedVals.firstmsg || "";
+    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || seedVals.bump1    || BUMP1_DEFAULT;
+    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || seedVals.bump2    || BUMP2_DEFAULT;
+    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || seedVals.bump3    || BUMP3_DEFAULT;
+    notes.value        = w.notes    || curA.notes    || prevA.notes    || seedVals.notes    || "";
 
-    const activeSeed = (w.active || curA.active || prevA.active || "");
-    setActive( activeSeed.toLowerCase()==="yes" );
+    const activeSeed = (w.active || curA.active || prevA.active || seedVals.active || "");
+    setActive( String(activeSeed).toLowerCase()==="yes" );
 
     renderCV();
     recalcSaveVisibility();
@@ -753,9 +775,9 @@
     const emptyTexts =
       !v.campaign &&
       !v.firstmsg &&
-      (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT) &&
-      (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT) &&
-      (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT) &&
+      (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT.trim()) &&
+      (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT.trim()) &&
+      (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT.trim()) &&
       !v.notes;
     return emptyActive && emptyTexts;
   }
@@ -801,7 +823,22 @@
   /* ---------------- SAVE HANDLER ---------------- */
   function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
 
+  function ensureSubmitReady(){
+    if (!locationId){
+      setStatus("Missing locationId", false);
+      return false;
+    }
+    if (!SUBMIT_URL){
+      setStatus("Missing submitUrl in query string.", false);
+      return false;
+    }
+    return true;
+    // (FETCH_URL can be absent; you just won't get a post-save refresh)
+  }
+
   async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
+    if (!ensureSubmitReady()) return;
+
     const changed = diffData(agentNum, { ignoreDefaults:false });
     if (!Object.keys(changed).length){ setStatus("No changes to save.", true); return; }
 
@@ -845,10 +882,17 @@
       setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
       showWebhookResponse(parsed, { status, headers });
 
-      await refreshFromServer();
+      // refresh current values if possible
+      if (FETCH_URL){
+        await refreshFromServer();
+      }
       if (jumpToNext){
         const next = agentNum === AGENTS ? 1 : agentNum + 1;
         switchAgent(next);
+      } else {
+        // re-render CV after save on same tab
+        renderCV();
+        recalcSaveVisibility();
       }
     } catch (err){
       hideOverlay();
@@ -857,18 +901,15 @@
     } finally {
       submitBtnTop.disabled = false;
       saveNextBtnTop.disabled = false;
-      recalcSaveVisibility();
     }
   }
 
   document.getElementById("submitBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
-    if (!locationId || !SUBMIT_URL) return;
     saveAgentThenRefresh(agent, { jumpToNext:false });
   });
   document.getElementById("saveNextBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
-    if (!locationId || !SUBMIT_URL) return;
     saveAgentThenRefresh(agent, { jumpToNext:true });
   });
   /* -------------- END SAVE HANDLER --------------- */
@@ -886,20 +927,22 @@
       });
       const text = await res.text();
       let json; try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
+
       const agents = json?.agents || {};
       for (let i=1;i<=AGENTS;i++){
         const a = agents[String(i)] || agents[i] || {};
+        // if server missing a field, fall back to seedVals (from loader)
         current[i] = {
-          active:   a.active ?? "",
-          campaign: a.campaign ?? "",
-          perday:   a.perday ?? "",
-          followups:a.followups ?? a.number_of_follow_ups ?? "",
-          cadence:  a.cadence ?? "",
-          firstmsg: a.firstmsg ?? "",
-          bump1:    a.bump1 ?? "",
-          bump2:    a.bump2 ?? "",
-          bump3:    a.bump3 ?? "",
-          notes:    a.notes ?? ""
+          active:   a.active ?? seedVals.active ?? "",
+          campaign: a.campaign ?? seedVals.campaign ?? "",
+          perday:   a.perday ?? seedVals.perday ?? "",
+          followups:a.followups ?? a.number_of_follow_ups ?? seedVals.followups ?? "",
+          cadence:  a.cadence ?? seedVals.cadence ?? "",
+          firstmsg: a.firstmsg ?? seedVals.firstmsg ?? "",
+          bump1:    a.bump1 ?? seedVals.bump1 ?? "",
+          bump2:    a.bump2 ?? seedVals.bump2 ?? "",
+          bump3:    a.bump3 ?? seedVals.bump3 ?? "",
+          notes:    a.notes ?? seedVals.notes ?? ""
         };
       }
       renderCV();
@@ -930,12 +973,39 @@
     recalcSaveVisibility();
   });
 
+  function showOverlay(text){
+    document.getElementById("overlayText").textContent = text || "Loading…";
+    document.getElementById("overlay").classList.remove("hidden");
+  }
+  function hideOverlay(){
+    document.getElementById("overlay").classList.add("hidden");
+  }
+
   (async function init(){
     ensureCadenceValues();
     for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
     if (!locationId){ setStatus("Missing locationId", false); return; }
     showOverlay("Loading current values…");
-    await refreshFromServer();  // hides overlay
+    // try server; if no fetchUrl, hydrate from seedVals only
+    if (FETCH_URL){
+      await refreshFromServer();
+    } else {
+      for (let i=1;i<=AGENTS;i++){
+        current[i] = {
+          active:   seedVals.active ?? "",
+          campaign: seedVals.campaign ?? "",
+          perday:   seedVals.perday ?? "",
+          followups: seedVals.followups ?? "3",
+          cadence:  seedVals.cadence || "IM > 15m > 24h > 24h",
+          firstmsg: seedVals.firstmsg ?? "",
+          bump1:    seedVals.bump1 || BUMP1_DEFAULT,
+          bump2:    seedVals.bump2 || BUMP2_DEFAULT,
+          bump3:    seedVals.bump3 || BUMP3_DEFAULT,
+          notes:    seedVals.notes ?? ""
+        };
+      }
+      hideOverlay();
+    }
     switchAgent(1);
   })();
 </script>
