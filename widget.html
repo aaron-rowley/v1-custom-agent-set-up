@@ -1029,6 +1029,15 @@ One question at a time per interaction.`
 
     const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
 
+    /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+       Replace all newlines with £%£% for GHL custom values
+       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+    for (const k in payload.data) {
+      if (typeof payload.data[k] === "string") {
+        payload.data[k] = payload.data[k].replace(/\r?\n/g, "£%£%");
+      }
+    }
+
     submitBtnTop.disabled = true;
     saveNextBtnTop.disabled = true;
     showOverlay("Saving…");
@@ -1116,7 +1125,7 @@ One question at a time per interaction.`
       setStatus("Refreshed", true);
     }catch{
       setStatus("Could not refresh current values.", false);
-    }finally{
+    }finally {
       hideOverlay();
     }
   }
