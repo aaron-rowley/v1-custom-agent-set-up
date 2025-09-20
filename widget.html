@@ -422,7 +422,6 @@
   }
 
   /* ------------------- EXAMPLES DATA ------------------- */
-  // Helper: replace {{location.name}} / agent placeholders in any legacy strings if needed
   const swapPlaceholders = s =>
     s.replaceAll("{{location.name}}","[Type business name here]")
      .replaceAll("{{location.name}}","[Type business name here]")
@@ -431,34 +430,20 @@
      .replaceAll("{{agent}}","[Type Agent name here]");
 
   const EXAMPLES = {
-    /* FIRST MESSAGE — aligned to Set-node wording */
     first: [
-      {
-        title: "DBR — IM",
-        items: [
-          "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
-        ]
-      },
-      {
-        title: "Service to Sales (Appraisal) — IM",
-        items: [
-          "Hi {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here] — how are you and your {{contact.model}} doing?"
-        ]
-      },
-      {
-        title: "Phone Up Follow Up — IM",
-        items: [
-          "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note to check in—how’s the vehicle search going?"
-        ]
-      },
-      {
-        title: "Internet Up Follow Up — IM",
-        items: [
-          "Hi {{contact.first_name}}, it’s [Type Agent name here] with [Type business name here]. I saw your online request—how’s the vehicle search going?"
-        ]
-      }
+      { title: "DBR — IM", items: [
+        "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
+      ]},
+      { title: "Service to Sales (Appraisal) — IM", items: [
+        "Hi {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here] — how are you and your {{contact.model}} doing?"
+      ]},
+      { title: "Phone Up Follow Up — IM", items: [
+        "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note to check in—how’s the vehicle search going?"
+      ]},
+      { title: "Internet Up Follow Up — IM", items: [
+        "Hi {{contact.first_name}}, it’s [Type Agent name here] with [Type business name here]. I saw your online request—how’s the vehicle search going?"
+      ]}
     ],
-    /* BUMPS — keep concise; one question per interaction */
     bump1: [
       { title: "Fresh Up Follow Up — Bump 1", items: [
         "Quick nudge — want me to hold a 10-minute slot this week to revisit top picks?"
@@ -501,7 +486,6 @@
         "If timing isn’t right, I can keep an eye out and text you when a perfect match hits — sound good?"
       ]}
     ],
-    /* NOTES / PROMPTS — exact Campaign Objectives from Set nodes (each has its own Use button) */
     notes: [
       {
         title: "DBR — Campaign Objective",
@@ -591,7 +575,9 @@ One question at a time per interaction.`
       }
     ]
   };
+</script>
 
+<script>
   /* ------------------- WEBHOOK UI HELPERS ------------------- */
   const respBox   = document.getElementById("respBox");
   const respGrid  = document.getElementById("respGrid");
@@ -722,11 +708,12 @@ One question at a time per interaction.`
   /* ---------- Cadence preview + per-day cap ---------- */
   const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
 
+  // FIX 1: keep the original full cadence string; don't rebuild from textContent after previews
   function ensureCadenceValues(){
     [...cadence.options].forEach(opt=>{
-      const full = opt.textContent.trim();
-      opt.value = full;
-      opt.dataset.full = full;
+      const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
+      if (!opt.dataset.full) opt.dataset.full = full; // set once
+      opt.value = opt.dataset.full; // keep the true full string as value
     });
   }
 
@@ -1018,31 +1005,29 @@ One question at a time per interaction.`
   async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
     if (!ensureSubmitReady()) return;
 
-const vals     = getFormValues();
-const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+    const vals     = getFormValues();
+    const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
 
-// always submit the FULL cadence string (not the preview text)
-const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
-const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
+    // FIX 2: always submit FULL cadence string, and send ALL fields even if hidden
+    const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
+    const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
 
-const allData = {
-  active:   vals.active,
-  campaign: vals.campaign,
-  perday:   vals.perday,
-  followups: vals.followups,   // still send the chosen count
-  cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
-  firstmsg: vals.firstmsg,
-  bump1:    vals.bump1,
-  bump2:    vals.bump2,        // send even if hidden
-  bump3:    vals.bump3,        // send even if hidden
-  notes:    vals.notes
-};
+    const allData = {
+      active:   vals.active,
+      campaign: vals.campaign,
+      perday:   vals.perday,
+      followups: vals.followups,   // still send the chosen count
+      cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
+      firstmsg: vals.firstmsg,
+      bump1:    vals.bump1,
+      bump2:    vals.bump2,        // send even if hidden
+      bump3:    vals.bump3,        // send even if hidden
+      notes:    vals.notes
+    };
 
-const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: allData };
+    const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: allData };
 
-    /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-       Replace all newlines with £%£% for GHL custom values
-       <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+    /* Replace all newlines with £%£% for GHL custom values */
     for (const k in payload.data) {
       if (typeof payload.data[k] === "string") {
         payload.data[k] = payload.data[k].replace(/\r?\n/g, "£%£%");
@@ -1186,7 +1171,6 @@ const payload = { locationId, businessName, agent: agentNum, keys: keysFull, dat
       h.textContent = g.title || "Examples";
       group.appendChild(h);
 
-      // SOP / PROMPTS — now each line has its own Use button
       if (Array.isArray(g.sop) && g.sop.length){
         g.sop.forEach(line=>{
           const row = document.createElement("div");
@@ -1213,7 +1197,6 @@ const payload = { locationId, businessName, agent: agentNum, keys: keysFull, dat
         });
       }
 
-      // TEMPLATE MESSAGES — each with its own Use button
       (g.items || []).forEach(text=>{
         const row = document.createElement("div");
         row.className = "ex-item";
