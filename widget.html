@@ -21,6 +21,23 @@
   .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); border-bottom:1px solid var(--line); }
   .tabsbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  /* LUXURY GOLD page tabs */
+  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
+  .pagetab{
+    border:1px solid #3a3218; color:#f7e6a8; padding:8px 14px; border-radius:999px; font-weight:800; cursor:pointer;
+    background: linear-gradient(120deg, #1a1508 0%, #2a220e 60%, #1a1508 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 6px 16px rgba(0,0,0,.35);
+    letter-spacing:.15px;
+  }
+  .pagetab:hover{ filter:brightness(1.08); }
+  .pagetab.active{
+    color:#1b1305;
+    border-color:#705a1c;
+    background: linear-gradient(120deg, #FFD700 0%, #E6B422 45%, #C9A227 100%);
+    box-shadow: 0 6px 18px rgba(255,215,0,.35), inset 0 0 0 1px rgba(255,255,255,.25);
+  }
+
   .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
   .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
   .top-actions{ display:flex; align-items:center; gap:10px; }
@@ -29,11 +46,6 @@
   .btn-sm.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
   .dirty-dot{ width:8px; height:8px; border-radius:99px; background:var(--orange); box-shadow:0 0 0 4px rgba(237,108,3,.25); display:none; }
   .top-actions.dirty .dirty-dot{ display:inline-block; }
-
-  /* Page tabs (inside form) */
-  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
-  .pagetab{ border:1px solid var(--line); background:#0e1117; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-weight:800; cursor:pointer; }
-  .pagetab.active{ background:var(--green); color:#052; border-color:rgba(16,185,129,.6); box-shadow:0 6px 16px rgba(16,185,129,.35); }
 
   /* Step actions */
   .step-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
@@ -45,7 +57,7 @@
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
   .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
-  input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
+  input[type="text"], input[type="url"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
 
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
@@ -103,6 +115,7 @@
   .pill{ font-size:12px; padding:6px 10px; border-radius:999px; font-weight:800; }
   .ok{ background:rgba(16,185,129,.15); color:#a7f3d0; border:1px solid rgba(16,185,129,.45); }
   .bad{ background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.45); }
+
   .resp-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
   .kvt{ border:1px solid #273042; border-radius:10px; padding:10px; background:#0f141a; }
   .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
@@ -143,10 +156,11 @@
     </div>
 
     <div class="card" id="formCard">
-      <!-- Page tabs -->
+      <!-- Page tabs - now 3 pages -->
       <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
-        <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Campaign & Messaging</button>
-        <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Volume, Follow-ups & CSV</button>
+        <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Campaign & Prompt</button>
+        <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Follow-ups & Messaging</button>
+        <button class="pagetab" data-page="3" aria-selected="false">Page 3 — Integrations</button>
       </div>
 
       <!-- PAGE 1 -->
@@ -289,6 +303,32 @@
         <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
         <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
+        <div class="divider"></div>
+
+        <!-- Dashboard + CSV (moved here) -->
+        <div class="row">
+          <div>
+            <label>Open Dashboard</label>
+            <button class="btn-sm" id="openDashboardBtn" title="Opens the GHL dashboard in a new tab">View dashboard</button>
+          </div>
+          <div>
+            <label>CSV Upload (sends binary to webhook)</label>
+            <div class="row" style="grid-template-columns:1fr auto;">
+              <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
+              <button class="btn-sm" id="uploadCsvBtn">Upload CSV</button>
+            </div>
+            <div class="row">
+              <select id="uploadMode">
+                <option value="multipart">multipart/form-data</option>
+                <option value="octet">application/octet-stream</option>
+              </select>
+              <input type="text" id="uploadFieldName" value="file" placeholder="Field name (multipart only)" />
+            </div>
+            <input type="text" id="uploadMeta" placeholder='Extra JSON meta (optional)' />
+            <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+          </div>
+        </div>
+
         <div class="step-actions">
           <div class="left">
             <button class="btn-prev" id="prevFromP1" disabled>Previous</button>
@@ -350,57 +390,71 @@
           </div>
         </div>
 
-        <div class="divider"></div>
-
-        <!-- CSV UPLOADER -->
-        <div class="label-row">
-          <label>CSV file receiver (sends binary to webhook)</label>
-          <button class="ibtn" data-tip="Uploads the selected CSV directly to your webhook as either multipart/form-data or application/octet-stream. Includes locationId, businessName, and agent number.">What’s this?</button>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Webhook (uploadUrl in query)</label>
-            <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
-          </div>
-          <div>
-            <label>Send mode</label>
-            <select id="uploadMode">
-              <option value="multipart">multipart/form-data</option>
-              <option value="octet">application/octet-stream</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Form field name (for multipart)</label>
-            <input type="text" id="uploadFieldName" value="file" />
-          </div>
-          <div>
-            <label>Extra JSON meta (optional)</label>
-            <input type="text" id="uploadMeta" placeholder='{"source":"custom-agent-setup"}' />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Select CSV file</label>
-            <input type="file" id="csvFile" accept=".csv,text/csv" />
-          </div>
-          <div style="display:flex; align-items:flex-end;">
-            <button class="btn-sm" id="uploadCsvBtn" style="height:42px;">Upload CSV</button>
-          </div>
-        </div>
-
-        <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
-
         <div class="step-actions">
           <div class="left">
             <button class="btn-prev" id="prevFromP2">Previous (Page 1)</button>
           </div>
           <div class="right">
-            <button class="btn-next" id="nextFromP2" title="Goes to next Agent">Next Agent</button>
+            <button class="btn-next" id="nextFromP2">Next (Page 3)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3 — INTEGRATIONS -->
+      <section id="page3" class="page hidden" aria-hidden="true">
+        <div class="label-row">
+          <label>Integrations — per-field webhooks</label>
+          <button class="ibtn" data-tip="Enter a webhook URL per field. Click Send to POST the current field value. We include raw text and a GHL-safe version with newlines replaced by £%£%. Auth/API headers from the query are applied.">What’s this?</button>
+        </div>
+
+        <div class="card" style="background:#0b0f14;border-color:#263142;">
+          <div class="row">
+            <div><label>Active (Yes/blank) webhook</label><input type="url" id="wh_active" placeholder="https://…" /></div>
+            <div><label>Campaign name webhook</label><input type="url" id="wh_campaign" placeholder="https://…" /></div>
+          </div>
+          <div class="row">
+            <div><label>Per-day webhook</label><input type="url" id="wh_perday" placeholder="https://…" /></div>
+            <div><label>Follow-ups webhook</label><input type="url" id="wh_followups" placeholder="https://…" /></div>
+          </div>
+          <div class="row">
+            <div><label>Cadence webhook</label><input type="url" id="wh_cadence" placeholder="https://…" /></div>
+            <div><label>First message webhook</label><input type="url" id="wh_firstmsg" placeholder="https://…" /></div>
+          </div>
+          <div class="row">
+            <div><label>Bump 1 webhook</label><input type="url" id="wh_bump1" placeholder="https://…" /></div>
+            <div><label>Bump 2 webhook</label><input type="url" id="wh_bump2" placeholder="https://…" /></div>
+          </div>
+          <div class="row">
+            <div><label>Bump 3 webhook</label><input type="url" id="wh_bump3" placeholder="https://…" /></div>
+            <div><label>Notes/Prompt webhook</label><input type="url" id="wh_notes" placeholder="https://…" /></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="row" style="grid-template-columns:1fr auto;">
+            <input type="text" id="wh_meta" placeholder='Optional meta JSON to attach e.g. {"source":"agent-setup"}' />
+            <button class="btn-sm" id="sendAllWebhooks">Send ALL</button>
+          </div>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn-sm" data-send-field="active">Send Active</button>
+            <button class="btn-sm" data-send-field="campaign">Send Campaign</button>
+            <button class="btn-sm" data-send-field="perday">Send Per-day</button>
+            <button class="btn-sm" data-send-field="followups">Send Follow-ups</button>
+            <button class="btn-sm" data-send-field="cadence">Send Cadence</button>
+            <button class="btn-sm" data-send-field="firstmsg">Send First</button>
+            <button class="btn-sm" data-send-field="bump1">Send Bump1</button>
+            <button class="btn-sm" data-send-field="bump2">Send Bump2</button>
+            <button class="btn-sm" data-send-field="bump3">Send Bump3</button>
+            <button class="btn-sm" data-send-field="notes">Send Notes</button>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <div class="left">
+            <button class="btn-prev" id="prevFromP3">Previous (Page 2)</button>
+          </div>
+          <div class="right">
+            <button class="btn-next" id="nextFromP3" title="Goes to next Agent">Next Agent</button>
           </div>
         </div>
       </section>
@@ -449,7 +503,7 @@
   }
   const FETCH_URL      = getUrlMaybeEncoded("fetchUrl");
   const SUBMIT_URL     = getUrlMaybeEncoded("submitUrl");
-  const UPLOAD_URL     = getUrlMaybeEncoded("uploadUrl"); // NEW
+  const UPLOAD_URL     = getUrlMaybeEncoded("uploadUrl");
   const AUTH_HEADER    = get("authHeader") || "";
   const AUTH_TOKEN     = get("authToken")  || "";
   const APIKEY_HEADER  = get("apiKeyHeader") || "";
@@ -473,8 +527,8 @@
     followups: get("val_followups"),
   };
 
-  function buildHeaders(){
-    const h = { "Content-Type":"application/json" };
+  function buildHeaders(json=true){
+    const h = json ? { "Content-Type":"application/json" } : {};
     if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
     if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
     return h;
@@ -630,13 +684,13 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
   const pageTabs = [...document.querySelectorAll(".pagetab")];
   const page1 = document.getElementById("page1");
   const page2 = document.getElementById("page2");
+  const page3 = document.getElementById("page3");
   let page = 1;
   function gotoPage(n){
     page = n;
-    page1.classList.toggle("hidden", n!==1);
-    page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
-    page2.classList.toggle("hidden", n!==2);
-    page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
+    page1.classList.toggle("hidden", n!==1); page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
+    page2.classList.toggle("hidden", n!==2); page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
+    page3.classList.toggle("hidden", n!==3); page3.setAttribute("aria-hidden", n!==3 ? "true" : "false");
     pageTabs.forEach(pt=>{
       const is = Number(pt.dataset.page)===n;
       pt.classList.toggle("active", is);
@@ -646,10 +700,11 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
   }
   pageTabs.forEach(pt=> pt.addEventListener("click", ()=> gotoPage(Number(pt.dataset.page)) ));
   document.getElementById("nextFromP1").addEventListener("click", ()=> gotoPage(2));
-  document.getElementById("prevFromP1").addEventListener("click", ()=> gotoPage(1)); // disabled anyway
+  document.getElementById("prevFromP1").addEventListener("click", ()=> gotoPage(1));
   document.getElementById("prevFromP2").addEventListener("click", ()=> gotoPage(1));
-  document.getElementById("nextFromP2").addEventListener("click", ()=>{
-    // advance to next agent after page 2
+  document.getElementById("nextFromP2").addEventListener("click", ()=> gotoPage(3));
+  document.getElementById("prevFromP3").addEventListener("click", ()=> gotoPage(2));
+  document.getElementById("nextFromP3").addEventListener("click", ()=>{
     const next = agent===AGENTS ? 1 : agent+1;
     switchAgent(next);
     gotoPage(1);
@@ -689,8 +744,8 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
   function ensureCadenceValues(){
     [...cadence.options].forEach(opt=>{
       const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
-      if (!opt.dataset.full) opt.dataset.full = full; // set once
-      opt.value = opt.dataset.full; // keep the true full string as value
+      if (!opt.dataset.full) opt.dataset.full = full;
+      opt.value = opt.dataset.full;
     });
   }
   function previewCadence(full, n){
@@ -958,19 +1013,21 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
     return changed;
   }
 
+  // Dirty detection updated for 3 pages
   function recalcSaveVisibility(){
-    // only consider fields on the current page for "dirty" state (nicer UX)
     const changes = diffData(agent, { ignoreDefaults:true });
     const page1Keys = ["Active","Campaign name","First message","Bump 1","Bump 2","Bump 3","Notes about campaign"];
     const page2Keys = ["How many per day","Number of follow ups","Follow up cadence"];
+    const page3Keys = []; // webhooks are fire-and-forget; don't gate save button
+
     const relevant = Object.keys(changes).some(k=>{
-      return page===1
-        ? page1Keys.some(pk=>k.includes(pk))
-        : page2Keys.some(pk=>k.includes(pk));
+      return page===1 ? page1Keys.some(pk=>k.includes(pk))
+           : page===2 ? page2Keys.some(pk=>k.includes(pk))
+           : page3Keys.some(pk=>k.includes(pk));
     });
 
     const allEmpty = isBlankTextFields();
-    const show = relevant && !allEmpty;
+    const show = (page===3 ? !allEmpty : (relevant && !allEmpty));
     topActions.classList.toggle("hidden", !show);
     topActions.classList.toggle("dirty", show);
   }
@@ -1031,7 +1088,7 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
     try{
       const res = await fetch(SUBMIT_URL, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(),
+        headers: buildHeaders(true),
         body: JSON.stringify(payload)
       });
 
@@ -1052,6 +1109,7 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
 
       if (jumpToNextPage){
         if (page===1) gotoPage(2);
+        else if (page===2) gotoPage(3);
         else {
           const next = agentNum === AGENTS ? 1 : agentNum + 1;
           switchAgent(next);
@@ -1085,7 +1143,7 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
     try{
       const res = await fetch(urlWithBust, {
         method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(),
+        headers: buildHeaders(true),
         body: JSON.stringify({ locationId })
       });
       const text = await res.text();
@@ -1229,12 +1287,12 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
   exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
   exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
-  /* ------------------- CSV UPLOAD ------------------- */
+  /* ------------------- CSV UPLOAD (moved to Page 1) ------------------- */
   const uploadUrlEcho = document.getElementById("uploadUrlEcho");
   const uploadMode = document.getElementById("uploadMode");
   const uploadFieldName = document.getElementById("uploadFieldName");
   const uploadMeta = document.getElementById("uploadMeta");
-  const csvFile = document.getElementById("csvFile");
+  const csvFile = document.getElementById("csvFile"); // optional input if you add a file picker elsewhere
   const uploadCsvBtn = document.getElementById("uploadCsvBtn");
   const csvStatus = document.getElementById("csvStatus");
   uploadUrlEcho.value = UPLOAD_URL || "(missing ?uploadUrl=…)";
@@ -1248,8 +1306,13 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
   uploadCsvBtn.addEventListener("click", async (e)=>{
     e.preventDefault();
     if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
-    const file = csvFile.files?.[0];
-    if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
+
+    // Because the input is not included in the new row by default, look for any file input with id 'csvFile' if present
+    const fileInput = document.querySelector('#csvFile') || null;
+    const file = fileInput?.files?.[0];
+    if (uploadMode.value === "multipart" && !file){
+      setCsvStatus("Choose a CSV file first (multipart).", false); return;
+    }
 
     showOverlay("Uploading CSV…");
     try {
@@ -1263,21 +1326,19 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
         fd.append("locationId", locationId || "");
         fd.append("businessName", businessName || "");
         fd.append("agent", String(agent));
-        // Optional extra meta JSON
         const metaTxt = (uploadMeta.value || "").trim();
         if (metaTxt){
           fd.append("meta", metaTxt);
         }
-        // Auth headers still apply, but DO NOT set content-type (browser sets boundary)
         const headers = {};
         if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
         if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
 
         res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
       } else {
-        // application/octet-stream with query/meta in headers
+        // application/octet-stream can send without a file (server may ignore body)
         const headers = { "Content-Type":"application/octet-stream",
-                          "X-Filename": encodeURIComponent(file.name),
+                          "X-Filename": file ? encodeURIComponent(file.name) : "no-file",
                           "X-Location-Id": locationId || "",
                           "X-Business-Name": businessName || "",
                           "X-Agent": String(agent) };
@@ -1286,7 +1347,7 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
         const metaTxt = (uploadMeta.value || "").trim();
         if (metaTxt) headers["X-Meta"] = metaTxt;
 
-        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file });
+        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file || new Blob([]) });
       }
 
       const status = res.status;
@@ -1306,6 +1367,74 @@ Ask empathetic questions, avoid pricing/inventory specifics until booking. One q
       showWebhookResponse({ error: String(err) }, { status: 0 });
     }
   });
+
+  /* ------------------- INTEGRATIONS (Page 3) ------------------- */
+  const whInputs = {
+    active:   document.getElementById("wh_active"),
+    campaign: document.getElementById("wh_campaign"),
+    perday:   document.getElementById("wh_perday"),
+    followups:document.getElementById("wh_followups"),
+    cadence:  document.getElementById("wh_cadence"),
+    firstmsg: document.getElementById("wh_firstmsg"),
+    bump1:    document.getElementById("wh_bump1"),
+    bump2:    document.getElementById("wh_bump2"),
+    bump3:    document.getElementById("wh_bump3"),
+    notes:    document.getElementById("wh_notes"),
+  };
+  const whMeta = document.getElementById("wh_meta");
+
+  function replaceNewlinesForGHL(s){ return String(s||"").replace(/\r?\n/g, "£%£%"); }
+
+  function parseMaybeJSON2(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
+
+  async function sendFieldWebhook(field){
+    const inp = whInputs[field];
+    const url = (inp?.value || "").trim();
+    if (!url) { alert(`No webhook URL set for ${field}`); return; }
+    const vals = getFormValues();
+    const payload = {
+      locationId, businessName, agent,
+      field, key: cvKeys(agent)[field],
+      value_raw: String(vals[field] ?? ""),
+      value_ghl_encoded: replaceNewlinesForGHL(String(vals[field] ?? "")),
+      meta: (whMeta?.value||"").trim() || undefined
+    };
+    showOverlay(`Sending ${field}…`);
+    try{
+      const res = await fetch(url, { method:"POST", mode:"cors", credentials:"omit", headers: buildHeaders(true), body: JSON.stringify(payload) });
+      const status = res.status;
+      const text = await res.text();
+      const parsed = parseMaybeJSON2(text);
+      hideOverlay();
+      showWebhookResponse(parsed, { status });
+    }catch(err){
+      hideOverlay();
+      showWebhookResponse({ error:String(err) }, { status:0 });
+    }
+  }
+
+  const sendAll = document.getElementById("sendAllWebhooks");
+  if (sendAll){
+    sendAll.addEventListener("click", async ()=>{
+      for (const f of Object.keys(whInputs)){
+        const has = (whInputs[f]?.value||"").trim();
+        if (has) await sendFieldWebhook(f);
+      }
+    });
+  }
+  document.querySelectorAll('[data-send-field]').forEach(btn=>{
+    btn.addEventListener("click", ()=> sendFieldWebhook(btn.getAttribute('data-send-field')));
+  });
+
+  /* ------------------- DASHBOARD BUTTON ------------------- */
+  const openDashboardBtn = document.getElementById("openDashboardBtn");
+  if (openDashboardBtn){
+    openDashboardBtn.addEventListener("click", ()=>{
+      if (!locationId) return alert("Missing locationId");
+      const url = `https://app.visquanta.com/v2/location/${encodeURIComponent(locationId)}/dashboard`;
+      window.open(url, "_blank", "noopener");
+    });
+  }
 
   /* ------------------- INIT ------------------- */
   (async function init(){
