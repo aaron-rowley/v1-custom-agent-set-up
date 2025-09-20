@@ -193,44 +193,26 @@
 
       <div class="divider"></div>
 
-      <!-- CSV UPLOADER (moved to Page 1) -->
-      <div class="label-row">
-        <label>CSV file receiver (sends binary to webhook)</label>
-        <button class="ibtn" data-tip="Uploads the selected CSV directly to your webhook as either multipart/form-data or application/octet-stream. Includes locationId, businessName, and agent number.">What’s this?</button>
-      </div>
-      <div class="row">
-        <div>
-          <label>Webhook (uploadUrl in query)</label>
-          <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
-        </div>
-        <div>
-          <label>Send mode</label>
-          <select id="uploadMode">
-            <option value="multipart">multipart/form-data</option>
-            <option value="octet">application/octet-stream</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>Form field name (for multipart)</label>
-          <input type="text" id="uploadFieldName" value="file" />
-        </div>
-        <div>
-          <label>Extra JSON meta (optional)</label>
-          <input type="text" id="uploadMeta" placeholder='{"source":"custom-agent-setup"}' />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>Select CSV file</label>
-          <input type="file" id="csvFile" accept=".csv,text/csv" />
-        </div>
-        <div style="display:flex; align-items:flex-end;">
-          <button class="btn-sm" id="uploadCsvBtn" style="height:42px;">Upload CSV</button>
-        </div>
-      </div>
-      <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+    <!-- Simple CSV uploader -->
+<div class="label-row">
+  <label>Upload CSV File</label>
+  <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
+</div>
+
+<div id="dropzone" class="dropzone" aria-label="Upload CSV File" tabindex="0">
+  <div class="dz-text">
+    <strong>Drag & drop</strong> your CSV here, or <span class="dz-cta">click to choose</span>
+    <div class="dz-sub">Accepted: .csv</div>
+  </div>
+  <input id="dzInput" type="file" accept=".csv,text/csv" hidden />
+</div>
+
+<div class="row" style="margin-top:10px;">
+  <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+  <div style="margin-left:auto;">
+    <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload CSV">Send</button>
+  </div>
+</div>
 
       <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
         <div class="left">
@@ -1242,72 +1224,104 @@ document.querySelectorAll(".ex-btn").forEach(b=>{
 exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
 exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
-/* ------------------- CSV UPLOAD ------------------- */
-const uploadUrlEcho   = document.getElementById("uploadUrlEcho");
-const uploadMode      = document.getElementById("uploadMode");
-const uploadFieldName = document.getElementById("uploadFieldName");
-const uploadMeta      = document.getElementById("uploadMeta");
-const csvFile         = document.getElementById("csvFile");
-const uploadCsvBtn    = document.getElementById("uploadCsvBtn");
-const csvStatus       = document.getElementById("csvStatus");
 
-uploadUrlEcho.value = UPLOAD_URL || "(missing ?uploadUrl=…)";
 
-function setCsvStatus(text, ok) {
+  
+/* --------- Simple CSV Dropzone + Send --------- */
+const dropzone   = document.getElementById("dropzone");
+const dzInput    = document.getElementById("dzInput");
+const sendCsvBtn = document.getElementById("sendCsvBtn");
+const csvStatus  = document.getElementById("csvStatus");
+
+// Must match your n8n Webhook node's binaryPropertyName
+const FIELD_NAME = "custom-campaign-agent.csv";
+
+function setCsvStatus(text, ok){
   csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
   csvStatus.classList.toggle("has-value", !!ok);
   csvStatus.classList.toggle("empty", !ok);
 }
 
-uploadCsvBtn.addEventListener("click", async (e)=>{
-  e.preventDefault();
+function getChosenFile(){
+  return dzInput.files && dzInput.files[0] ? dzInput.files[0] : null;
+}
+
+function chooseFile(){ dzInput.click(); }
+
+function wireDropzone(){
+  const onChoose = e => { if (e.target.files?.[0]) setCsvStatus(`Selected: ${e.target.files[0].name}`, true); };
+  dzInput.addEventListener("change", onChoose);
+
+  const onDrop = e => {
+    e.preventDefault();
+    dropzone.classList.remove("dz-hover");
+    const f = e.dataTransfer?.files?.[0];
+    if (f){ dzInput.files = e.dataTransfer.files; setCsvStatus(`Selected: ${f.name}`, true); }
+  };
+  const onOver  = e => { e.preventDefault(); dropzone.classList.add("dz-hover"); };
+  const onLeave = () => dropzone.classList.remove("dz-hover");
+
+  ["dragenter","dragover"].forEach(ev => dropzone.addEventListener(ev, onOver));
+  ["dragleave","dragend"].forEach(ev => dropzone.addEventListener(ev, onLeave));
+  dropzone.addEventListener("drop", onDrop);
+  dropzone.addEventListener("click", chooseFile);
+  dropzone.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); chooseFile(); }});
+}
+wireDropzone();
+
+/* Send flow: turn agent ON -> save fields -> upload CSV to UPLOAD_URL */
+async function sendAndActivate(){
   if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
-  const file = csvFile.files?.[0];
+  const file = getChosenFile();
   if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
+
+  // 1) ensure agent is ON
+  setActive(true);
+
+  // 2) save current page (posts all fields to submitUrl with auth)
+  showOverlay("Saving fields…");
+  try{
+    await saveAgentThenRefresh(agent, { action:"stay" });
+  }catch{
+    hideOverlay();
+    setCsvStatus("Couldn’t save fields.", false);
+    return;
+  }
+
+  // 3) multipart upload to your n8n webhook with auth headers
   showOverlay("Uploading CSV…");
-  try {
-    const mode = uploadMode.value;
-    let res;
-    if (mode === "multipart"){
-      const fd = new FormData();
-      const field = (uploadFieldName.value || "file").trim();
-      fd.append(field, file, file.name);
-      fd.append("locationId", locationId || "");
-      fd.append("businessName", businessName || "");
-      fd.append("agent", String(agent));
-      const metaTxt = (uploadMeta.value || "").trim();
-      if (metaTxt){ fd.append("meta", metaTxt); }
-      const headers = {};
-      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
-      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
-    } else {
-      const headers = {
-        "Content-Type":"application/octet-stream",
-        "X-Filename": encodeURIComponent(file.name),
-        "X-Location-Id": locationId || "",
-        "X-Business-Name": businessName || "",
-        "X-Agent": String(agent)
-      };
-      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
-      const metaTxt = (uploadMeta.value || "").trim();
-      if (metaTxt) headers["X-Meta"] = metaTxt;
-      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file });
-    }
+  try{
+    const fd = new FormData();
+    fd.append(FIELD_NAME, file, file.name);
+    fd.append("locationId", locationId || "");
+    fd.append("businessName", businessName || "");
+    fd.append("agent", String(agent));
+    fd.append("activate", "true"); // optional flag for backend
+
+    const headers = {};
+    if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+    if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+
+    const res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
     const status = res.status;
-    const text = await res.text();
+    const text   = await res.text();
     let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
     hideOverlay();
-    if (!res.ok){ setCsvStatus(`Error ${status}`, false); } else { setCsvStatus("Uploaded", true); }
+
+    setCsvStatus(res.ok ? "Uploaded & agent activated" : `Upload error ${status}`, res.ok);
     showWebhookResponse(parsed, { status });
   } catch (err){
     hideOverlay();
-    setCsvStatus("Network error", false);
-    showWebhookResponse({ error: String(err) }, { status: 0 });
+    setCsvStatus("Network error during upload", false);
+    showWebhookResponse({ error:String(err) }, { status:0 });
   }
-});
+}
 
+sendCsvBtn.addEventListener("click", e => { e.preventDefault(); sendAndActivate(); });
+
+
+
+  
 /* ------------------- INIT ------------------- */
 (async function init(){
   ensureCadenceValues();
