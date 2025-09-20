@@ -1018,28 +1018,27 @@ One question at a time per interaction.`
   async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
     if (!ensureSubmitReady()) return;
 
-    const changed = diffData(agentNum, { ignoreDefaults:false });
-    if (!Object.keys(changed).length){ setStatus("No changes to save.", true); return; }
+const vals     = getFormValues();
+const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
 
-    const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
-    const rev = {
-      [`Custom campaign agent ${agentNum} – Active`]               : "active",
-      [`Custom campaign agent ${agentNum} – Campaign name`]        : "campaign",
-      [`Custom campaign agent ${agentNum} – How many per day`]     : "perday",
-      [`Custom campaign agent ${agentNum} – Number of follow ups`] : "followups",
-      [`Custom campaign agent ${agentNum} – Follow up cadence`]    : "cadence",
-      [`Custom campaign agent ${agentNum} – First message`]        : "firstmsg",
-      [`Custom campaign agent ${agentNum} – Bump 1`]               : "bump1",
-      [`Custom campaign agent ${agentNum} – Bump 2`]               : "bump2",
-      [`Custom campaign agent ${agentNum} – Bump 3`]               : "bump3",
-      [`Custom campaign agent ${agentNum} – Notes about campaign`] : "notes"
-    };
-    const keysSubset = {};
-    for (const label of Object.keys(changed)){
-      const k = rev[label]; if (k) keysSubset[k] = keysFull[k];
-    }
+// always submit the FULL cadence string (not the preview text)
+const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
+const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
 
-    const payload = { locationId, businessName, agent: agentNum, keys: keysSubset, data: changed };
+const allData = {
+  active:   vals.active,
+  campaign: vals.campaign,
+  perday:   vals.perday,
+  followups: vals.followups,   // still send the chosen count
+  cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
+  firstmsg: vals.firstmsg,
+  bump1:    vals.bump1,
+  bump2:    vals.bump2,        // send even if hidden
+  bump3:    vals.bump3,        // send even if hidden
+  notes:    vals.notes
+};
+
+const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: allData };
 
     /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
        Replace all newlines with £%£% for GHL custom values
