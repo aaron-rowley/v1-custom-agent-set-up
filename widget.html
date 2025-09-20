@@ -1013,16 +1013,19 @@ function ensureSubmitReady(){
   return true;
 }
 
+
+  
 function buildPageScopedPayload(vals){
-  // Always send ALL fields (server can keep state)
-  const cadOpt = document.getElementById("cadence").selectedOptions?.[0];
-  const fullCad = (cadOpt?.dataset?.full) || vals.cadence;
+  // Always save the FULL cadence value (not the preview text)
+  const cadOpt = document.getElementById("cadence")?.selectedOptions?.[0];
+  const fullCad = (cadOpt && cadOpt.dataset && cadOpt.dataset.full) ? cadOpt.dataset.full : vals.cadence;
+
   const data = {
-    active:   toggle.classList.contains("on") ? "Yes" : "No",
+    active:   document.getElementById("activeToggle").classList.contains("on") ? "Yes" : "No",
     campaign: vals.campaign,
     perday:   vals.perday,
     followups:vals.followups,
-    cadence:  fullCad,
+    cadence:  fullCad,                     // <— full string
     firstmsg: vals.firstmsg,
     bump1:    vals.bump1,
     bump2:    vals.bump2,
@@ -1030,7 +1033,8 @@ function buildPageScopedPayload(vals){
     notes:    vals.notes,
     webhook:  vals.webhook,
   };
-  // Replace all newlines with £%£% for GHL custom values
+
+  // Convert real line breaks to the GHL-safe token once (UI can preview)
   for (const k in data) {
     if (typeof data[k] === "string") {
       data[k] = data[k].replace(/\r?\n/g, "£%£%");
@@ -1039,6 +1043,9 @@ function buildPageScopedPayload(vals){
   return data;
 }
 
+
+
+  
 async function saveAgentThenRefresh(agentNum, { action="stay" } = {}){
   if (!ensureSubmitReady()) return;
   const vals = getFormValues();
