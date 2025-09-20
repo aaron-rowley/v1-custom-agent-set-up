@@ -1013,17 +1013,18 @@ One question at a time per interaction.`
     const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
 
     const allData = {
-      active:   vals.active,
-      campaign: vals.campaign,
-      perday:   vals.perday,
-      followups: vals.followups,   // still send the chosen count
-      cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
-      firstmsg: vals.firstmsg,
-      bump1:    vals.bump1,
-      bump2:    vals.bump2,        // send even if hidden
-      bump3:    vals.bump3,        // send even if hidden
-      notes:    vals.notes
-    };
+  active:   toggle.classList.contains("on") ? "Yes" : "No",
+  campaign: vals.campaign,
+  perday:   vals.perday,
+  followups: vals.followups,   // still send the chosen count
+  cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
+  firstmsg: vals.firstmsg,
+  bump1:    vals.bump1,
+  bump2:    vals.bump2,        // send even if hidden
+  bump3:    vals.bump3,        // send even if hidden
+  notes:    vals.notes
+};
+
 
     const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: allData };
 
