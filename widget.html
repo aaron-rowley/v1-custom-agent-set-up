@@ -21,25 +21,9 @@
   .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); border-bottom:1px solid var(--line); }
   .tabsbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
-
-  /* LUXURY GOLD page tabs */
-  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
-  .pagetab{
-    border:1px solid #3a3218; color:#f7e6a8; padding:8px 14px; border-radius:999px; font-weight:800; cursor:pointer;
-    background: linear-gradient(120deg, #1a1508 0%, #2a220e 60%, #1a1508 100%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 6px 16px rgba(0,0,0,.35);
-    letter-spacing:.15px;
-  }
-  .pagetab:hover{ filter:brightness(1.08); }
-  .pagetab.active{
-    color:#1b1305;
-    border-color:#705a1c;
-    background: linear-gradient(120deg, #FFD700 0%, #E6B422 45%, #C9A227 100%);
-    box-shadow: 0 6px 18px rgba(255,215,0,.35), inset 0 0 0 1px rgba(255,255,255,.25);
-  }
-
   .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
   .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
+
   .top-actions{ display:flex; align-items:center; gap:10px; }
   .top-actions.hidden{ display:none; }
   .btn-sm{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; }
@@ -47,19 +31,17 @@
   .dirty-dot{ width:8px; height:8px; border-radius:99px; background:var(--orange); box-shadow:0 0 0 4px rgba(237,108,3,.25); display:none; }
   .top-actions.dirty .dirty-dot{ display:inline-block; }
 
-  /* Step actions */
-  .step-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
-  .step-actions .left, .step-actions .right{ display:flex; gap:8px; align-items:center; }
-  .btn-next{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; cursor:pointer; }
-  .btn-prev{ background:transparent; border:1px solid var(--line); color:#fff; padding:10px 16px; border-radius:12px; font-weight:800; cursor:pointer; }
+  /* Page chips */
+  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
+  .pagetab{ border:1px solid var(--line); background:#0e1117; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-weight:800; cursor:pointer; }
+  .pagetab.active{ background:var(--green); color:#052; border-color:rgba(16,185,129,.6); box-shadow:0 6px 16px rgba(16,185,129,.35); }
 
   /* Controls */
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
   .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
-  input[type="text"], input[type="url"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
+  input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
-
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .row-follow{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:end; }
 
@@ -74,6 +56,7 @@
   .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
 
   .ibtn{ background:transparent; border:1px dashed var(--line); color:#cfd6e4; font-size:12px; padding:4px 10px; border-radius:999px; cursor:pointer; }
+
   .tip{ position:fixed; max-width:320px; background:#0b0f14; border:1px solid #273042; border-radius:10px; padding:10px 12px; z-index:10001; box-shadow:0 16px 48px rgba(0,0,0,.5); }
   .tip.hidden{ display:none; }
 
@@ -115,78 +98,235 @@
   .pill{ font-size:12px; padding:6px 10px; border-radius:999px; font-weight:800; }
   .ok{ background:rgba(16,185,129,.15); color:#a7f3d0; border:1px solid rgba(16,185,129,.45); }
   .bad{ background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.45); }
-
   .resp-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
   .kvt{ border:1px solid #273042; border-radius:10px; padding:10px; background:#0f141a; }
   .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
   .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
-
   .actions{ display:none !important; }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <a class="sop" href="https://airtable.com/appZY3R7wWCzEsIZT/pagMdmBUMsAVRNYMe?ZHpwB=recPcFlbdOVjRopk2" target="_blank" rel="noopener">Link to SOP</a>
-      <button class="xbtn" id="refreshBtn" title="Reload widget">Refresh</button>
+<div class="wrap">
+  <div class="topbar">
+    <a class="sop" href="https://airtable.com/appZY3R7wWCzEsIZT/pagMdmBUMsAVRNYMe?ZHpwB=recPcFlbdOVjRopk2" target="_blank" rel="noopener">Link to SOP</a>
+    <button class="xbtn" id="refreshBtn" title="Reload widget">Refresh</button>
+  </div>
+
+  <h1>Custom agent set up</h1>
+  <div class="sub" id="bizLine"></div>
+  <div class="sub" id="locLine"></div>
+
+  <!-- Sticky tabs + actions -->
+  <div class="tabs-wrap">
+    <div class="tabsbar">
+      <div class="tabs" id="tabs"></div>
+      <div class="top-actions hidden" id="topActions">
+        <span class="dirty-dot" title="Unsaved changes"></span>
+        <button class="btn-sm" id="submitBtnTop">Save (Page)</button>
+        <button class="btn-sm secondary" id="savePrevBtnTop">Save & Previous</button>
+        <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="editing" style="display:flex; align-items:center; gap:10px; margin:10px 0;">
+    <span class="sub">Editing:</span>
+    <span class="chip" id="agentChip">Custom campaign agent 1</span>
+    <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
+    <span class="copy-note" id="copyNote"></span>
+    <span class="sub" id="status" style="margin-left:auto;"></span>
+  </div>
+
+  <div class="card" id="formCard">
+    <!-- Page tabs -->
+    <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
+      <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Overview</button>
+      <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Follow-ups & Messaging</button>
+      <button class="pagetab" data-page="3" aria-selected="false">Page 3 — Integrations</button>
     </div>
 
-    <h1>Custom agent set up</h1>
-    <div class="sub" id="bizLine"></div>
-    <div class="sub" id="locLine"></div>
+    <!-- PAGE 1 -->
+    <section id="page1" class="page">
+      <!-- Active -->
+      <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
+      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
+      <span class="toggle-label" id="activeLabel">No</span>
+      <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
 
-    <!-- Sticky tabs + actions -->
-    <div class="tabs-wrap">
-      <div class="tabsbar">
-        <div class="tabs" id="tabs"></div>
-        <div class="top-actions hidden" id="topActions">
-          <span class="dirty-dot" title="Unsaved changes"></span>
-          <button class="btn-sm" id="submitBtnTop">Save (Page)</button>
-          <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next Page</button>
+      <div class="divider"></div>
+
+      <!-- Campaign name -->
+      <div class="label-row"><label>Campaign name</label></div>
+      <input type="text" id="campaignName" placeholder="Campaign name" />
+      <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Notes / Prompt -->
+      <div class="label-row">
+        <label>Notes about campaign (Prompts/SOP)</label>
+      </div>
+      <div class="ti" data-target="notes">
+        <select>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="[Type business name here]">Business name</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
+      <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
+      <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Dashboard button -->
+      <div class="label-row">
+        <label>View Dashboard</label>
+      </div>
+      <a id="dashLink" class="xbtn" target="_blank" rel="noopener">Open dashboard for this location</a>
+
+      <div class="divider"></div>
+
+      <!-- CSV UPLOADER (moved to Page 1) -->
+      <div class="label-row">
+        <label>CSV file receiver (sends binary to webhook)</label>
+        <button class="ibtn" data-tip="Uploads the selected CSV directly to your webhook as either multipart/form-data or application/octet-stream. Includes locationId, businessName, and agent number.">What’s this?</button>
+      </div>
+      <div class="row">
+        <div>
+          <label>Webhook (uploadUrl in query)</label>
+          <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
+        </div>
+        <div>
+          <label>Send mode</label>
+          <select id="uploadMode">
+            <option value="multipart">multipart/form-data</option>
+            <option value="octet">application/octet-stream</option>
+          </select>
         </div>
       </div>
-    </div>
+      <div class="row">
+        <div>
+          <label>Form field name (for multipart)</label>
+          <input type="text" id="uploadFieldName" value="file" />
+        </div>
+        <div>
+          <label>Extra JSON meta (optional)</label>
+          <input type="text" id="uploadMeta" placeholder='{"source":"custom-agent-setup"}' />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Select CSV file</label>
+          <input type="file" id="csvFile" accept=".csv,text/csv" />
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn-sm" id="uploadCsvBtn" style="height:42px;">Upload CSV</button>
+        </div>
+      </div>
+      <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
 
-    <div class="editing">
-      <span class="sub">Editing:</span>
-      <span class="chip" id="agentChip">Custom campaign agent 1</span>
-      <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
-      <span class="copy-note" id="copyNote"></span>
-      <span class="sub" id="status" style="margin-left:auto;"></span>
-    </div>
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p1SavePrevAgent">Save & Previous Agent</button>
+        </div>
+        <div class="right">
+          <button class="btn-sm" id="p1Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p1SaveNextPage">Save & Next Page</button>
+        </div>
+      </div>
+    </section>
 
-    <div class="card" id="formCard">
-      <!-- Page tabs - now 3 pages -->
-      <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
-        <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Campaign & Prompt</button>
-        <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Follow-ups & Messaging</button>
-        <button class="pagetab" data-page="3" aria-selected="false">Page 3 — Integrations</button>
+    <!-- PAGE 2 -->
+    <section id="page2" class="page hidden" aria-hidden="true">
+      <!-- Per-day + Followups + Cadence -->
+      <div class="row-follow">
+        <!-- Per-day -->
+        <div>
+          <div class="label-row">
+            <label>How many per day</label>
+            <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
+          </div>
+          <select id="perDay">
+            <option>10</option><option>25</option><option>50</option><option>75</option>
+            <option>100</option><option>150</option><option>200</option><option>250</option>
+            <option>300</option><option>350</option><option>500</option>
+          </select>
+          <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
+        </div>
+
+        <!-- Follow-ups (segmented) -->
+        <div>
+          <div class="label-row">
+            <label>Number of follow ups</label>
+            <button class="ibtn" data-tip="How many follow-up bumps after the IM to schedule.">What’s this?</button>
+          </div>
+          <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
+            <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
+            <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
+            <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
+            <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
+          </div>
+          <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
+        </div>
+
+        <!-- Cadence -->
+        <div>
+          <div class="label-row">
+            <label>Follow up cadence</label>
+            <button class="ibtn" data-tip="IM = Initial message. The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows only what will send based on # of follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
+          </div>
+          <select id="cadence">
+            <option>IM > 15m > 24h > 24h</option>
+            <option>IM > 24h > 24h > 24h</option>
+            <option>IM > 24h > 48h > 72h</option>
+            <option>IM > 48h > 48h > 48h</option>
+            <option>IM > 72h > 72h > 72h</option>
+            <option>IM > 7d > 7d > 7d</option>
+          </select>
+          <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
+        </div>
       </div>
 
-      <!-- PAGE 1 -->
-      <section id="page1" class="page">
-        <!-- Active -->
-        <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
-        <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
-        <span class="toggle-label" id="activeLabel">No</span>
-        <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
+      <div class="divider"></div>
 
-        <div class="divider"></div>
+      <!-- First message -->
+      <div class="label-row">
+        <label>First message</label>
+        <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
+      </div>
+      <div class="ti" data-target="firstMessage">
+        <select>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="[Type business name here]">Business name</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
+      <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
+      <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
 
-        <!-- Campaign name -->
-        <div class="label-row"><label>Campaign name</label></div>
-        <input type="text" id="campaignName" placeholder="Campaign name" />
-        <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
+      <div class="divider"></div>
 
-        <div class="divider"></div>
-
-        <!-- First message -->
+      <!-- Bumps -->
+      <div class="bump-block" data-b="1">
         <div class="label-row">
-          <label>First message</label>
-          <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
-          <button class="xbtn ex-btn" data-target="firstMessage" data-kind="first">Examples</button>
+          <label>Bump 1</label>
+          <button class="ibtn" data-tip="Short nudge after IM based on the cadence.">What’s this?</button>
         </div>
-        <div class="ti" data-target="firstMessage">
+        <div class="ti" data-target="bump1">
           <select>
             <option value="{{contact.first_name}}">First name</option>
             <option value="{{contact.last_name}}">Last name</option>
@@ -200,93 +340,17 @@
           </select>
           <button type="button">Insert</button>
         </div>
-        <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
-        <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
-
+        <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
+        <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
         <div class="divider"></div>
+      </div>
 
-        <!-- Bumps -->
-        <div class="bump-block" data-b="1">
-          <div class="label-row">
-            <label>Bump 1</label>
-            <button class="ibtn" data-tip="Short nudge after IM based on the cadence.">What’s this?</button>
-            <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
-          </div>
-          <div class="ti" data-target="bump1">
-            <select>
-              <option value="{{contact.first_name}}">First name</option>
-              <option value="{{contact.last_name}}">Last name</option>
-              <option value="{{contact.full_name}}">Full name</option>
-              <option value="{{contact.email}}">Email</option>
-              <option value="{{contact.phone}}">Phone</option>
-              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-              <option value="{{contact.make}}">Make</option>
-              <option value="{{contact.model}}">Model</option>
-              <option value="[Type business name here]">Business name</option>
-            </select>
-            <button type="button">Insert</button>
-          </div>
-          <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
-          <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
-          <div class="divider"></div>
-        </div>
-
-        <div class="bump-block" data-b="2">
-          <div class="label-row">
-            <label>Bump 2</label>
-            <button class="ibtn" data-tip="Second follow-up.">What’s this?</button>
-            <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
-          </div>
-          <div class="ti" data-target="bump2">
-            <select>
-              <option value="{{contact.first_name}}">First name</option>
-              <option value="{{contact.last_name}}">Last name</option>
-              <option value="{{contact.full_name}}">Full name</option>
-              <option value="{{contact.email}}">Email</option>
-              <option value="{{contact.phone}}">Phone</option>
-              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-              <option value="{{contact.make}}">Make</option>
-              <option value="{{contact.model}}">Model</option>
-              <option value="[Type business name here]">Business name</option>
-            </select>
-            <button type="button">Insert</button>
-          </div>
-          <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
-          <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
-          <div class="divider"></div>
-        </div>
-
-        <div class="bump-block" data-b="3">
-          <div class="label-row">
-            <label>Bump 3</label>
-            <button class="ibtn" data-tip="Final follow-up.">What’s this?</button>
-            <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
-          </div>
-          <div class="ti" data-target="bump3">
-            <select>
-              <option value="{{contact.first_name}}">First name</option>
-              <option value="{{contact.last_name}}">Last name</option>
-              <option value="{{contact.full_name}}">Full name</option>
-              <option value="{{contact.email}}">Email</option>
-              <option value="{{contact.phone}}">Phone</option>
-              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-              <option value="{{contact.make}}">Make</option>
-              <option value="{{contact.model}}">Model</option>
-              <option value="[Type business name here]">Business name</option>
-            </select>
-            <button type="button">Insert</button>
-          </div>
-          <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
-          <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
-          <div class="divider"></div>
-        </div>
-
-        <!-- Notes -->
+      <div class="bump-block" data-b="2">
         <div class="label-row">
-          <label>Notes about campaign (Prompts/SOP)</label>
-          <button class="xbtn ex-btn" data-target="notes" data-kind="notes">Examples</button>
+          <label>Bump 2</label>
+          <button class="ibtn" data-tip="Second follow-up.">What’s this?</button>
         </div>
-        <div class="ti" data-target="notes">
+        <div class="ti" data-target="bump2">
           <select>
             <option value="{{contact.first_name}}">First name</option>
             <option value="{{contact.last_name}}">Last name</option>
@@ -300,1171 +364,973 @@
           </select>
           <button type="button">Insert</button>
         </div>
-        <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
-        <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
-
+        <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
+        <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
         <div class="divider"></div>
+      </div>
 
-        <!-- Dashboard + CSV (moved here) -->
-        <div class="row">
-          <div>
-            <label>Open Dashboard</label>
-            <button class="btn-sm" id="openDashboardBtn" title="Opens the GHL dashboard in a new tab">View dashboard</button>
-          </div>
-          <div>
-            <label>CSV Upload (sends binary to webhook)</label>
-            <div class="row" style="grid-template-columns:1fr auto;">
-              <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
-              <button class="btn-sm" id="uploadCsvBtn">Upload CSV</button>
-            </div>
-            <div class="row">
-              <select id="uploadMode">
-                <option value="multipart">multipart/form-data</option>
-                <option value="octet">application/octet-stream</option>
-              </select>
-              <input type="text" id="uploadFieldName" value="file" placeholder="Field name (multipart only)" />
-            </div>
-            <input type="text" id="uploadMeta" placeholder='Extra JSON meta (optional)' />
-            <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
-          </div>
-        </div>
-
-        <div class="step-actions">
-          <div class="left">
-            <button class="btn-prev" id="prevFromP1" disabled>Previous</button>
-          </div>
-          <div class="right">
-            <button class="btn-next" id="nextFromP1">Next (Page 2)</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE 2 -->
-      <section id="page2" class="page hidden" aria-hidden="true">
-        <!-- Per day + Followups + Cadence -->
-        <div class="row-follow">
-          <!-- Per-day -->
-          <div>
-            <div class="label-row">
-              <label>How many per day</label>
-              <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
-            </div>
-            <select id="perDay">
-              <option>10</option><option>25</option><option>50</option><option>75</option>
-              <option>100</option><option>150</option><option>200</option><option>250</option>
-              <option>300</option><option>350</option><option>500</option>
-            </select>
-            <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
-          </div>
-
-          <!-- Follow-ups (segmented) -->
-          <div>
-            <div class="label-row">
-              <label>Number of follow ups</label>
-              <button class="ibtn" data-tip="How many follow-up bumps after the IM to schedule.">What’s this?</button>
-            </div>
-            <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
-              <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
-              <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
-              <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
-              <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
-            </div>
-            <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
-          </div>
-
-          <!-- Cadence -->
-          <div>
-            <div class="label-row">
-              <label>Follow up cadence</label>
-              <button class="ibtn" data-tip="IM = Initial message. The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows only what will send based on # of follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
-            </div>
-            <select id="cadence">
-              <option>IM > 15m > 24h > 24h</option>
-              <option>IM > 24h > 24h > 24h</option>
-              <option>IM > 24h > 48h > 72h</option>
-              <option>IM > 48h > 48h > 48h</option>
-              <option>IM > 72h > 72h > 72h</option>
-              <option>IM > 7d > 7d > 7d</option>
-            </select>
-            <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
-          </div>
-        </div>
-
-        <div class="step-actions">
-          <div class="left">
-            <button class="btn-prev" id="prevFromP2">Previous (Page 1)</button>
-          </div>
-          <div class="right">
-            <button class="btn-next" id="nextFromP2">Next (Page 3)</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE 3 — INTEGRATIONS -->
-      <section id="page3" class="page hidden" aria-hidden="true">
+      <div class="bump-block" data-b="3">
         <div class="label-row">
-          <label>Integrations — per-field webhooks</label>
-          <button class="ibtn" data-tip="Enter a webhook URL per field. Click Send to POST the current field value. We include raw text and a GHL-safe version with newlines replaced by £%£%. Auth/API headers from the query are applied.">What’s this?</button>
+          <label>Bump 3</label>
+          <button class="ibtn" data-tip="Final follow-up.">What’s this?</button>
         </div>
-
-        <div class="card" style="background:#0b0f14;border-color:#263142;">
-          <div class="row">
-            <div><label>Active (Yes/blank) webhook</label><input type="url" id="wh_active" placeholder="https://…" /></div>
-            <div><label>Campaign name webhook</label><input type="url" id="wh_campaign" placeholder="https://…" /></div>
-          </div>
-          <div class="row">
-            <div><label>Per-day webhook</label><input type="url" id="wh_perday" placeholder="https://…" /></div>
-            <div><label>Follow-ups webhook</label><input type="url" id="wh_followups" placeholder="https://…" /></div>
-          </div>
-          <div class="row">
-            <div><label>Cadence webhook</label><input type="url" id="wh_cadence" placeholder="https://…" /></div>
-            <div><label>First message webhook</label><input type="url" id="wh_firstmsg" placeholder="https://…" /></div>
-          </div>
-          <div class="row">
-            <div><label>Bump 1 webhook</label><input type="url" id="wh_bump1" placeholder="https://…" /></div>
-            <div><label>Bump 2 webhook</label><input type="url" id="wh_bump2" placeholder="https://…" /></div>
-          </div>
-          <div class="row">
-            <div><label>Bump 3 webhook</label><input type="url" id="wh_bump3" placeholder="https://…" /></div>
-            <div><label>Notes/Prompt webhook</label><input type="url" id="wh_notes" placeholder="https://…" /></div>
-          </div>
-
-          <div class="divider"></div>
-          <div class="row" style="grid-template-columns:1fr auto;">
-            <input type="text" id="wh_meta" placeholder='Optional meta JSON to attach e.g. {"source":"agent-setup"}' />
-            <button class="btn-sm" id="sendAllWebhooks">Send ALL</button>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <button class="btn-sm" data-send-field="active">Send Active</button>
-            <button class="btn-sm" data-send-field="campaign">Send Campaign</button>
-            <button class="btn-sm" data-send-field="perday">Send Per-day</button>
-            <button class="btn-sm" data-send-field="followups">Send Follow-ups</button>
-            <button class="btn-sm" data-send-field="cadence">Send Cadence</button>
-            <button class="btn-sm" data-send-field="firstmsg">Send First</button>
-            <button class="btn-sm" data-send-field="bump1">Send Bump1</button>
-            <button class="btn-sm" data-send-field="bump2">Send Bump2</button>
-            <button class="btn-sm" data-send-field="bump3">Send Bump3</button>
-            <button class="btn-sm" data-send-field="notes">Send Notes</button>
-          </div>
+        <div class="ti" data-target="bump3">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="[Type business name here]">Business name</option>
+          </select>
+          <button type="button">Insert</button>
         </div>
+        <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+        <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+      </div>
 
-        <div class="step-actions">
-          <div class="left">
-            <button class="btn-prev" id="prevFromP3">Previous (Page 2)</button>
-          </div>
-          <div class="right">
-            <button class="btn-next" id="nextFromP3" title="Goes to next Agent">Next Agent</button>
-          </div>
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p2SavePrevPage">Save & Previous Page</button>
         </div>
-      </section>
+        <div class="right">
+          <button class="btn-sm" id="p2Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p2SaveNextPage">Save & Next Page</button>
+        </div>
+      </div>
+    </section>
 
-      <!-- Webhook response (pretty) -->
-      <div class="resp hidden" id="respBox">
-        <div class="label-row"><label>Webhook response</label></div>
-        <div class="resp-card">
-          <div class="resp-head">
-            <div id="respStatusPill" class="pill ok">200 OK</div>
-            <button class="rawtoggle" id="rawToggle">View raw JSON</button>
-          </div>
-          <div class="resp-grid" id="respGrid"></div>
-          <div class="rawbox" id="rawBox"><pre id="rawPre"></pre></div>
+    <!-- PAGE 3 -->
+    <section id="page3" class="page hidden" aria-hidden="true">
+      <div class="label-row">
+        <label>Objective reached webhook endpoint (per agent)</label>
+        <button class="ibtn" data-tip="This endpoint will be called when the objective is reached for this agent.">What’s this?</button>
+      </div>
+      <input type="text" id="webhook" placeholder="https://your-n8n.example/workflow?agent={{n}}&locationId={{locationId}}" />
+      <div class="cv empty" id="cv_webhook"><strong>Current value:</strong> (not set)</div>
+
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p3SavePrevPage">Save & Previous Page</button>
         </div>
+        <div class="right">
+          <button class="btn-sm" id="p3Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p3SaveNextAgent">Save & Next Agent</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Webhook response (pretty) -->
+    <div class="resp hidden" id="respBox">
+      <div class="label-row"><label>Webhook response</label></div>
+      <div class="resp-card">
+        <div class="resp-head">
+          <div id="respStatusPill" class="pill ok">200 OK</div>
+          <button class="rawtoggle" id="rawToggle">View raw JSON</button>
+        </div>
+        <div class="resp-grid" id="respGrid"></div>
+        <div class="rawbox" id="rawBox"><pre id="rawPre"></pre></div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Overlay loader -->
-  <div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
-    <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
-  </div>
+<!-- Overlay loader -->
+<div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
+  <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
+</div>
 
-  <!-- Floating helper tooltip -->
-  <div id="tooltip" class="tip hidden" role="dialog" aria-live="polite"></div>
+<!-- Floating helper tooltip -->
+<div id="tooltip" class="tip hidden" role="dialog" aria-live="polite"></div>
 
-  <!-- Examples modal -->
-  <div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title" id="exTitle">Examples</div>
-        <button class="xbtn" id="exClose">Close</button>
-      </div>
-      <div class="ex-list" id="exList"></div>
+<!-- Examples modal -->
+<div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="exTitle">Examples</div>
+      <button class="xbtn" id="exClose">Close</button>
     </div>
+    <div class="ex-list" id="exList"></div>
   </div>
+</div>
 
 <script>
-  /* ------------------- URL CONFIG ------------------- */
-  const qs = new URLSearchParams(location.search);
-  const get = k => qs.get(k) || "";
-  function getUrlMaybeEncoded(param){
-    const v = get(param) || "";
-    return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
-  }
-  const FETCH_URL      = getUrlMaybeEncoded("fetchUrl");
-  const SUBMIT_URL     = getUrlMaybeEncoded("submitUrl");
-  const UPLOAD_URL     = getUrlMaybeEncoded("uploadUrl");
-  const AUTH_HEADER    = get("authHeader") || "";
-  const AUTH_TOKEN     = get("authToken")  || "";
-  const APIKEY_HEADER  = get("apiKeyHeader") || "";
-  const APIKEY_VALUE   = get("apiKey") || "";
-  const AGENTS = 5;
+/* ------------------- URL CONFIG ------------------- */
+const qs = new URLSearchParams(location.search);
+const get = k => qs.get(k) || "";
+function getUrlMaybeEncoded(param){
+  const v = get(param) || "";
+  return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
+}
+const FETCH_URL  = getUrlMaybeEncoded("fetchUrl");
+const SUBMIT_URL = getUrlMaybeEncoded("submitUrl");
+const UPLOAD_URL = getUrlMaybeEncoded("uploadUrl");
+const AUTH_HEADER  = get("authHeader") || "";
+const AUTH_TOKEN   = get("authToken") || "";
+const APIKEY_HEADER= get("apiKeyHeader") || "";
+const APIKEY_VALUE = get("apiKey") || "";
 
-  const locationId   = get("locationId");
-  const businessName = get("businessName");
+const AGENTS = 5;
+const locationId   = get("locationId");
+const businessName = get("businessName");
 
-  // optional per-field prefills (from loader: data-value-*)
-  const seedVals = {
-    active:   get("val_active"),
-    bump1:    get("val_bump1"),
-    bump2:    get("val_bump2"),
-    bump3:    get("val_bump3"),
-    campaign: get("val_campaign"),
-    firstmsg: get("val_firstmsg"),
-    cadence:  get("val_cadence"),
-    perday:   get("val_perday"),
-    notes:    get("val_notes"),
-    followups: get("val_followups"),
-  };
+// optional per-field prefills (from loader: data-value-*)
+const seedVals = {
+  active:   get("val_active"),
+  bump1:    get("val_bump1"),
+  bump2:    get("val_bump2"),
+  bump3:    get("val_bump3"),
+  campaign: get("val_campaign"),
+  firstmsg: get("val_firstmsg"),
+  cadence:  get("val_cadence"),
+  perday:   get("val_perday"),
+  notes:    get("val_notes"),
+  followups:get("val_followups"),
+  webhook:  get("val_webhook"),
+};
 
-  function buildHeaders(json=true){
-    const h = json ? { "Content-Type":"application/json" } : {};
-    if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
-    if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
-    return h;
-  }
+function buildHeaders(){
+  const h = { "Content-Type":"application/json" };
+  if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
+  if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
+  return h;
+}
 
-  /* ------------------- EXAMPLES DATA ------------------- */
-  const swapPlaceholders = s =>
-    s.replaceAll("{{location.name}}","[Type business name here]")
-     .replaceAll("{{agent.first_name}}","[Type Agent name here]")
-     .replaceAll("{{agent.name}}","[Type Agent name here]")
-     .replaceAll("{{agent}}","[Type Agent name here]");
+/* ------------------- EXAMPLES DATA ------------------- */
+const swapPlaceholders = s => (s||"")
+  .replaceAll("{{location.name}}","[Type business name here]")
+  .replaceAll("{{agent.first_name}}","[Type Agent name here]")
+  .replaceAll("{{agent.name}}","[Type Agent name here]")
+  .replaceAll("{{agent}}","[Type Agent name here]");
 
-  const EXAMPLES = {
-    first: [
-      { title: "DBR — IM", items: [
-        "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
-      ]},
-      { title: "Service to Sales (Appraisal) — IM", items: [
-        "Hi {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here] — how are you and your {{contact.model}} doing?"
-      ]},
-      { title: "Phone Up Follow Up — IM", items: [
-        "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note to check in—how’s the vehicle search going?"
-      ]},
-      { title: "Internet Up Follow Up — IM", items: [
-        "Hi {{contact.first_name}}, it’s [Type Agent name here] with [Type business name here]. I saw your online request—how’s the vehicle search going?"
-      ]}
-    ],
-    bump1: [
-      { title: "Fresh Up Follow Up — Bump 1", items: [
-        "Quick nudge — want me to hold a 10-minute slot this week to revisit top picks?"
-      ]}
-    ],
-    bump2: [
-      { title: "Fresh Up Follow Up — Bump 2", items: [
-        "If nothing grabbed you yet, I can text 2–3 matches and hold one. Want me to do that?"
-      ]}
-    ],
-    bump3: [
-      { title: "Fresh Up Follow Up — Bump 3", items: [
-        "Last check-in from [Type business name here] — want me to keep looking or should I close this out for now?"
-      ]}
-    ],
-    notes: [
-      { title: "DBR — Campaign Objective", sop: [
-`=If the chat history indicates that the most recent agent to be activated is the “dbr” Agent - we are doing a general reach out to see if {{contact.first_name}} has purchased a vehicle yet.
+const EXAMPLES = {
+  first: [
+    { title: "DBR — IM", items: [
+      "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
+    ]},
+    { title: "Service to Sales (Appraisal) — IM", items: [
+      "Hi {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here] — how are you and your {{contact.model}} doing?"
+    ]},
+    { title: "Phone Up Follow Up — IM", items: [
+      "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note to check in—how’s the vehicle search going?"
+    ]},
+    { title: "Internet Up Follow Up — IM", items: [
+      "Hi {{contact.first_name}}, it’s [Type Agent name here] with [Type business name here]. I saw your online request—how’s the vehicle search going?"
+    ]}
+  ],
+  bump1: [
+    { title: "Fresh Up Follow Up — Bump 1", items: [
+      "Quick nudge — want me to hold a 10-minute slot this week to revisit top picks?"
+    ]}
+  ],
+  bump2: [
+    { title: "Fresh Up Follow Up — Bump 2", items: [
+      "If nothing grabbed you yet, I can text 2–3 matches and hold one. Want me to do that?"
+    ]}
+  ],
+  bump3: [
+    { title: "Fresh Up Follow Up — Bump 3", items: [
+      "Last check-in from [Type business name here] — want me to keep looking or should I close this out for now?"
+    ]}
+  ],
+  notes: [
+    { title: "DBR — Campaign Objective", sop: [
+      "=If the chat history indicates that the most recent agent to be activated is the “dbr” Agent - we are doing a general reach out to see if {{contact.first_name}} has purchased a vehicle yet. Ask empathetic questions, avoid pricing/inventory specifics until booking. One question per interaction."
+    ]}
+  ]
+};
 
-Ask empathetic questions, avoid pricing/inventory specifics until booking. One question per interaction.`
-      ]}
-    ]
-  };
-</script>
+/* ------------------- WEBHOOK UI HELPERS ------------------- */
+const respBox = document.getElementById("respBox");
+const respGrid = document.getElementById("respGrid");
+const rawBox   = document.getElementById("rawBox");
+const rawPre   = document.getElementById("rawPre");
+const respStatusPill = document.getElementById("respStatusPill");
+document.getElementById("rawToggle").addEventListener("click", ()=>{
+  rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
+  document.getElementById("rawToggle").textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
+});
 
-<script>
-  /* ------------------- WEBHOOK UI HELPERS ------------------- */
-  const respBox   = document.getElementById("respBox");
-  const respGrid  = document.getElementById("respGrid");
-  const rawBox    = document.getElementById("rawBox");
-  const rawPre    = document.getElementById("rawPre");
-  const respStatusPill = document.getElementById("respStatusPill");
-  document.getElementById("rawToggle").addEventListener("click", ()=>{
-    rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
-    document.getElementById("rawToggle").textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
-  });
+function showWebhookResponse(body, meta = {}) {
+  const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
+  respStatusPill.className = "pill " + (ok ? "ok" : "bad");
+  respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
 
-  function showWebhookResponse(body, meta = {}) {
-    const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
-    respStatusPill.className = "pill " + (ok ? "ok" : "bad");
-    respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
+  respGrid.innerHTML = "";
+  let blocks = [];
+  if (Array.isArray(body) && body[0]?.data) blocks = body[0].data;
+  else if (Array.isArray(body?.data)) blocks = body.data;
 
-    respGrid.innerHTML = "";
-    let blocks = [];
-    if (Array.isArray(body) && body[0]?.data) blocks = body[0].data;
-    else if (Array.isArray(body?.data)) blocks = body.data;
+  if (Array.isArray(blocks) && blocks.length) {
+    const group = document.createElement("div");
+    group.className = "kvt";
+    const h = document.createElement("h5");
+    h.textContent = "Saved fields";
+    group.appendChild(h);
 
-    if (Array.isArray(blocks) && blocks.length) {
-      const group = document.createElement("div");
-      group.className = "kvt";
-      const h = document.createElement("h5"); h.textContent = "Saved fields";
-      group.appendChild(h);
-
-      blocks.slice(0, 100).forEach(item=>{
-        const box = document.createElement("div");
-        box.className = "kv";
-        const pairs = [
-          ["Custom value name", item["Custom value name"]],
-          ["Field key", item["Custom value field key"]],
-          ["Value", item["Custom value - Value"]],
-          ["Custom value ID", item["Custom value ID"]],
-          ["Trace", item["GHL Trace ID"]],
-        ];
-        pairs.forEach(([k,v])=>{
-          if (v===undefined || v===null) return;
-          const kEl=document.createElement("div"); kEl.style.color="#a7b0c0"; kEl.textContent=k;
-          const vEl=document.createElement("div"); vEl.textContent=String(v);
-          box.appendChild(kEl); box.appendChild(vEl);
-        });
-        group.appendChild(box);
+    blocks.slice(0, 100).forEach(item=>{
+      const box = document.createElement("div");
+      box.className = "kv";
+      const pairs = [
+        ["Custom value name", item["Custom value name"]],
+        ["Field key", item["Custom value field key"]],
+        ["Value", item["Custom value - Value"]],
+        ["Custom value ID", item["Custom value ID"]],
+        ["Trace", item["GHL Trace ID"]],
+      ];
+      pairs.forEach(([k,v])=>{
+        if (v===undefined || v===null) return;
+        const kEl=document.createElement("div");
+        kEl.style.color="#a7b0c0";
+        kEl.textContent=k;
+        const vEl=document.createElement("div");
+        vEl.textContent=String(v);
+        box.appendChild(kEl);
+        box.appendChild(vEl);
       });
-      respGrid.appendChild(group);
-    } else {
-      const g = document.createElement("div");
-      g.className="kvt";
-      const h=document.createElement("h5"); h.textContent="Response";
-      const p=document.createElement("div"); p.className="kv";
-      p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
-      g.appendChild(h); g.appendChild(p);
-      respGrid.appendChild(g);
-    }
-
-    rawPre.textContent = JSON.stringify(body, null, 2);
-    respBox.classList.remove("hidden");
-  }
-
-  // Header text
-  document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
-  document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
-
-  document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
-
-  // Agent tabs
-  const tabsEl = document.getElementById("tabs");
-  for (let i=1;i<=AGENTS;i++){
-    const t = document.createElement("button");
-    t.className = "tab" + (i===1?" active":"");
-    t.textContent = `Agent ${i}`;
-    t.dataset.agent = i;
-    t.setAttribute("aria-selected", i===1 ? "true" : "false");
-    t.onclick = () => switchAgent(i);
-    tabsEl.appendChild(t);
-  }
-
-  // Elements
-  const agentChip    = document.getElementById("agentChip");
-  const copyPrevBtn  = document.getElementById("copyPrevBtn");
-  const copyNote     = document.getElementById("copyNote");
-
-  const toggle       = document.getElementById("activeToggle");
-  const activeLabel  = document.getElementById("activeLabel");
-  const campaignName = document.getElementById("campaignName");
-
-  const perDay       = document.getElementById("perDay");
-  const cadence      = document.getElementById("cadence");
-  const followupsSeg = document.getElementById("followupsSeg");
-
-  const firstMessage = document.getElementById("firstMessage");
-  const bump1        = document.getElementById("bump1");
-  const bump2        = document.getElementById("bump2");
-  const bump3        = document.getElementById("bump3");
-  const notes        = document.getElementById("notes");
-  const statusEl     = document.getElementById("status");
-
-  // Page tabs
-  const pageTabs = [...document.querySelectorAll(".pagetab")];
-  const page1 = document.getElementById("page1");
-  const page2 = document.getElementById("page2");
-  const page3 = document.getElementById("page3");
-  let page = 1;
-  function gotoPage(n){
-    page = n;
-    page1.classList.toggle("hidden", n!==1); page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
-    page2.classList.toggle("hidden", n!==2); page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
-    page3.classList.toggle("hidden", n!==3); page3.setAttribute("aria-hidden", n!==3 ? "true" : "false");
-    pageTabs.forEach(pt=>{
-      const is = Number(pt.dataset.page)===n;
-      pt.classList.toggle("active", is);
-      pt.setAttribute("aria-selected", is ? "true":"false");
+      group.appendChild(box);
     });
-    recalcSaveVisibility();
+    respGrid.appendChild(group);
+  } else {
+    const g = document.createElement("div");
+    g.className="kvt";
+    const h=document.createElement("h5");
+    h.textContent="Response";
+    const p=document.createElement("div");
+    p.className="kv";
+    p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
+    g.appendChild(h); g.appendChild(p);
+    respGrid.appendChild(g);
   }
-  pageTabs.forEach(pt=> pt.addEventListener("click", ()=> gotoPage(Number(pt.dataset.page)) ));
-  document.getElementById("nextFromP1").addEventListener("click", ()=> gotoPage(2));
-  document.getElementById("prevFromP1").addEventListener("click", ()=> gotoPage(1));
-  document.getElementById("prevFromP2").addEventListener("click", ()=> gotoPage(1));
-  document.getElementById("nextFromP2").addEventListener("click", ()=> gotoPage(3));
-  document.getElementById("prevFromP3").addEventListener("click", ()=> gotoPage(2));
-  document.getElementById("nextFromP3").addEventListener("click", ()=>{
-    const next = agent===AGENTS ? 1 : agent+1;
-    switchAgent(next);
-    gotoPage(1);
+
+  rawPre.textContent = JSON.stringify(body, null, 2);
+  respBox.classList.remove("hidden");
+}
+
+/* Header text + buttons */
+document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
+document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
+document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
+
+/* Dashboard button */
+const dashLink = document.getElementById("dashLink");
+dashLink.href = locationId ? `https://app.visquanta.com/v2/location/${encodeURIComponent(locationId)}/dashboard` : '#';
+dashLink.setAttribute("aria-disabled", locationId ? "false" : "true");
+
+/* Agent tabs */
+const tabsEl = document.getElementById("tabs");
+for (let i=1;i<=AGENTS;i++){
+  const t = document.createElement("button");
+  t.className = "tab" + (i===1?" active":"");
+  t.textContent = `Agent ${i}`;
+  t.dataset.agent = i;
+  t.setAttribute("aria-selected", i===1 ? "true" : "false");
+  t.onclick = () => switchAgent(i);
+  tabsEl.appendChild(t);
+}
+
+/* Elements */
+const agentChip  = document.getElementById("agentChip");
+const copyPrevBtn= document.getElementById("copyPrevBtn");
+const copyNote   = document.getElementById("copyNote");
+const toggle     = document.getElementById("activeToggle");
+const activeLabel= document.getElementById("activeLabel");
+
+const campaignName = document.getElementById("campaignName");
+const perDay       = document.getElementById("perDay");
+const cadence      = document.getElementById("cadence");
+const followupsSeg = document.getElementById("followupsSeg");
+const firstMessage = document.getElementById("firstMessage");
+const bump1        = document.getElementById("bump1");
+const bump2        = document.getElementById("bump2");
+const bump3        = document.getElementById("bump3");
+const notes        = document.getElementById("notes");
+const webhook      = document.getElementById("webhook");
+
+const statusEl     = document.getElementById("status");
+
+/* Page tabs + navigation */
+const pageTabs = [...document.querySelectorAll(".pagetab")];
+const page1 = document.getElementById("page1");
+const page2 = document.getElementById("page2");
+const page3 = document.getElementById("page3");
+let page = 1;
+
+function gotoPage(n){
+  page = n;
+  page1.classList.toggle("hidden", n!==1); page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
+  page2.classList.toggle("hidden", n!==2); page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
+  page3.classList.toggle("hidden", n!==3); page3.setAttribute("aria-hidden", n!==3 ? "true" : "false");
+  pageTabs.forEach(pt=>{
+    const is = Number(pt.dataset.page)===n;
+    pt.classList.toggle("active", is);
+    pt.setAttribute("aria-selected", is ? "true":"false");
   });
+  recalcSaveVisibility();
+}
+pageTabs.forEach(pt=> pt.addEventListener("click", ()=> gotoPage(Number(pt.dataset.page)) ));
 
-  // Sticky top actions
-  const topActions   = document.getElementById("topActions");
-  const submitBtnTop = document.getElementById("submitBtnTop");
-  const saveNextBtnTop = document.getElementById("saveNextBtnTop");
+/* Footer page buttons */
+document.getElementById("p1Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p1SaveNextPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextPage" }));
+document.getElementById("p1SavePrevAgent").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevAgent" }));
 
-  const cv = {
-    active:   document.getElementById("cv_active"),
-    campaign: document.getElementById("cv_campaign"),
-    perday:   document.getElementById("cv_perday"),
-    followups:document.getElementById("cv_followups"),
-    cadence:  document.getElementById("cv_cadence"),
-    firstmsg: document.getElementById("cv_firstmsg"),
-    bump1:    document.getElementById("cv_bump1"),
-    bump2:    document.getElementById("cv_bump_2") || document.getElementById("cv_bump2"),
-    bump3:    document.getElementById("cv_bump3"),
-    notes:    document.getElementById("cv_notes"),
+document.getElementById("p2Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p2SaveNextPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextPage" }));
+document.getElementById("p2SavePrevPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevPage" }));
+
+document.getElementById("p3Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p3SaveNextAgent").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextAgent" }));
+document.getElementById("p3SavePrevPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevPage" }));
+
+/* Sticky top actions (now aware of page) */
+const topActions   = document.getElementById("topActions");
+const submitBtnTop = document.getElementById("submitBtnTop");
+const savePrevBtnTop = document.getElementById("savePrevBtnTop");
+const saveNextBtnTop = document.getElementById("saveNextBtnTop");
+
+submitBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+savePrevBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action: (page===1 ? "prevAgent" : "prevPage") }));
+saveNextBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action: (page===3 ? "nextAgent" : "nextPage") }));
+
+/* CV view buckets */
+const cv = {
+  active:   document.getElementById("cv_active"),
+  campaign: document.getElementById("cv_campaign"),
+  perday:   document.getElementById("cv_perday"),
+  followups:document.getElementById("cv_followups"),
+  cadence:  document.getElementById("cv_cadence"),
+  firstmsg: document.getElementById("cv_firstmsg"),
+  bump1:    document.getElementById("cv_bump1"),
+  bump2:    document.getElementById("cv_bump2"),
+  bump3:    document.getElementById("cv_bump3"),
+  notes:    document.getElementById("cv_notes"),
+  webhook:  document.getElementById("cv_webhook"),
+};
+
+/* Working/current snapshots */
+const working = {};
+const current = {};
+let agent = 1;
+
+/* Defaults for bumps */
+const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
+const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
+const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at [Type business name here]?";
+
+/* ---------- Cadence preview + per-day cap ---------- */
+const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
+function ensureCadenceValues(){
+  [...cadence.options].forEach(opt=>{
+    const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
+    if (!opt.dataset.full) opt.dataset.full = full;
+    opt.value = opt.dataset.full;
+  });
+}
+function previewCadence(full, n){
+  const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
+  return parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
+}
+function applyCadencePreview(n){
+  [...cadence.options].forEach(opt=>{
+    const full = opt.dataset.full || opt.value || opt.textContent.trim();
+    opt.textContent = previewCadence(full, n);
+  });
+}
+function restrictPerDay(n){
+  let max = 500;
+  if (n===1) max=250;
+  else if (n===2) max=200;
+  else if (n>=3) max=150;
+  const cur = Number(perDay.value) || 100;
+  const allowed = PERDAY_FULL.filter(v=>v<=max);
+  perDay.innerHTML = "";
+  allowed.forEach(v=>{
+    const o=document.createElement("option");
+    o.value=String(v); o.textContent=String(v);
+    perDay.appendChild(o);
+  });
+  const target = allowed.includes(cur) ? cur : Math.max(...allowed);
+  perDay.value = String(target);
+}
+
+/* Follow-ups segmented control + visibility */
+let followups = 3;
+function updateBumpVisibility(){
+  const blocks = document.querySelectorAll('.bump-block');
+  blocks.forEach(b=>{
+    const idx = Number(b.getAttribute('data-b'));
+    b.classList.toggle('hidden', idx > followups);
+  });
+}
+function setFollowups(n){
+  followups = Math.max(0, Math.min(3, Number(n)||0));
+  [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
+    const on = Number(b.dataset.n)===followups;
+    b.classList.toggle('seg-on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  setCV(cv.followups, followups);
+  applyCadencePreview(followups);
+  restrictPerDay(followups);
+  updateBumpVisibility();
+  recalcSaveVisibility();
+}
+
+/* Toggle behavior */
+function setActive(on){
+  toggle.classList.toggle("on", !!on);
+  toggle.setAttribute("aria-checked", !!on);
+  activeLabel.textContent = on ? "Yes" : "No";
+  recalcSaveVisibility();
+}
+toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
+toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
+
+/* Token inserter */
+function insertTokenInto(el, token){
+  const start = el.selectionStart ?? el.value.length;
+  const end   = el.selectionEnd ?? el.value.length;
+  const cur   = el.value || "";
+  el.value = cur.slice(0,start) + token + cur.slice(end);
+  el.focus();
+  el.selectionStart = el.selectionEnd = start + token.length;
+  recalcSaveVisibility();
+}
+document.querySelectorAll(".ti").forEach(ti=>{
+  const target = document.getElementById(ti.dataset.target);
+  const sel = ti.querySelector("select");
+  const btn = ti.querySelector("button");
+  btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
+});
+
+/* Helper pop-ups */
+const tip = document.getElementById("tooltip");
+function showTip(btn){
+  const text = btn.getAttribute("data-tip") || "";
+  if (!text) return;
+  tip.textContent = text;
+  const r = btn.getBoundingClientRect();
+  tip.style.left = Math.min(window.innerWidth - 340, r.left) + "px";
+  tip.style.top  = (r.bottom + 8) + "px";
+  tip.classList.remove("hidden");
+}
+function hideTip(){ tip.classList.add("hidden"); }
+document.addEventListener("click", (e)=>{
+  if (e.target.classList.contains("ibtn")) { showTip(e.target); }
+  else if (!tip.classList.contains("hidden")) { hideTip(); }
+});
+
+/* Inputs listeners (page-specific) */
+[campaignName, firstMessage, bump1, bump2, bump3, notes, perDay, cadence, webhook].forEach(el=>{
+  el.addEventListener("input", recalcSaveVisibility);
+  el.addEventListener("change", recalcSaveVisibility);
+});
+
+function setStatus(text, ok){
+  statusEl.textContent = text || "";
+  statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
+}
+function setCV(el, value){
+  const has = value !== undefined && value !== null && String(value).trim() !== "";
+  el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
+  el.classList.toggle("has-value", has);
+  el.classList.toggle("empty", !has);
+}
+
+/* Keys for agent (override via key_*_N) */
+function cvKeys(n){
+  const base = `custom_campaign_agent_${n}__`;
+  return {
+    active:   base + "active_yes_or_leave_blank",
+    campaign: base + "campaign_name",
+    perday:   base + "how_many_per_day_see_sop",
+    followups:base + "number_of_follow_ups",
+    cadence:  base + "follow_up_cadence",
+    firstmsg: base + "first_message",
+    bump1:    base + "bump_1",
+    bump2:    base + "bump_2",
+    bump3:    base + "bump_3",
+    notes:    base + "notes_about_campaign",
+    webhook:  base + "objective_reached_webhook_endpoint"
   };
+}
+function overrideKeysFromQuery(kmap, n){
+  const map = {...kmap};
+  for (const field of Object.keys(map)){
+    const q = qs.get(`key_${field}_${n}`) || qs.get(`key_${field}`);
+    if (q) map[field] = q;
+  }
+  return map;
+}
 
-  // Working/current snapshots
-  const working = {};
-  const current = {};
-  let agent = 1;
+function renderCV(){
+  setCV(cv.active,   current[agent]?.active);
+  setCV(cv.campaign, current[agent]?.campaign);
+  setCV(cv.perday,   current[agent]?.perday);
+  setCV(cv.followups,current[agent]?.followups);
+  setCV(cv.cadence,  current[agent]?.cadence);
+  setCV(cv.firstmsg, current[agent]?.firstmsg);
+  setCV(cv.bump1,    current[agent]?.bump1);
+  setCV(cv.bump2,    current[agent]?.bump2);
+  setCV(cv.bump3,    current[agent]?.bump3);
+  setCV(cv.notes,    current[agent]?.notes);
+  setCV(cv.webhook,  current[agent]?.webhook);
+}
 
-  // Defaults for bumps
-  const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
-  const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
-  const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at [Type business name here]?";
+function switchAgent(n){
+  // persist working values for current agent
+  working[agent] = getFormValues();
 
-  /* ---------- Cadence preview + per-day cap ---------- */
-  const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
-
-  function ensureCadenceValues(){
-    [...cadence.options].forEach(opt=>{
-      const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
-      if (!opt.dataset.full) opt.dataset.full = full;
-      opt.value = opt.dataset.full;
-    });
-  }
-  function previewCadence(full, n){
-    const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
-    const head = parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
-    return head;
-  }
-  function applyCadencePreview(n){
-    [...cadence.options].forEach(opt=>{
-      const full = opt.dataset.full || opt.value || opt.textContent.trim();
-      opt.textContent = previewCadence(full, n);
-    });
-  }
-  function restrictPerDay(n){
-    let max = 500;
-    if (n===1) max=250;
-    else if (n===2) max=200;
-    else if (n>=3) max=150;
-    const cur = Number(perDay.value) || 100;
-    const allowed = PERDAY_FULL.filter(v=>v<=max);
-    perDay.innerHTML = "";
-    allowed.forEach(v=>{
-      const o=document.createElement("option");
-      o.value=String(v); o.textContent=String(v);
-      perDay.appendChild(o);
-    });
-    const target = allowed.includes(cur) ? cur : Math.max(...allowed);
-    perDay.value = String(target);
-  }
-
-  // Follow-ups segmented control + visibility
-  let followups = 3;
-  function updateBumpVisibility(){
-    const blocks = document.querySelectorAll('.bump-block');
-    blocks.forEach(b=>{
-      const idx = Number(b.getAttribute('data-b'));
-      b.classList.toggle('hidden', idx > followups);
-    });
-  }
-  function setFollowups(n){
-    followups = Math.max(0, Math.min(3, Number(n)||0));
-    [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
-      const on = Number(b.dataset.n)===followups;
-      b.classList.toggle('seg-on', on);
-      b.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-    setCV(cv.followups, followups);
-    applyCadencePreview(followups);
-    restrictPerDay(followups);
-    updateBumpVisibility();
-    recalcSaveVisibility();
-  }
-  followupsSeg.addEventListener('click', e=>{
-    const btn = e.target.closest('.segbtn');
-    if (!btn) return;
-    setFollowups(Number(btn.dataset.n));
+  [...tabsEl.children].forEach(btn=>{
+    const is = Number(btn.dataset.agent)===n;
+    btn.classList.toggle("active", is);
+    btn.setAttribute('aria-selected', is ? 'true' : 'false');
   });
+  agent = n;
+  agentChip.textContent = `Custom campaign agent ${agent}`;
+  document.title = `Agent ${agent} • Custom agent set up`;
+  copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
+  copyNote.textContent = "";
 
-  // Toggle behavior
-  function setActive(on){
-    toggle.classList.toggle("on", !!on);
-    toggle.setAttribute("aria-checked", !!on);
-    activeLabel.textContent = on ? "Yes" : "No";
-    recalcSaveVisibility();
-  }
-  toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
-  toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
+  const w = working[agent] || {};
+  const prevIndex = agent === 1 ? AGENTS : agent - 1;
+  const curA = current[agent] || {};
+  const prevA = current[prevIndex] || {};
 
-  // Token inserter
-  function insertTokenInto(el, token){
-    const start = el.selectionStart ?? el.value.length;
-    const end   = el.selectionEnd ?? el.value.length;
-    const cur   = el.value || "";
-    el.value = cur.slice(0,start) + token + cur.slice(end);
-    el.focus();
-    el.selectionStart = el.selectionEnd = start + token.length;
-    recalcSaveVisibility();
-  }
-  document.querySelectorAll(".ti").forEach(ti=>{
-    const target = document.getElementById(ti.dataset.target);
-    const sel = ti.querySelector("select");
-    const btn = ti.querySelector("button");
-    btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
-  });
+  ensureCadenceValues();
 
-  // Helper pop-ups
-  const tip = document.getElementById("tooltip");
-  function showTip(btn){
-    const text = btn.getAttribute("data-tip") || "";
-    if (!text) return;
-    tip.textContent = text;
-    const r = btn.getBoundingClientRect();
-    tip.style.left = Math.min(window.innerWidth - 340, r.left) + "px";
-    tip.style.top  = (r.bottom + 8) + "px";
-    tip.classList.remove("hidden");
-  }
-  function hideTip(){ tip.classList.add("hidden"); }
-  document.addEventListener("click", (e)=>{
-    if (e.target.classList.contains("ibtn")) { showTip(e.target); }
-    else if (!tip.classList.contains("hidden")) { hideTip(); }
-  });
+  // Follow-ups first
+  const fuSeed = Number( w.followups ?? curA.followups ?? prevA.followups ?? seedVals.followups ?? 3 );
+  setFollowups(fuSeed);
 
-  // Inputs listeners (page-specific)
-  [campaignName, firstMessage, bump1, bump2, bump3, notes, perDay, cadence].forEach(el=>{
-    el.addEventListener("input", recalcSaveVisibility);
-    el.addEventListener("change", recalcSaveVisibility);
-  });
+  campaignName.value = w.campaign || curA.campaign || prevA.campaign || seedVals.campaign || "";
+  perDay.value       = String(w.perday || curA.perday || prevA.perday || seedVals.perday || perDay.value);
+  cadence.value      = w.cadence || curA.cadence || prevA.cadence || seedVals.cadence || cadence.value;
 
-  function setStatus(text, ok){
-    statusEl.textContent = text || "";
-    statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
-  }
-  function setCV(el, value){
-    const has = value !== undefined && value !== null && String(value).trim() !== "";
-    el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
-    el.classList.toggle("has-value", has);
-    el.classList.toggle("empty", !has);
-  }
+  firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || seedVals.firstmsg || "";
+  bump1.value        = w.bump1 || curA.bump1 || prevA.bump1 || seedVals.bump1 || BUMP1_DEFAULT;
+  bump2.value        = w.bump2 || curA.bump2 || prevA.bump2 || seedVals.bump2 || BUMP2_DEFAULT;
+  bump3.value        = w.bump3 || curA.bump3 || prevA.bump3 || seedVals.bump3 || BUMP3_DEFAULT;
+  notes.value        = w.notes || curA.notes || prevA.notes || seedVals.notes || "";
+  webhook.value      = w.webhook || curA.webhook || prevA.webhook || seedVals.webhook || "";
 
-  // Keys for agent (override via key_*_N)
-  function cvKeys(n){
-    const base = `custom_campaign_agent_${n}__`;
-    return {
-      active:    base + "active_yes_or_leave_blank",
-      campaign:  base + "campaign_name",
-      perday:    base + "how_many_per_day_see_sop",
-      followups: base + "number_of_follow_ups",
-      cadence:   base + "follow_up_cadence",
-      firstmsg:  base + "first_message",
-      bump1:     base + "bump_1",
-      bump2:     base + "bump_2",
-      bump3:     base + "bump_3",
-      notes:     base + "notes_about_campaign"
-    };
-  }
-  function overrideKeysFromQuery(kmap, n){
-    const map = {...kmap};
-    for (const field of Object.keys(map)){
-      const q = qs.get(`key_${field}_${n}`) || qs.get(`key_${field}`); // allow generic or per-agent
-      if (q) map[field] = q;
+  const activeSeed = (w.active || curA.active || prevA.active || seedVals.active || "");
+  setActive(String(activeSeed).toLowerCase()==="yes");
+
+  renderCV();
+  recalcSaveVisibility();
+  setStatus("");
+  respBox.classList.add("hidden");
+  gotoPage(1); // reset to Page 1 when switching agents
+}
+
+function getFormValues(){
+  return {
+    active:   toggle.classList.contains("on") ? "Yes" : "",
+    campaign: campaignName.value.trim(),
+    perday:   perDay.value,
+    followups:String(followups),
+    cadence:  cadence.value,
+    firstmsg: firstMessage.value,
+    bump1:    bump1.value,
+    bump2:    bump2.value,
+    bump3:    bump3.value,
+    notes:    notes.value,
+    webhook:  webhook.value.trim(),
+  };
+}
+
+function isBlankTextFields(){
+  const v = getFormValues();
+  const emptyActive = v.active==="";
+  const emptyTexts = !v.campaign && !v.firstmsg
+    && (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT.trim())
+    && (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT.trim())
+    && (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT.trim())
+    && !v.notes && !v.perday && !v.cadence && !v.webhook;
+  return emptyActive && emptyTexts;
+}
+
+function diffData(n, { ignoreDefaults=false } = {}){
+  const now = getFormValues();
+  const cur = current[n] || {};
+  const labels = {
+    active:   `Custom campaign agent ${n} – Active`,
+    campaign: `Custom campaign agent ${n} – Campaign name`,
+    perday:   `Custom campaign agent ${n} – How many per day`,
+    followups:`Custom campaign agent ${n} – Number of follow ups`,
+    cadence:  `Custom campaign agent ${n} – Follow up cadence`,
+    firstmsg: `Custom campaign agent ${n} – First message`,
+    bump1:    `Custom campaign agent ${n} – Bump 1`,
+    bump2:    `Custom campaign agent ${n} – Bump 2`,
+    bump3:    `Custom campaign agent ${n} – Bump 3`,
+    notes:    `Custom campaign agent ${n} – Notes about campaign`,
+    webhook:  `Custom campaign agent ${n} – Objective reached webhook endpoint`,
+  };
+  const changed = {};
+  for (const k of Object.keys(labels)){
+    let after = now[k] ?? "";
+    const before = cur[k] ?? "";
+    if (ignoreDefaults){
+      if (k==="bump1" && after.trim()===BUMP1_DEFAULT.trim() && !before.trim()) continue;
+      if (k==="bump2" && after.trim()===BUMP2_DEFAULT.trim() && !before.trim()) continue;
+      if (k==="bump3" && after.trim()===BUMP3_DEFAULT.trim() && !before.trim()) continue;
     }
-    return map;
+    if (String(before) !== String(after)) changed[ labels[k] ] = after;
   }
+  return changed;
+}
 
-  function renderCV(){
-    setCV(cv.active,     current[agent]?.active);
-    setCV(cv.campaign,   current[agent]?.campaign);
-    setCV(cv.perday,     current[agent]?.perday);
-    setCV(cv.followups,  current[agent]?.followups);
-    setCV(cv.cadence,    current[agent]?.cadence);
-    setCV(cv.firstmsg,   current[agent]?.firstmsg);
-    setCV(cv.bump1,      current[agent]?.bump1);
-    setCV(cv.bump2,      current[agent]?.bump2);
-    setCV(cv.bump3,      current[agent]?.bump3);
-    setCV(cv.notes,      current[agent]?.notes);
+function recalcSaveVisibility(){
+  // Only consider fields on the current page for "dirty" state
+  const changes = diffData(agent, { ignoreDefaults:true });
+  const page1Keys = ["Active","Campaign name","Notes about campaign","Objective reached webhook endpoint (none here)"]; // we only count actual page 1 fields
+  const page2Keys = ["How many per day","Number of follow ups","Follow up cadence","First message","Bump 1","Bump 2","Bump 3"];
+  const page3Keys = ["Objective reached webhook endpoint"];
+
+  const relevant = Object.keys(changes).some(k=>{
+    if (page===1) return ["Active","Campaign name","Notes about campaign"].some(pk=>k.includes(pk));
+    if (page===2) return page2Keys.some(pk=>k.includes(pk));
+    if (page===3) return page3Keys.some(pk=>k.includes(pk));
+    return false;
+  });
+
+  const allEmpty = isBlankTextFields();
+  const show = relevant && !allEmpty;
+  topActions.classList.toggle("hidden", !show);
+  topActions.classList.toggle("dirty", show);
+}
+
+/* ---------------- SAVE HANDLER ---------------- */
+function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
+function ensureSubmitReady(){
+  if (!locationId){ setStatus("Missing locationId", false); return false; }
+  if (!SUBMIT_URL){ setStatus("Missing submitUrl in query string.", false); return false; }
+  return true;
+}
+
+function buildPageScopedPayload(vals){
+  // Always send ALL fields (server can keep state)
+  const cadOpt = document.getElementById("cadence").selectedOptions?.[0];
+  const fullCad = (cadOpt?.dataset?.full) || vals.cadence;
+  const data = {
+    active:   toggle.classList.contains("on") ? "Yes" : "No",
+    campaign: vals.campaign,
+    perday:   vals.perday,
+    followups:vals.followups,
+    cadence:  fullCad,
+    firstmsg: vals.firstmsg,
+    bump1:    vals.bump1,
+    bump2:    vals.bump2,
+    bump3:    vals.bump3,
+    notes:    vals.notes,
+    webhook:  vals.webhook,
+  };
+  // Replace all newlines with £%£% for GHL custom values
+  for (const k in data) {
+    if (typeof data[k] === "string") {
+      data[k] = data[k].replace(/\r?\n/g, "£%£%");
+    }
   }
+  return data;
+}
 
-  function switchAgent(n){
-    // persist working values for current agent+page
-    working[agent] = getFormValues();
+async function saveAgentThenRefresh(agentNum, { action="stay" } = {}){
+  if (!ensureSubmitReady()) return;
+  const vals = getFormValues();
+  const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+  const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: buildPageScopedPayload(vals) };
 
-    [...tabsEl.children].forEach(btn=>{
-      const is = Number(btn.dataset.agent)===n;
-      btn.classList.toggle("active", is);
-      btn.setAttribute('aria-selected', is ? 'true' : 'false');
+  submitBtnTop.disabled = true;
+  savePrevBtnTop.disabled = true;
+  saveNextBtnTop.disabled = true;
+
+  showOverlay("Saving…");
+  try{
+    const res = await fetch(SUBMIT_URL, {
+      method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
+      headers: buildHeaders(),
+      body: JSON.stringify(payload)
     });
+    const status = res.status;
+    const text   = await res.text();
+    const parsed = parseMaybeJSON(text);
+    hideOverlay();
+    setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
+    showWebhookResponse(parsed, { status });
 
-    agent = n;
-    agentChip.textContent = `Custom campaign agent ${agent}`;
-    document.title = `Agent ${agent} • Custom agent set up`;
-
-    copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
-    copyNote.textContent = "";
-
-    const w = working[agent] || {};
-    const prevIndex = agent === 1 ? AGENTS : agent - 1;
-    const curA = current[agent] || {};
-    const prevA = current[prevIndex] || {};
-
-    ensureCadenceValues();
-
-    // Follow-ups first
-    const fuSeed = Number(
-      w.followups ?? curA.followups ?? prevA.followups ?? seedVals.followups ?? 3
-    );
-    setFollowups(fuSeed);
-
-    campaignName.value = w.campaign || curA.campaign || prevA.campaign || seedVals.campaign || "";
-    perDay.value       = String(w.perday   || curA.perday   || prevA.perday || seedVals.perday || perDay.value);
-    cadence.value      = w.cadence  || curA.cadence  || prevA.cadence  || seedVals.cadence || cadence.value;
-    firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || seedVals.firstmsg || "";
-    bump1.value        = w.bump1    || curA.bump1    || prevA.bump1    || seedVals.bump1    || BUMP1_DEFAULT;
-    bump2.value        = w.bump2    || curA.bump2    || prevA.bump2    || seedVals.bump2    || BUMP2_DEFAULT;
-    bump3.value        = w.bump3    || curA.bump3    || prevA.bump3    || seedVals.bump3    || BUMP3_DEFAULT;
-    notes.value        = w.notes    || curA.notes    || prevA.notes    || seedVals.notes    || "";
-
-    const activeSeed = (w.active || curA.active || prevA.active || seedVals.active || "");
-    setActive( String(activeSeed).toLowerCase()==="yes" );
-
+    if (FETCH_URL){ await refreshFromServer(); }
     renderCV();
     recalcSaveVisibility();
-    setStatus("");
-    respBox.classList.add("hidden");
 
-    // reset to Page 1 when switching agents
-    gotoPage(1);
-  }
-
-  function getFormValues(){
-    return {
-      active:   toggle.classList.contains("on") ? "Yes" : "",
-      campaign: campaignName.value.trim(),
-      perday:   perDay.value,
-      followups: String(followups),
-      cadence:  cadence.value,
-      firstmsg: firstMessage.value,
-      bump1:    bump1.value,
-      bump2:    bump2.value,
-      bump3:    bump3.value,
-      notes:    notes.value
-    };
-  }
-
-  function isBlankTextFields(){
-    const v = getFormValues();
-    const emptyActive = v.active==="";
-    const emptyTexts =
-      !v.campaign &&
-      !v.firstmsg &&
-      (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT.trim()) &&
-      (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT.trim()) &&
-      (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT.trim()) &&
-      !v.notes &&
-      !v.perday && !v.cadence;
-    return emptyActive && emptyTexts;
-  }
-
-  function diffData(n, { ignoreDefaults=false } = {}){
-    const now = getFormValues();
-    const cur = current[n] || {};
-    const labels = {
-      active:   `Custom campaign agent ${n} – Active`,
-      campaign: `Custom campaign agent ${n} – Campaign name`,
-      perday:   `Custom campaign agent ${n} – How many per day`,
-      followups:`Custom campaign agent ${n} – Number of follow ups`,
-      cadence:  `Custom campaign agent ${n} – Follow up cadence`,
-      firstmsg: `Custom campaign agent ${n} – First message`,
-      bump1:    `Custom campaign agent ${n} – Bump 1`,
-      bump2:    `Custom campaign agent ${n} – Bump 2`,
-      bump3:    `Custom campaign agent ${n} – Bump 3`,
-      notes:    `Custom campaign agent ${n} – Notes about campaign`
-    };
-
-    const changed = {};
-    for (const k of Object.keys(labels)){
-      let after = now[k] ?? "";
-      const before = cur[k] ?? "";
-      if (ignoreDefaults){
-        if (k==="bump1" && after.trim()===BUMP1_DEFAULT.trim() && !before.trim()) continue;
-        if (k==="bump2" && after.trim()===BUMP2_DEFAULT.trim() && !before.trim()) continue;
-        if (k==="bump3" && after.trim()===BUMP3_DEFAULT.trim() && !before.trim()) continue;
-      }
-      if (String(before) !== String(after)) changed[ labels[k] ] = after;
+    // Navigation actions
+    if (action==="stay") return;
+    if (action==="nextPage"){
+      if (page===1) gotoPage(2);
+      else if (page===2) gotoPage(3);
+      else if (page===3) {/* fallthrough to nextAgent? top button handles that */ }
+    } else if (action==="prevPage"){
+      if (page===2) gotoPage(1);
+      else if (page===3) gotoPage(2);
+    } else if (action==="nextAgent"){
+      const next = agentNum === AGENTS ? 1 : agentNum + 1;
+      switchAgent(next);
+      gotoPage(1);
+    } else if (action==="prevAgent"){
+      const prev = agentNum === 1 ? AGENTS : agentNum - 1;
+      switchAgent(prev);
+      gotoPage(1);
     }
-    return changed;
+  } catch (err){
+    hideOverlay();
+    setStatus("Network error. Try again.", false);
+    showWebhookResponse({ error: String(err) }, { status: 0 });
+  } finally {
+    submitBtnTop.disabled = false;
+    savePrevBtnTop.disabled = false;
+    saveNextBtnTop.disabled = false;
   }
+}
 
-  // Dirty detection updated for 3 pages
-  function recalcSaveVisibility(){
-    const changes = diffData(agent, { ignoreDefaults:true });
-    const page1Keys = ["Active","Campaign name","First message","Bump 1","Bump 2","Bump 3","Notes about campaign"];
-    const page2Keys = ["How many per day","Number of follow ups","Follow up cadence"];
-    const page3Keys = []; // webhooks are fire-and-forget; don't gate save button
-
-    const relevant = Object.keys(changes).some(k=>{
-      return page===1 ? page1Keys.some(pk=>k.includes(pk))
-           : page===2 ? page2Keys.some(pk=>k.includes(pk))
-           : page3Keys.some(pk=>k.includes(pk));
+/* Refresh current from server */
+async function refreshFromServer(){
+  if (!locationId) return;
+  if (!FETCH_URL){ setStatus("Missing fetchUrl in query string.", false); return; }
+  showOverlay("Refreshing…");
+  const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+  try{
+    const res = await fetch(urlWithBust, {
+      method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
+      headers: buildHeaders(),
+      body: JSON.stringify({ locationId })
     });
+    const text = await res.text();
+    let json; try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
 
-    const allEmpty = isBlankTextFields();
-    const show = (page===3 ? !allEmpty : (relevant && !allEmpty));
-    topActions.classList.toggle("hidden", !show);
-    topActions.classList.toggle("dirty", show);
-  }
-
-  /* ---------------- SAVE HANDLER ---------------- */
-  function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
-
-  function ensureSubmitReady(){
-    if (!locationId){
-      setStatus("Missing locationId", false);
-      return false;
+    const agents = json?.agents || {};
+    for (let i=1;i<=AGENTS;i++){
+      const a = agents[String(i)] || agents[i] || {};
+      current[i] = {
+        active:   a.active   ?? seedVals.active   ?? "",
+        campaign: a.campaign ?? seedVals.campaign ?? "",
+        perday:   a.perday   ?? seedVals.perday   ?? "",
+        followups:a.followups ?? a.number_of_follow_ups ?? seedVals.followups ?? "",
+        cadence:  a.cadence  ?? seedVals.cadence  ?? "",
+        firstmsg: swapPlaceholders(a.firstmsg ?? seedVals.firstmsg ?? ""),
+        bump1:    swapPlaceholders(a.bump1    ?? seedVals.bump1    ?? ""),
+        bump2:    swapPlaceholders(a.bump2    ?? seedVals.bump2    ?? ""),
+        bump3:    swapPlaceholders(a.bump3    ?? seedVals.bump3    ?? ""),
+        notes:    swapPlaceholders(a.notes    ?? seedVals.notes    ?? ""),
+        webhook:  a.webhook  ?? seedVals.webhook  ?? ""
+      };
     }
-    if (!SUBMIT_URL){
-      setStatus("Missing submitUrl in query string.", false);
-      return false;
-    }
-    return true;
-  }
-
-  function buildPageScopedPayload(vals){
-    // Always send ALL fields (so server can keep state), BUT we still do page-scoped "dirty" UX.
-    const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
-    const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
-
-    const data = {
-      active:   toggle.classList.contains("on") ? "Yes" : "No",
-      campaign: vals.campaign,
-      perday:   vals.perday,
-      followups: vals.followups,
-      cadence:  fullCad,
-      firstmsg: vals.firstmsg,
-      bump1:    vals.bump1,
-      bump2:    vals.bump2,
-      bump3:    vals.bump3,
-      notes:    vals.notes
-    };
-
-    // Replace all newlines with £%£% for GHL custom values
-    for (const k in data) {
-      if (typeof data[k] === "string") {
-        data[k] = data[k].replace(/\r?\n/g, "£%£%");
-      }
-    }
-    return data;
-  }
-
-  async function saveAgentThenRefresh(agentNum, { jumpToNextPage=false } = {}){
-    if (!ensureSubmitReady()) return;
-
-    const vals     = getFormValues();
-    const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
-    const payload  = { locationId, businessName, agent: agentNum, keys: keysFull, data: buildPageScopedPayload(vals) };
-
-    submitBtnTop.disabled = true;
-    saveNextBtnTop.disabled = true;
-    showOverlay("Saving…");
-
-    try{
-      const res = await fetch(SUBMIT_URL, {
-        method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(true),
-        body: JSON.stringify(payload)
-      });
-
-      const status  = res.status;
-      const headers = Object.fromEntries([...res.headers.entries()]);
-      const text    = await res.text();
-      const parsed  = parseMaybeJSON(text);
-
-      hideOverlay();
-      setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
-      showWebhookResponse(parsed, { status, headers });
-
-      if (FETCH_URL){
-        await refreshFromServer();
-      }
-      renderCV();
-      recalcSaveVisibility();
-
-      if (jumpToNextPage){
-        if (page===1) gotoPage(2);
-        else if (page===2) gotoPage(3);
-        else {
-          const next = agentNum === AGENTS ? 1 : agentNum + 1;
-          switchAgent(next);
-          gotoPage(1);
-        }
-      }
-    } catch (err){
-      hideOverlay();
-      setStatus("Network error. Try again.", false);
-      showWebhookResponse({ error: String(err) }, { status: 0 });
-    } finally {
-      submitBtnTop.disabled = false;
-      saveNextBtnTop.disabled = false;
-    }
-  }
-
-  document.getElementById("submitBtnTop").addEventListener("click", (e)=>{
-    e.preventDefault();
-    saveAgentThenRefresh(agent, { jumpToNextPage:false });
-  });
-  document.getElementById("saveNextBtnTop").addEventListener("click", (e)=>{
-    e.preventDefault();
-    saveAgentThenRefresh(agent, { jumpToNextPage:true });
-  });
-
-  async function refreshFromServer(){
-    if (!locationId) return;
-    if (!FETCH_URL){ setStatus("Missing fetchUrl in query string.", false); return; }
-    showOverlay("Refreshing…");
-    const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
-    try{
-      const res = await fetch(urlWithBust, {
-        method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-        headers: buildHeaders(true),
-        body: JSON.stringify({ locationId })
-      });
-      const text = await res.text();
-      let json; try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
-
-      const agents = json?.agents || {};
-      for (let i=1;i<=AGENTS;i++){
-        const a = agents[String(i)] || agents[i] || {};
-        current[i] = {
-          active:   a.active ?? seedVals.active ?? "",
-          campaign: a.campaign ?? seedVals.campaign ?? "",
-          perday:   a.perday ?? seedVals.perday ?? "",
-          followups:a.followups ?? a.number_of_follow_ups ?? seedVals.followups ?? "",
-          cadence:  a.cadence ?? seedVals.cadence ?? "",
-          firstmsg: swapPlaceholders(a.firstmsg ?? seedVals.firstmsg ?? ""),
-          bump1:    swapPlaceholders(a.bump1 ?? seedVals.bump1 ?? ""),
-          bump2:    swapPlaceholders(a.bump2 ?? seedVals.bump2 ?? ""),
-          bump3:    swapPlaceholders(a.bump3 ?? seedVals.bump3 ?? ""),
-          notes:    swapPlaceholders(a.notes ?? seedVals.notes ?? "")
-        };
-      }
-      renderCV();
-      updateBumpVisibility();
-      recalcSaveVisibility();
-      setStatus("Refreshed", true);
-    }catch{
-      setStatus("Could not refresh current values.", false);
-    }finally {
-      hideOverlay();
-    }
-  }
-
-  document.getElementById("copyPrevBtn").addEventListener("click", ()=>{
-    const prev = agent === 1 ? AGENTS : agent - 1;
-    const src = current[prev] || {};
-    setActive((src.active || "").toLowerCase()==="yes");
-    setFollowups(Number(src.followups ?? 3));
-    campaignName.value = src.campaign || "";
-    perDay.value       = src.perday   || perDay.value;
-    cadence.value      = src.cadence  || cadence.value;
-    firstMessage.value = src.firstmsg || "";
-    bump1.value        = src.bump1    || BUMP1_DEFAULT;
-    bump2.value        = src.bump2    || BUMP2_DEFAULT;
-    bump3.value        = src.bump3    || BUMP3_DEFAULT;
-    notes.value        = src.notes    || "";
-    copyNote.textContent = `Copied values from Agent ${prev}.`;
-    setTimeout(()=> copyNote.textContent="", 3500);
+    renderCV();
+    updateBumpVisibility();
     recalcSaveVisibility();
-  });
+    setStatus("Refreshed", true);
+  }catch{
+    setStatus("Could not refresh current values.", false);
+  }finally { hideOverlay(); }
+}
 
-  function showOverlay(text){
-    document.getElementById("overlayText").textContent = text || "Loading…";
-    document.getElementById("overlay").classList.remove("hidden");
-  }
-  function hideOverlay(){
-    document.getElementById("overlay").classList.add("hidden");
-  }
+/* Copy prev agent */
+document.getElementById("copyPrevBtn").addEventListener("click", ()=>{
+  const prev = agent === 1 ? AGENTS : agent - 1;
+  const src = current[prev] || {};
+  setActive((src.active || "").toLowerCase()==="yes");
+  setFollowups(Number(src.followups ?? 3));
+  campaignName.value = src.campaign || "";
+  perDay.value = src.perday || perDay.value;
+  cadence.value = src.cadence || cadence.value;
+  firstMessage.value = src.firstmsg || "";
+  bump1.value = src.bump1 || BUMP1_DEFAULT;
+  bump2.value = src.bump2 || BUMP2_DEFAULT;
+  bump3.value = src.bump3 || BUMP3_DEFAULT;
+  notes.value = src.notes || "";
+  webhook.value = src.webhook || "";
+  copyNote.textContent = `Copied values from Agent ${prev}.`;
+  setTimeout(()=> copyNote.textContent="", 3500);
+  recalcSaveVisibility();
+});
 
-  /* ------------------- EXAMPLES MODAL ------------------- */
-  const exModal = document.getElementById("exModal");
-  const exList  = document.getElementById("exList");
-  const exClose = document.getElementById("exClose");
-  let exTargetEl = null;
+/* Overlay helpers */
+function showOverlay(text){ document.getElementById("overlayText").textContent = text || "Loading…"; document.getElementById("overlay").classList.remove("hidden"); }
+function hideOverlay(){ document.getElementById("overlay").classList.add("hidden"); }
 
-  function openExamples(kind, targetId){
-    exTargetEl = document.getElementById(targetId);
-    exList.innerHTML = "";
-    const groups = EXAMPLES[kind] || [];
+/* ------------------- EXAMPLES MODAL ------------------- */
+const exModal = document.getElementById("exModal");
+const exList  = document.getElementById("exList");
+const exClose = document.getElementById("exClose");
+let exTargetEl = null;
 
-    groups.forEach(g=>{
-      const group = document.createElement("div");
-      group.className = "ex-group";
+function openExamples(kind, targetId){
+  exTargetEl = document.getElementById(targetId);
+  exList.innerHTML = "";
+  const groups = EXAMPLES[kind] || [];
+  groups.forEach(g=>{
+    const group = document.createElement("div");
+    group.className = "ex-group";
+    const h = document.createElement("h4");
+    h.textContent = g.title || "Examples";
+    group.appendChild(h);
 
-      const h = document.createElement("h4");
-      h.textContent = g.title || "Examples";
-      group.appendChild(h);
-
-      if (Array.isArray(g.sop) && g.sop.length){
-        g.sop.forEach(line=>{
-          const row = document.createElement("div");
-          row.className = "ex-item";
-
-          const txt = document.createElement("div");
-          txt.className = "ex-text";
-          txt.textContent = line;
-          row.appendChild(txt);
-
-          const btn = document.createElement("button");
-          btn.className = "usebtn";
-          btn.textContent = "Use";
-          btn.addEventListener("click", ()=>{
-            if (!exTargetEl) return;
-            exTargetEl.value = line;
-            exModal.classList.remove("show");
-            exTargetEl.focus();
-            recalcSaveVisibility();
-          });
-          row.appendChild(btn);
-
-          group.appendChild(row);
-        });
-      }
-
-      (g.items || []).forEach(text=>{
+    if (Array.isArray(g.sop) && g.sop.length){
+      g.sop.forEach(line=>{
         const row = document.createElement("div");
         row.className = "ex-item";
-
         const txt = document.createElement("div");
         txt.className = "ex-text";
-        txt.textContent = text;
+        txt.textContent = line;
         row.appendChild(txt);
-
         const btn = document.createElement("button");
         btn.className = "usebtn";
         btn.textContent = "Use";
         btn.addEventListener("click", ()=>{
           if (!exTargetEl) return;
-          exTargetEl.value = text;
+          exTargetEl.value = line;
           exModal.classList.remove("show");
           exTargetEl.focus();
           recalcSaveVisibility();
         });
         row.appendChild(btn);
-
         group.appendChild(row);
       });
-
-      exList.appendChild(group);
-    });
-
-    exModal.classList.add("show");
-  }
-
-  document.querySelectorAll(".ex-btn").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      const target = b.getAttribute("data-target");
-      const kind = b.getAttribute("data-kind");
-      openExamples(kind, target);
-    });
-  });
-  exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
-  exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
-
-  /* ------------------- CSV UPLOAD (moved to Page 1) ------------------- */
-  const uploadUrlEcho = document.getElementById("uploadUrlEcho");
-  const uploadMode = document.getElementById("uploadMode");
-  const uploadFieldName = document.getElementById("uploadFieldName");
-  const uploadMeta = document.getElementById("uploadMeta");
-  const csvFile = document.getElementById("csvFile"); // optional input if you add a file picker elsewhere
-  const uploadCsvBtn = document.getElementById("uploadCsvBtn");
-  const csvStatus = document.getElementById("csvStatus");
-  uploadUrlEcho.value = UPLOAD_URL || "(missing ?uploadUrl=…)";
-
-  function setCsvStatus(text, ok) {
-    csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
-    csvStatus.classList.toggle("has-value", !!ok);
-    csvStatus.classList.toggle("empty", !ok);
-  }
-
-  uploadCsvBtn.addEventListener("click", async (e)=>{
-    e.preventDefault();
-    if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
-
-    // Because the input is not included in the new row by default, look for any file input with id 'csvFile' if present
-    const fileInput = document.querySelector('#csvFile') || null;
-    const file = fileInput?.files?.[0];
-    if (uploadMode.value === "multipart" && !file){
-      setCsvStatus("Choose a CSV file first (multipart).", false); return;
     }
 
-    showOverlay("Uploading CSV…");
-    try {
-      const mode = uploadMode.value;
-      let res;
-
-      if (mode === "multipart"){
-        const fd = new FormData();
-        const field = (uploadFieldName.value || "file").trim();
-        fd.append(field, file, file.name);
-        fd.append("locationId", locationId || "");
-        fd.append("businessName", businessName || "");
-        fd.append("agent", String(agent));
-        const metaTxt = (uploadMeta.value || "").trim();
-        if (metaTxt){
-          fd.append("meta", metaTxt);
-        }
-        const headers = {};
-        if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-        if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
-
-        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
-      } else {
-        // application/octet-stream can send without a file (server may ignore body)
-        const headers = { "Content-Type":"application/octet-stream",
-                          "X-Filename": file ? encodeURIComponent(file.name) : "no-file",
-                          "X-Location-Id": locationId || "",
-                          "X-Business-Name": businessName || "",
-                          "X-Agent": String(agent) };
-        if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-        if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
-        const metaTxt = (uploadMeta.value || "").trim();
-        if (metaTxt) headers["X-Meta"] = metaTxt;
-
-        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file || new Blob([]) });
-      }
-
-      const status = res.status;
-      const text = await res.text();
-      let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
-      hideOverlay();
-
-      if (!res.ok){
-        setCsvStatus(`Error ${status}`, false);
-      } else {
-        setCsvStatus("Uploaded", true);
-      }
-      showWebhookResponse(parsed, { status });
-    } catch (err){
-      hideOverlay();
-      setCsvStatus("Network error", false);
-      showWebhookResponse({ error: String(err) }, { status: 0 });
-    }
-  });
-
-  /* ------------------- INTEGRATIONS (Page 3) ------------------- */
-  const whInputs = {
-    active:   document.getElementById("wh_active"),
-    campaign: document.getElementById("wh_campaign"),
-    perday:   document.getElementById("wh_perday"),
-    followups:document.getElementById("wh_followups"),
-    cadence:  document.getElementById("wh_cadence"),
-    firstmsg: document.getElementById("wh_firstmsg"),
-    bump1:    document.getElementById("wh_bump1"),
-    bump2:    document.getElementById("wh_bump2"),
-    bump3:    document.getElementById("wh_bump3"),
-    notes:    document.getElementById("wh_notes"),
-  };
-  const whMeta = document.getElementById("wh_meta");
-
-  function replaceNewlinesForGHL(s){ return String(s||"").replace(/\r?\n/g, "£%£%"); }
-
-  function parseMaybeJSON2(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
-
-  async function sendFieldWebhook(field){
-    const inp = whInputs[field];
-    const url = (inp?.value || "").trim();
-    if (!url) { alert(`No webhook URL set for ${field}`); return; }
-    const vals = getFormValues();
-    const payload = {
-      locationId, businessName, agent,
-      field, key: cvKeys(agent)[field],
-      value_raw: String(vals[field] ?? ""),
-      value_ghl_encoded: replaceNewlinesForGHL(String(vals[field] ?? "")),
-      meta: (whMeta?.value||"").trim() || undefined
-    };
-    showOverlay(`Sending ${field}…`);
-    try{
-      const res = await fetch(url, { method:"POST", mode:"cors", credentials:"omit", headers: buildHeaders(true), body: JSON.stringify(payload) });
-      const status = res.status;
-      const text = await res.text();
-      const parsed = parseMaybeJSON2(text);
-      hideOverlay();
-      showWebhookResponse(parsed, { status });
-    }catch(err){
-      hideOverlay();
-      showWebhookResponse({ error:String(err) }, { status:0 });
-    }
-  }
-
-  const sendAll = document.getElementById("sendAllWebhooks");
-  if (sendAll){
-    sendAll.addEventListener("click", async ()=>{
-      for (const f of Object.keys(whInputs)){
-        const has = (whInputs[f]?.value||"").trim();
-        if (has) await sendFieldWebhook(f);
-      }
+    (g.items || []).forEach(text=>{
+      const row = document.createElement("div");
+      row.className = "ex-item";
+      const txt = document.createElement("div");
+      txt.className = "ex-text";
+      txt.textContent = text;
+      row.appendChild(txt);
+      const btn = document.createElement("button");
+      btn.className = "usebtn";
+      btn.textContent = "Use";
+      btn.addEventListener("click", ()=>{
+        if (!exTargetEl) return;
+        exTargetEl.value = text;
+        exModal.classList.remove("show");
+        exTargetEl.focus();
+        recalcSaveVisibility();
+      });
+      row.appendChild(btn);
+      group.appendChild(row);
     });
-  }
-  document.querySelectorAll('[data-send-field]').forEach(btn=>{
-    btn.addEventListener("click", ()=> sendFieldWebhook(btn.getAttribute('data-send-field')));
+    exList.appendChild(group);
   });
+  exModal.classList.add("show");
+}
+document.querySelectorAll(".ex-btn").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const target = b.getAttribute("data-target");
+    const kind   = b.getAttribute("data-kind");
+    openExamples(kind, target);
+  });
+});
+exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
+exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
-  /* ------------------- DASHBOARD BUTTON ------------------- */
-  const openDashboardBtn = document.getElementById("openDashboardBtn");
-  if (openDashboardBtn){
-    openDashboardBtn.addEventListener("click", ()=>{
-      if (!locationId) return alert("Missing locationId");
-      const url = `https://app.visquanta.com/v2/location/${encodeURIComponent(locationId)}/dashboard`;
-      window.open(url, "_blank", "noopener");
-    });
-  }
+/* ------------------- CSV UPLOAD ------------------- */
+const uploadUrlEcho   = document.getElementById("uploadUrlEcho");
+const uploadMode      = document.getElementById("uploadMode");
+const uploadFieldName = document.getElementById("uploadFieldName");
+const uploadMeta      = document.getElementById("uploadMeta");
+const csvFile         = document.getElementById("csvFile");
+const uploadCsvBtn    = document.getElementById("uploadCsvBtn");
+const csvStatus       = document.getElementById("csvStatus");
 
-  /* ------------------- INIT ------------------- */
-  (async function init(){
-    ensureCadenceValues();
-    for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
-    if (!locationId){ setStatus("Missing locationId", false); return; }
-    showOverlay("Loading current values…");
-    if (FETCH_URL){
-      await refreshFromServer();
+uploadUrlEcho.value = UPLOAD_URL || "(missing ?uploadUrl=…)";
+
+function setCsvStatus(text, ok) {
+  csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
+  csvStatus.classList.toggle("has-value", !!ok);
+  csvStatus.classList.toggle("empty", !ok);
+}
+
+uploadCsvBtn.addEventListener("click", async (e)=>{
+  e.preventDefault();
+  if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
+  const file = csvFile.files?.[0];
+  if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
+  showOverlay("Uploading CSV…");
+  try {
+    const mode = uploadMode.value;
+    let res;
+    if (mode === "multipart"){
+      const fd = new FormData();
+      const field = (uploadFieldName.value || "file").trim();
+      fd.append(field, file, file.name);
+      fd.append("locationId", locationId || "");
+      fd.append("businessName", businessName || "");
+      fd.append("agent", String(agent));
+      const metaTxt = (uploadMeta.value || "").trim();
+      if (metaTxt){ fd.append("meta", metaTxt); }
+      const headers = {};
+      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
     } else {
-      for (let i=1;i<=AGENTS;i++){
-        current[i] = {
-          active:   seedVals.active ?? "",
-          campaign: seedVals.campaign ?? "",
-          perday:   seedVals.perday ?? "",
-          followups: seedVals.followups ?? "3",
-          cadence:  seedVals.cadence || "IM > 15m > 24h > 24h",
-          firstmsg: swapPlaceholders(seedVals.firstmsg ?? ""),
-          bump1:    swapPlaceholders(seedVals.bump1 || BUMP1_DEFAULT),
-          bump2:    swapPlaceholders(seedVals.bump2 || BUMP2_DEFAULT),
-          bump3:    swapPlaceholders(seedVals.bump3 || BUMP3_DEFAULT),
-          notes:    swapPlaceholders(seedVals.notes ?? "")
-        };
-      }
-      hideOverlay();
+      const headers = {
+        "Content-Type":"application/octet-stream",
+        "X-Filename": encodeURIComponent(file.name),
+        "X-Location-Id": locationId || "",
+        "X-Business-Name": businessName || "",
+        "X-Agent": String(agent)
+      };
+      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+      const metaTxt = (uploadMeta.value || "").trim();
+      if (metaTxt) headers["X-Meta"] = metaTxt;
+      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file });
     }
-    switchAgent(1);
-    updateBumpVisibility();
-    gotoPage(1);
-  })();
+    const status = res.status;
+    const text = await res.text();
+    let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
+    hideOverlay();
+    if (!res.ok){ setCsvStatus(`Error ${status}`, false); } else { setCsvStatus("Uploaded", true); }
+    showWebhookResponse(parsed, { status });
+  } catch (err){
+    hideOverlay();
+    setCsvStatus("Network error", false);
+    showWebhookResponse({ error: String(err) }, { status: 0 });
+  }
+});
+
+/* ------------------- INIT ------------------- */
+(async function init(){
+  ensureCadenceValues();
+  for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
+  if (!locationId){ setStatus("Missing locationId", false); return; }
+
+  showOverlay("Loading current values…");
+  if (FETCH_URL){ await refreshFromServer(); }
+  else {
+    for (let i=1;i<=AGENTS;i++){
+      current[i] = {
+        active:   seedVals.active   ?? "",
+        campaign: seedVals.campaign ?? "",
+        perday:   seedVals.perday   ?? "",
+        followups:seedVals.followups ?? "3",
+        cadence:  seedVals.cadence  || "IM > 15m > 24h > 24h",
+        firstmsg: swapPlaceholders(seedVals.firstmsg ?? ""),
+        bump1:    swapPlaceholders(seedVals.bump1 || BUMP1_DEFAULT),
+        bump2:    swapPlaceholders(seedVals.bump2 || BUMP2_DEFAULT),
+        bump3:    swapPlaceholders(seedVals.bump3 || BUMP3_DEFAULT),
+        notes:    swapPlaceholders(seedVals.notes ?? ""),
+        webhook:  seedVals.webhook  ?? ""
+      };
+    }
+    hideOverlay();
+  }
+  switchAgent(1);
+  updateBumpVisibility();
+  gotoPage(1);
+})();
 </script>
 </body>
 </html>
