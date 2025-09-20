@@ -434,9 +434,9 @@
     /* FIRST MESSAGE — aligned to Set-node wording */
     first: [
       {
-        title: "Fresh Up Follow Up — IM",
+        title: "DBR — IM",
         items: [
-          "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note here to reach out—how’s the vehicle search going?"
+          "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
         ]
       },
       {
@@ -504,17 +504,29 @@
     /* NOTES / PROMPTS — exact Campaign Objectives from Set nodes (each has its own Use button) */
     notes: [
       {
-        title: "Fresh Up Follow Up — Campaign Objective",
+        title: "DBR — Campaign Objective",
         sop: [
-`=If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent,
+`=If the chat history indicates that the most recent agent to be activated is the “dbr” Agent - we are doing a general reach out to see if {{contact.first_name}} has purchased a vehicle yet.
 
-This means we are reaching out to a customer who first visited the showroom 10 days ago, and the conversation objective is to invite them back toward rebooking an appointment.
+1.0 – If their first response is positive, acknowledge the response (without a greeting) and say:  
+“{{contact.first_initial_response_message}}”
 
-1.0 – We will be (re) introducing ourselves and asking how their vehicle search is. (We are skipping the assistant working from home message here in this convo.) This will be a short "Hey [their name], how are you? It’s [your name] from [dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
+Then on a new paragraph:  
+“Just wanted to see if you're still on the lookout for a vehicle or if you are still looking at your options?”
 
-2.0 – Once they tell us how they / their vehicle search is we want to acknowledge what they say empathetically and then continue with the default qualified prospect section and any booking-related criteria.
+1.1 – If the response to the message asking who they are or one of the follow up messages is not positive (for example “no” or “no it isn’t” or “wrong number”), then apologize say:
 
-The best way to book an appointment is to schedule a call with a specialist who will walk them through any final things we need etc.
+“My apologies, looks like there’s a mix-up – I'll make sure you don't get any more messages.  Before you go, is anyone you know looking to buy or sell a vehicle at this time? :)”
+
+Then if they say no to that question, say  
+“no worries, have a great day, take care”
+ 2.0 - If their response to the question about exploring vehicle options is negative, go to 2.1 - If is positive, go to 2.2. 
+2.1 – Acknowledge the response and try to figure out what is holding them back from moving forward. Utilize your training to pry a little and move toward qualification without sounding too pushy. The only exception is if they say they already bought a vehicle. In which case move onto the “already purchased” protocol.
+
+2.2 – Acknowledge the response and then begin to converse with the customer about their vehicle needs and what we can do to help. 
+
+Make sure to ask 2 relevant qualification questions in regular conversation, qualifying them & finding out we can help without offering any advice or answering questions about price or inventory before going for the appointment/call. 
+3.0 - When you have asked your questions, ask if they would like to chat with the relevant person from the department you think will help them best & then move onto the sales booking protocol.
 
 One question at a time per interaction.`
         ]
