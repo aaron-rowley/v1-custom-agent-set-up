@@ -11,13 +11,9 @@
   *{ box-sizing:border-box; }
   body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
   .wrap{ max-width:980px; margin:24px auto; padding:20px; }
-
-  /* Top toolbar */
   .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
   .sop{ background:var(--red); color:#000; font-weight:800; border:none; text-decoration:none; padding:8px 12px; border-radius:12px; box-shadow:0 6px 14px rgba(239,68,68,.35); }
-  .sop:hover{ filter:brightness(1.05); }
   .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
-
   h1{ margin:0 0 4px; font-size:22px; }
   .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
 
@@ -26,9 +22,7 @@
   .tabsbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
   .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
-  .tab:hover{ border-color:#3a404a; }
   .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
-
   .top-actions{ display:flex; align-items:center; gap:10px; }
   .top-actions.hidden{ display:none; }
   .btn-sm{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; }
@@ -36,39 +30,41 @@
   .dirty-dot{ width:8px; height:8px; border-radius:99px; background:var(--orange); box-shadow:0 0 0 4px rgba(237,108,3,.25); display:none; }
   .top-actions.dirty .dirty-dot{ display:inline-block; }
 
-  /* Editing bar */
-  .editing{ display:flex; align-items:center; gap:10px; margin:10px 0 12px; flex-wrap:wrap; }
-  .chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700; background:rgba(237,108,3,.14); color:#ffd9b8; border:1px solid rgba(237,108,3,.45); }
-  .copy-note{ font-size:12px; color:#a7f3d0; }
+  /* Page tabs (inside form) */
+  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
+  .pagetab{ border:1px solid var(--line); background:#0e1117; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-weight:800; cursor:pointer; }
+  .pagetab.active{ background:var(--green); color:#052; border-color:rgba(16,185,129,.6); box-shadow:0 6px 16px rgba(16,185,129,.35); }
 
+  /* Step actions */
+  .step-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
+  .step-actions .left, .step-actions .right{ display:flex; gap:8px; align-items:center; }
+  .btn-next{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; cursor:pointer; }
+  .btn-prev{ background:transparent; border:1px solid var(--line); color:#fff; padding:10px 16px; border-radius:12px; font-weight:800; cursor:pointer; }
+
+  /* Controls */
   .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
   .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
   label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
   input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
   textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
 
-  /* Rows */
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .row-follow{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:end; }
 
-  /* Token inserter */
   .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
   .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
   .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
 
-  /* Toggle */
   .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
   .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
   .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
   .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
   .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
 
-  /* Helper pop-up */
   .ibtn{ background:transparent; border:1px dashed var(--line); color:#cfd6e4; font-size:12px; padding:4px 10px; border-radius:999px; cursor:pointer; }
   .tip{ position:fixed; max-width:320px; background:#0b0f14; border:1px solid #273042; border-radius:10px; padding:10px 12px; z-index:10001; box-shadow:0 16px 48px rgba(0,0,0,.5); }
   .tip.hidden{ display:none; }
 
-  /* Current value chip */
   .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
   .cv strong{ font-weight:800; }
   .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; }
@@ -76,22 +72,18 @@
 
   .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
 
-  /* Segmented control (follow ups) */
   .seg{ display:flex; gap:6px; background:#0e1117; border:1px solid var(--line); border-radius:999px; padding:4px; }
   .segbtn{ background:transparent; border:none; color:#cfd6e4; font-weight:800; padding:8px 12px; border-radius:999px; cursor:pointer; }
   .segbtn.seg-on{ background:var(--orange); color:#000; box-shadow:0 6px 14px rgba(237,108,3,.35); }
 
-  /* Hide helper */
   .hidden{ display:none !important; }
 
-  /* Overlay loader */
   .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
   .overlay.hidden{ display:none; }
   .loading{ display:flex; flex-direction:column; align-items:center; gap:10px; }
   .bigspin{ width:46px; height:46px; border:5px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:999px; animation:spin .9s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg) } }
 
-  /* Examples modal (scrollable) */
   .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
   .modal.show{ display:flex; }
   .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); max-height:80vh; }
@@ -104,7 +96,6 @@
   .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
   .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
 
-  /* Webhook response (pretty) */
   .resp{ margin-top:14px; }
   .resp.hidden{ display:none; }
   .resp-card{ border:1px solid #263142; background:#0b0f14; border-radius:14px; padding:14px; }
@@ -116,9 +107,6 @@
   .kvt{ border:1px solid #273042; border-radius:10px; padding:10px; background:#0f141a; }
   .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
   .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
-  .rawtoggle{ background:transparent; border:1px dashed #2b2f36; color:#cfd6e4; padding:6px 10px; border-radius:10px; cursor:pointer; font-size:12px; }
-  .rawbox{ margin-top:8px; display:none; }
-  .rawbox pre{ background:#090d12; border:1px solid #263142; border-radius:12px; padding:12px; overflow:auto; max-height:260px; }
 
   .actions{ display:none !important; }
 </style>
@@ -140,8 +128,8 @@
         <div class="tabs" id="tabs"></div>
         <div class="top-actions hidden" id="topActions">
           <span class="dirty-dot" title="Unsaved changes"></span>
-          <button class="btn-sm" id="submitBtnTop">Save</button>
-          <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next</button>
+          <button class="btn-sm" id="submitBtnTop">Save (Page)</button>
+          <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next Page</button>
         </div>
       </div>
     </div>
@@ -155,105 +143,36 @@
     </div>
 
     <div class="card" id="formCard">
-      <!-- Active -->
-      <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
-      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
-      <span class="toggle-label" id="activeLabel">No</span>
-      <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
-
-      <!-- Campaign name -->
-      <div class="label-row"><label>Campaign name</label></div>
-      <input type="text" id="campaignName" placeholder="Campaign name" />
-      <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
-
-      <div class="divider"></div>
-
-      <!-- Per day + Followups + Cadence -->
-      <div class="row-follow">
-        <!-- Per-day -->
-        <div>
-          <div class="label-row">
-            <label>How many per day</label>
-            <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
-          </div>
-          <select id="perDay">
-            <option>10</option><option>25</option><option>50</option><option>75</option>
-            <option>100</option><option>150</option><option>200</option><option>250</option>
-            <option>300</option><option>350</option><option>500</option>
-          </select>
-          <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
-        </div>
-
-        <!-- Follow-ups (segmented) -->
-        <div>
-          <div class="label-row">
-            <label>Number of follow ups</label>
-            <button class="ibtn" data-tip="How many follow-up bumps after the IM (initial message) to schedule.">What’s this?</button>
-          </div>
-          <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
-            <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
-            <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
-            <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
-            <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
-          </div>
-          <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
-        </div>
-
-        <!-- Cadence -->
-        <div>
-          <div class="label-row">
-            <label>Follow up cadence</label>
-            <button class="ibtn" data-tip="IM = Initial message (the very first outbound). The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows only what will send based on # of follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
-          </div>
-          <select id="cadence">
-            <option>IM > 15m > 24h > 24h</option>
-            <option>IM > 24h > 24h > 24h</option>
-            <option>IM > 24h > 48h > 72h</option>
-            <option>IM > 48h > 48h > 48h</option>
-            <option>IM > 72h > 72h > 72h</option>
-            <option>IM > 7d > 7d > 7d</option>
-          </select>
-          <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
-        </div>
+      <!-- Page tabs -->
+      <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
+        <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Campaign & Messaging</button>
+        <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Volume, Follow-ups & CSV</button>
       </div>
 
-      <div class="divider"></div>
+      <!-- PAGE 1 -->
+      <section id="page1" class="page">
+        <!-- Active -->
+        <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
+        <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
+        <span class="toggle-label" id="activeLabel">No</span>
+        <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
 
-      <!-- First message -->
-      <div class="label-row">
-        <label>First message</label>
-        <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
-        <button class="xbtn ex-btn" data-target="firstMessage" data-kind="first">Examples</button>
-      </div>
-      <div class="ti" data-target="firstMessage">
-        <select>
-          <option value="{{contact.first_name}}">First name</option>
-          <option value="{{contact.last_name}}">Last name</option>
-          <option value="{{contact.full_name}}">Full name</option>
-          <option value="{{contact.email}}">Email</option>
-          <option value="{{contact.phone}}">Phone</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-          <option value="{{contact.make}}">Make</option>
-          <option value="{{contact.model}}">Model</option>
-          <option value="[Type business name here]">Business name</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
-      <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
-      <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
 
-      <div class="divider"></div>
+        <!-- Campaign name -->
+        <div class="label-row"><label>Campaign name</label></div>
+        <input type="text" id="campaignName" placeholder="Campaign name" />
+        <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
 
-      <!-- Bumps (each wrapped so we can hide/show by follow-ups) -->
-      <div class="bump-block" data-b="1">
+        <div class="divider"></div>
+
+        <!-- First message -->
         <div class="label-row">
-          <label>Bump 1</label>
-          <button class="ibtn" data-tip="Short nudge after IM based on the cadence above. Aim to confirm we’ve got the right number and keep the door open.">What’s this?</button>
-          <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
+          <label>First message</label>
+          <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
+          <button class="xbtn ex-btn" data-target="firstMessage" data-kind="first">Examples</button>
         </div>
-        <div class="ti" data-target="bump1">
+        <div class="ti" data-target="firstMessage">
           <select>
             <option value="{{contact.first_name}}">First name</option>
             <option value="{{contact.last_name}}">Last name</option>
@@ -267,18 +186,93 @@
           </select>
           <button type="button">Insert</button>
         </div>
-        <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
-        <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
-        <div class="divider"></div>
-      </div>
+        <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
+        <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
 
-      <div class="bump-block" data-b="2">
-        <div class="label-row">
-          <label>Bump 2</label>
-          <button class="ibtn" data-tip="Second follow-up. Keep it polite and low-friction; ask for a simple confirmation or preference.">What’s this?</button>
-          <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
+        <div class="divider"></div>
+
+        <!-- Bumps -->
+        <div class="bump-block" data-b="1">
+          <div class="label-row">
+            <label>Bump 1</label>
+            <button class="ibtn" data-tip="Short nudge after IM based on the cadence.">What’s this?</button>
+            <button class="xbtn ex-btn" data-target="bump1" data-kind="bump1">Examples</button>
+          </div>
+          <div class="ti" data-target="bump1">
+            <select>
+              <option value="{{contact.first_name}}">First name</option>
+              <option value="{{contact.last_name}}">Last name</option>
+              <option value="{{contact.full_name}}">Full name</option>
+              <option value="{{contact.email}}">Email</option>
+              <option value="{{contact.phone}}">Phone</option>
+              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+              <option value="{{contact.make}}">Make</option>
+              <option value="{{contact.model}}">Model</option>
+              <option value="[Type business name here]">Business name</option>
+            </select>
+            <button type="button">Insert</button>
+          </div>
+          <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
+          <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
+          <div class="divider"></div>
         </div>
-        <div class="ti" data-target="bump2">
+
+        <div class="bump-block" data-b="2">
+          <div class="label-row">
+            <label>Bump 2</label>
+            <button class="ibtn" data-tip="Second follow-up.">What’s this?</button>
+            <button class="xbtn ex-btn" data-target="bump2" data-kind="bump2">Examples</button>
+          </div>
+          <div class="ti" data-target="bump2">
+            <select>
+              <option value="{{contact.first_name}}">First name</option>
+              <option value="{{contact.last_name}}">Last name</option>
+              <option value="{{contact.full_name}}">Full name</option>
+              <option value="{{contact.email}}">Email</option>
+              <option value="{{contact.phone}}">Phone</option>
+              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+              <option value="{{contact.make}}">Make</option>
+              <option value="{{contact.model}}">Model</option>
+              <option value="[Type business name here]">Business name</option>
+            </select>
+            <button type="button">Insert</button>
+          </div>
+          <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
+          <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
+          <div class="divider"></div>
+        </div>
+
+        <div class="bump-block" data-b="3">
+          <div class="label-row">
+            <label>Bump 3</label>
+            <button class="ibtn" data-tip="Final follow-up.">What’s this?</button>
+            <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
+          </div>
+          <div class="ti" data-target="bump3">
+            <select>
+              <option value="{{contact.first_name}}">First name</option>
+              <option value="{{contact.last_name}}">Last name</option>
+              <option value="{{contact.full_name}}">Full name</option>
+              <option value="{{contact.email}}">Email</option>
+              <option value="{{contact.phone}}">Phone</option>
+              <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+              <option value="{{contact.make}}">Make</option>
+              <option value="{{contact.model}}">Model</option>
+              <option value="[Type business name here]">Business name</option>
+            </select>
+            <button type="button">Insert</button>
+          </div>
+          <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+          <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+          <div class="divider"></div>
+        </div>
+
+        <!-- Notes -->
+        <div class="label-row">
+          <label>Notes about campaign (Prompts/SOP)</label>
+          <button class="xbtn ex-btn" data-target="notes" data-kind="notes">Examples</button>
+        </div>
+        <div class="ti" data-target="notes">
           <select>
             <option value="{{contact.first_name}}">First name</option>
             <option value="{{contact.last_name}}">Last name</option>
@@ -292,61 +286,126 @@
           </select>
           <button type="button">Insert</button>
         </div>
-        <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
-        <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
-        <div class="divider"></div>
-      </div>
+        <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
+        <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
 
-      <div class="bump-block" data-b="3">
+        <div class="step-actions">
+          <div class="left">
+            <button class="btn-prev" id="prevFromP1" disabled>Previous</button>
+          </div>
+          <div class="right">
+            <button class="btn-next" id="nextFromP1">Next (Page 2)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2 -->
+      <section id="page2" class="page hidden" aria-hidden="true">
+        <!-- Per day + Followups + Cadence -->
+        <div class="row-follow">
+          <!-- Per-day -->
+          <div>
+            <div class="label-row">
+              <label>How many per day</label>
+              <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
+            </div>
+            <select id="perDay">
+              <option>10</option><option>25</option><option>50</option><option>75</option>
+              <option>100</option><option>150</option><option>200</option><option>250</option>
+              <option>300</option><option>350</option><option>500</option>
+            </select>
+            <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
+          </div>
+
+          <!-- Follow-ups (segmented) -->
+          <div>
+            <div class="label-row">
+              <label>Number of follow ups</label>
+              <button class="ibtn" data-tip="How many follow-up bumps after the IM to schedule.">What’s this?</button>
+            </div>
+            <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
+              <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
+              <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
+              <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
+              <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
+            </div>
+            <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
+          </div>
+
+          <!-- Cadence -->
+          <div>
+            <div class="label-row">
+              <label>Follow up cadence</label>
+              <button class="ibtn" data-tip="IM = Initial message. The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows only what will send based on # of follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
+            </div>
+            <select id="cadence">
+              <option>IM > 15m > 24h > 24h</option>
+              <option>IM > 24h > 24h > 24h</option>
+              <option>IM > 24h > 48h > 72h</option>
+              <option>IM > 48h > 48h > 48h</option>
+              <option>IM > 72h > 72h > 72h</option>
+              <option>IM > 7d > 7d > 7d</option>
+            </select>
+            <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- CSV UPLOADER -->
         <div class="label-row">
-          <label>Bump 3</label>
-          <button class="ibtn" data-tip="Final follow-up. Close the loop, be helpful, offer a next step (call, test drive, or ‘I’ll keep an eye out’).">What’s this?</button>
-          <button class="xbtn ex-btn" data-target="bump3" data-kind="bump3">Examples</button>
+          <label>CSV file receiver (sends binary to webhook)</label>
+          <button class="ibtn" data-tip="Uploads the selected CSV directly to your webhook as either multipart/form-data or application/octet-stream. Includes locationId, businessName, and agent number.">What’s this?</button>
         </div>
-        <div class="ti" data-target="bump3">
-          <select>
-            <option value="{{contact.first_name}}">First name</option>
-            <option value="{{contact.last_name}}">Last name</option>
-            <option value="{{contact.full_name}}">Full name</option>
-            <option value="{{contact.email}}">Email</option>
-            <option value="{{contact.phone}}">Phone</option>
-            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-            <option value="{{contact.make}}">Make</option>
-            <option value="{{contact.model}}">Model</option>
-            <option value="[Type business name here]">Business name</option>
-          </select>
-          <button type="button">Insert</button>
+
+        <div class="row">
+          <div>
+            <label>Webhook (uploadUrl in query)</label>
+            <input type="text" id="uploadUrlEcho" placeholder="Upload URL (from ?uploadUrl=…)" disabled />
+          </div>
+          <div>
+            <label>Send mode</label>
+            <select id="uploadMode">
+              <option value="multipart">multipart/form-data</option>
+              <option value="octet">application/octet-stream</option>
+            </select>
+          </div>
         </div>
-        <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
-        <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
-        <div class="divider"></div>
-      </div>
 
-      <!-- Notes -->
-      <div class="label-row">
-        <label>Notes about campaign</label>
-        <button class="xbtn ex-btn" data-target="notes" data-kind="notes">Examples</button>
-      </div>
-      <div class="ti" data-target="notes">
-        <select>
-          <option value="{{contact.first_name}}">First name</option>
-          <option value="{{contact.last_name}}">Last name</option>
-          <option value="{{contact.full_name}}">Full name</option>
-          <option value="{{contact.email}}">Email</option>
-          <option value="{{contact.phone}}">Phone</option>
-          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
-          <option value="{{contact.make}}">Make</option>
-          <option value="{{contact.model}}">Model</option>
-          <option value="[Type business name here]">Business name</option>
-        </select>
-        <button type="button">Insert</button>
-      </div>
-      <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
-      <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
+        <div class="row">
+          <div>
+            <label>Form field name (for multipart)</label>
+            <input type="text" id="uploadFieldName" value="file" />
+          </div>
+          <div>
+            <label>Extra JSON meta (optional)</label>
+            <input type="text" id="uploadMeta" placeholder='{"source":"custom-agent-setup"}' />
+          </div>
+        </div>
 
-      <div class="divider"></div>
+        <div class="row">
+          <div>
+            <label>Select CSV file</label>
+            <input type="file" id="csvFile" accept=".csv,text/csv" />
+          </div>
+          <div style="display:flex; align-items:flex-end;">
+            <button class="btn-sm" id="uploadCsvBtn" style="height:42px;">Upload CSV</button>
+          </div>
+        </div>
 
-      <!-- Webhook response -->
+        <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+
+        <div class="step-actions">
+          <div class="left">
+            <button class="btn-prev" id="prevFromP2">Previous (Page 1)</button>
+          </div>
+          <div class="right">
+            <button class="btn-next" id="nextFromP2" title="Goes to next Agent">Next Agent</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Webhook response (pretty) -->
       <div class="resp hidden" id="respBox">
         <div class="label-row"><label>Webhook response</label></div>
         <div class="resp-card">
@@ -384,14 +443,13 @@
   /* ------------------- URL CONFIG ------------------- */
   const qs = new URLSearchParams(location.search);
   const get = k => qs.get(k) || "";
-
   function getUrlMaybeEncoded(param){
     const v = get(param) || "";
     return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
   }
-
   const FETCH_URL      = getUrlMaybeEncoded("fetchUrl");
   const SUBMIT_URL     = getUrlMaybeEncoded("submitUrl");
+  const UPLOAD_URL     = getUrlMaybeEncoded("uploadUrl"); // NEW
   const AUTH_HEADER    = get("authHeader") || "";
   const AUTH_TOKEN     = get("authToken")  || "";
   const APIKEY_HEADER  = get("apiKeyHeader") || "";
@@ -412,6 +470,7 @@
     cadence:  get("val_cadence"),
     perday:   get("val_perday"),
     notes:    get("val_notes"),
+    followups: get("val_followups"),
   };
 
   function buildHeaders(){
@@ -424,7 +483,6 @@
   /* ------------------- EXAMPLES DATA ------------------- */
   const swapPlaceholders = s =>
     s.replaceAll("{{location.name}}","[Type business name here]")
-     .replaceAll("{{location.name}}","[Type business name here]")
      .replaceAll("{{agent.first_name}}","[Type Agent name here]")
      .replaceAll("{{agent.name}}","[Type Agent name here]")
      .replaceAll("{{agent}}","[Type Agent name here]");
@@ -447,132 +505,24 @@
     bump1: [
       { title: "Fresh Up Follow Up — Bump 1", items: [
         "Quick nudge — want me to hold a 10-minute slot this week to revisit top picks?"
-      ]},
-      { title: "Service to Sales (Appraisal) — Bump 1", items: [
-        "Open to a quick appraisal? I can send a link for online or have a buying specialist call — which do you prefer?"
-      ]},
-      { title: "Phone Up Follow Up — Bump 1", items: [
-        "Shall I pencil you in for a quick walkthrough? Morning or afternoon?"
-      ]},
-      { title: "Internet Up Follow Up — Bump 1", items: [
-        "Prefer a 10-minute call or a quick visit to look at options?"
       ]}
     ],
     bump2: [
       { title: "Fresh Up Follow Up — Bump 2", items: [
         "If nothing grabbed you yet, I can text 2–3 matches and hold one. Want me to do that?"
-      ]},
-      { title: "Service to Sales (Appraisal) — Bump 2", items: [
-        "Online works great — I’ll send the link now. When you submit, I’ll bring it up to the team. Want the link?"
-      ]},
-      { title: "Phone Up Follow Up — Bump 2", items: [
-        "I can have a specialist ready when you pop in. Would a quick 15-minute slot help?"
-      ]},
-      { title: "Internet Up Follow Up — Bump 2", items: [
-        "I’ve got availability to show you options — would after-work today or tomorrow be better?"
       ]}
     ],
     bump3: [
       { title: "Fresh Up Follow Up — Bump 3", items: [
         "Last check-in from [Type business name here] — want me to keep looking or should I close this out for now?"
-      ]},
-      { title: "Service to Sales (Appraisal) — Bump 3", items: [
-        "No rush on the appraisal. I can send the link and a buying specialist will contact you soon to discuss the next steps. Want me to send it?"
-      ]},
-      { title: "Phone Up Follow Up — Bump 3", items: [
-        "Happy to close the loop here. Would you like me to hold a time this weekend just in case?"
-      ]},
-      { title: "Internet Up Follow Up — Bump 3", items: [
-        "If timing isn’t right, I can keep an eye out and text you when a perfect match hits — sound good?"
       ]}
     ],
     notes: [
-      {
-        title: "DBR — Campaign Objective",
-        sop: [
+      { title: "DBR — Campaign Objective", sop: [
 `=If the chat history indicates that the most recent agent to be activated is the “dbr” Agent - we are doing a general reach out to see if {{contact.first_name}} has purchased a vehicle yet.
 
-1.0 – If their first response is positive, acknowledge the response (without a greeting) and say:  
-“{{contact.first_initial_response_message}}”
-
-Then on a new paragraph:  
-“Just wanted to see if you're still on the lookout for a vehicle or if you are still looking at your options?”
-
-1.1 – If the response to the message asking who they are or one of the follow up messages is not positive (for example “no” or “no it isn’t” or “wrong number”), then apologize say:
-
-“My apologies, looks like there’s a mix-up – I'll make sure you don't get any more messages.  Before you go, is anyone you know looking to buy or sell a vehicle at this time? :)”
-
-Then if they say no to that question, say  
-“no worries, have a great day, take care”
- 2.0 - If their response to the question about exploring vehicle options is negative, go to 2.1 - If is positive, go to 2.2. 
-2.1 – Acknowledge the response and try to figure out what is holding them back from moving forward. Utilize your training to pry a little and move toward qualification without sounding too pushy. The only exception is if they say they already bought a vehicle. In which case move onto the “already purchased” protocol.
-
-2.2 – Acknowledge the response and then begin to converse with the customer about their vehicle needs and what we can do to help. 
-
-Make sure to ask 2 relevant qualification questions in regular conversation, qualifying them & finding out we can help without offering any advice or answering questions about price or inventory before going for the appointment/call. 
-3.0 - When you have asked your questions, ask if they would like to chat with the relevant person from the department you think will help them best & then move onto the sales booking protocol.
-
-One question at a time per interaction.`
-        ]
-      },
-      {
-        title: "Service to Sales (Appraisal) — Campaign Objective",
-        sop: [
-`=If the chat history indicates that the most recent agent to be activated is the "Service to Sales (Appraisal)" Agent,
-
-This means we are reaching out to a customer who scheduled a service appointment very recently & the objective is to invite them to have their vehicle appraised either online or get the process started over the phone with a specialist.
-
-1.0 – We will be (re) introducing ourselves and asking how their vehicle is. (We are skipping the assistant working from home message here in this convo.) This will be a short "Hi [their name], it’s [your name] from [dealership name] — how are you and your [vehicle but without the year, just the model; if nothing available, use 'vehicle'] doing?" message.
-
-2.0 – Once they tell us how they / their vehicle is we want to acknowledge what they say empathetically,
-
-and then on a new line say:
-
-"I just wanted to quickly check-in, see how you were and also quickly ask if you were interested in getting your [vehicle] appraised?"
-
-2.1 – If they say yes, ask if they would like to do it online or if they would like to have an appraisal specialist reach out to them.
-
-3.1 – If they say online, send them this link: www.juneksbuysusedcars.com and say "Once you start, could you let me know when you’ve submitted your info? That way, I’ll bring it up to the team."
-
-3.1.1 – Once they are done, say "Great, thanks. A buying specialist will contact you soon to discuss the next steps" and then wish them a nice day (don’t use "take care" or "have a wonderful day" here as the phrase "buying specialist will contact you soon to discuss the next steps" is the trigger phrase tool that will send to the buying team so make sure you use it when appropriate).
-
-If they say over the phone, use the "buying specialist" trigger phrase tool in your sign-off message as you are just in admin.
-
-Note: One question at a time per interaction.`
-        ]
-      },
-      {
-        title: "Phone Up Follow Up — Campaign Objective",
-        sop: [
-`=If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent,
-
-This means we are reaching out to customers who called the dealership 7 days ago & the conversation objective is to invite them to visit the store and set an appointment.
-
-1.0 – We will be (re) introducing ourselves and asking how their vehicle search is. (Skipping the assistant working from home message.) Short "Hey [their name], how are you? It’s [your name] from [dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
-
-2.0 – After they reply, acknowledge empathetically and continue with default qualified prospect section and any booking criteria.
-
-The best way to book is to schedule a call with a specialist who will walk them through any final things.
-
-One question at a time per interaction.`
-        ]
-      },
-      {
-        title: "Internet Up Follow Up — Campaign Objective",
-        sop: [
-`=If the chat history indicates that the most recent agent to be activated is the "Fresh Up Follow Up" Agent,
-
-This means we are reaching out to a customer who is a brand new internet lead & the conversation objective is to invite them to set an appointment in our store.
-
-1.0 – (Re) introduce and ask how their vehicle search is. (Skipping the assistant working from home message.) Short "Hey [their name], how are you? It’s [your name] from [dealership name]. I had a quick note here to reach out, how is the vehicle search going?" message.
-
-2.0 – Once they reply, acknowledge empathetically and continue with the default qualified prospect section and any booking criteria.
-
-The best way to book is to schedule a call with a specialist who will walk them through any final things.
-
-One question at a time per interaction.`
-        ]
-      }
+Ask empathetic questions, avoid pricing/inventory specifics until booking. One question per interaction.`
+      ]}
     ]
   };
 </script>
@@ -583,11 +533,10 @@ One question at a time per interaction.`
   const respGrid  = document.getElementById("respGrid");
   const rawBox    = document.getElementById("rawBox");
   const rawPre    = document.getElementById("rawPre");
-  const rawToggle = document.getElementById("rawToggle");
   const respStatusPill = document.getElementById("respStatusPill");
-  rawToggle.addEventListener("click", ()=>{
+  document.getElementById("rawToggle").addEventListener("click", ()=>{
     rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
-    rawToggle.textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
+    document.getElementById("rawToggle").textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
   });
 
   function showWebhookResponse(body, meta = {}) {
@@ -645,7 +594,7 @@ One question at a time per interaction.`
 
   document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
 
-  // Tabs
+  // Agent tabs
   const tabsEl = document.getElementById("tabs");
   for (let i=1;i<=AGENTS;i++){
     const t = document.createElement("button");
@@ -676,6 +625,35 @@ One question at a time per interaction.`
   const bump3        = document.getElementById("bump3");
   const notes        = document.getElementById("notes");
   const statusEl     = document.getElementById("status");
+
+  // Page tabs
+  const pageTabs = [...document.querySelectorAll(".pagetab")];
+  const page1 = document.getElementById("page1");
+  const page2 = document.getElementById("page2");
+  let page = 1;
+  function gotoPage(n){
+    page = n;
+    page1.classList.toggle("hidden", n!==1);
+    page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
+    page2.classList.toggle("hidden", n!==2);
+    page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
+    pageTabs.forEach(pt=>{
+      const is = Number(pt.dataset.page)===n;
+      pt.classList.toggle("active", is);
+      pt.setAttribute("aria-selected", is ? "true":"false");
+    });
+    recalcSaveVisibility();
+  }
+  pageTabs.forEach(pt=> pt.addEventListener("click", ()=> gotoPage(Number(pt.dataset.page)) ));
+  document.getElementById("nextFromP1").addEventListener("click", ()=> gotoPage(2));
+  document.getElementById("prevFromP1").addEventListener("click", ()=> gotoPage(1)); // disabled anyway
+  document.getElementById("prevFromP2").addEventListener("click", ()=> gotoPage(1));
+  document.getElementById("nextFromP2").addEventListener("click", ()=>{
+    // advance to next agent after page 2
+    const next = agent===AGENTS ? 1 : agent+1;
+    switchAgent(next);
+    gotoPage(1);
+  });
 
   // Sticky top actions
   const topActions   = document.getElementById("topActions");
@@ -708,7 +686,6 @@ One question at a time per interaction.`
   /* ---------- Cadence preview + per-day cap ---------- */
   const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
 
-  // FIX 1: keep the original full cadence string; don't rebuild from textContent after previews
   function ensureCadenceValues(){
     [...cadence.options].forEach(opt=>{
       const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
@@ -716,20 +693,17 @@ One question at a time per interaction.`
       opt.value = opt.dataset.full; // keep the true full string as value
     });
   }
-
   function previewCadence(full, n){
     const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
     const head = parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
     return head;
   }
-
   function applyCadencePreview(n){
     [...cadence.options].forEach(opt=>{
       const full = opt.dataset.full || opt.value || opt.textContent.trim();
       opt.textContent = previewCadence(full, n);
     });
   }
-
   function restrictPerDay(n){
     let max = 500;
     if (n===1) max=250;
@@ -819,8 +793,8 @@ One question at a time per interaction.`
     else if (!tip.classList.contains("hidden")) { hideTip(); }
   });
 
-  // Inputs listeners
-  [campaignName, perDay, cadence, firstMessage, bump1, bump2, bump3, notes].forEach(el=>{
+  // Inputs listeners (page-specific)
+  [campaignName, firstMessage, bump1, bump2, bump3, notes, perDay, cadence].forEach(el=>{
     el.addEventListener("input", recalcSaveVisibility);
     el.addEventListener("change", recalcSaveVisibility);
   });
@@ -875,6 +849,7 @@ One question at a time per interaction.`
   }
 
   function switchAgent(n){
+    // persist working values for current agent+page
     working[agent] = getFormValues();
 
     [...tabsEl.children].forEach(btn=>{
@@ -919,6 +894,9 @@ One question at a time per interaction.`
     recalcSaveVisibility();
     setStatus("");
     respBox.classList.add("hidden");
+
+    // reset to Page 1 when switching agents
+    gotoPage(1);
   }
 
   function getFormValues(){
@@ -945,7 +923,8 @@ One question at a time per interaction.`
       (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT.trim()) &&
       (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT.trim()) &&
       (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT.trim()) &&
-      !v.notes;
+      !v.notes &&
+      !v.perday && !v.cadence;
     return emptyActive && emptyTexts;
   }
 
@@ -980,9 +959,18 @@ One question at a time per interaction.`
   }
 
   function recalcSaveVisibility(){
-    const noChanges = Object.keys(diffData(agent, { ignoreDefaults:true })).length===0;
-    const allEmpty  = isBlankTextFields();
-    const show = !(noChanges || allEmpty);
+    // only consider fields on the current page for "dirty" state (nicer UX)
+    const changes = diffData(agent, { ignoreDefaults:true });
+    const page1Keys = ["Active","Campaign name","First message","Bump 1","Bump 2","Bump 3","Notes about campaign"];
+    const page2Keys = ["How many per day","Number of follow ups","Follow up cadence"];
+    const relevant = Object.keys(changes).some(k=>{
+      return page===1
+        ? page1Keys.some(pk=>k.includes(pk))
+        : page2Keys.some(pk=>k.includes(pk));
+    });
+
+    const allEmpty = isBlankTextFields();
+    const show = relevant && !allEmpty;
     topActions.classList.toggle("hidden", !show);
     topActions.classList.toggle("dirty", show);
   }
@@ -1002,38 +990,39 @@ One question at a time per interaction.`
     return true;
   }
 
-  async function saveAgentThenRefresh(agentNum, { jumpToNext } = {}){
+  function buildPageScopedPayload(vals){
+    // Always send ALL fields (so server can keep state), BUT we still do page-scoped "dirty" UX.
+    const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
+    const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
+
+    const data = {
+      active:   toggle.classList.contains("on") ? "Yes" : "No",
+      campaign: vals.campaign,
+      perday:   vals.perday,
+      followups: vals.followups,
+      cadence:  fullCad,
+      firstmsg: vals.firstmsg,
+      bump1:    vals.bump1,
+      bump2:    vals.bump2,
+      bump3:    vals.bump3,
+      notes:    vals.notes
+    };
+
+    // Replace all newlines with £%£% for GHL custom values
+    for (const k in data) {
+      if (typeof data[k] === "string") {
+        data[k] = data[k].replace(/\r?\n/g, "£%£%");
+      }
+    }
+    return data;
+  }
+
+  async function saveAgentThenRefresh(agentNum, { jumpToNextPage=false } = {}){
     if (!ensureSubmitReady()) return;
 
     const vals     = getFormValues();
     const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
-
-    // FIX 2: always submit FULL cadence string, and send ALL fields even if hidden
-    const cadOpt   = document.getElementById("cadence").selectedOptions?.[0];
-    const fullCad  = (cadOpt?.dataset?.full) || vals.cadence;
-
-    const allData = {
-  active:   toggle.classList.contains("on") ? "Yes" : "No",
-  campaign: vals.campaign,
-  perday:   vals.perday,
-  followups: vals.followups,   // still send the chosen count
-  cadence:  fullCad,           // full string e.g. "IM > 24h > 48h > 72h"
-  firstmsg: vals.firstmsg,
-  bump1:    vals.bump1,
-  bump2:    vals.bump2,        // send even if hidden
-  bump3:    vals.bump3,        // send even if hidden
-  notes:    vals.notes
-};
-
-
-    const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: allData };
-
-    /* Replace all newlines with £%£% for GHL custom values */
-    for (const k in payload.data) {
-      if (typeof payload.data[k] === "string") {
-        payload.data[k] = payload.data[k].replace(/\r?\n/g, "£%£%");
-      }
-    }
+    const payload  = { locationId, businessName, agent: agentNum, keys: keysFull, data: buildPageScopedPayload(vals) };
 
     submitBtnTop.disabled = true;
     saveNextBtnTop.disabled = true;
@@ -1055,16 +1044,19 @@ One question at a time per interaction.`
       setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
       showWebhookResponse(parsed, { status, headers });
 
-      // refresh current values if possible
       if (FETCH_URL){
         await refreshFromServer();
       }
-      if (jumpToNext){
-        const next = agentNum === AGENTS ? 1 : agentNum + 1;
-        switchAgent(next);
-      } else {
-        renderCV();
-        recalcSaveVisibility();
+      renderCV();
+      recalcSaveVisibility();
+
+      if (jumpToNextPage){
+        if (page===1) gotoPage(2);
+        else {
+          const next = agentNum === AGENTS ? 1 : agentNum + 1;
+          switchAgent(next);
+          gotoPage(1);
+        }
       }
     } catch (err){
       hideOverlay();
@@ -1078,13 +1070,12 @@ One question at a time per interaction.`
 
   document.getElementById("submitBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
-    saveAgentThenRefresh(agent, { jumpToNext:false });
+    saveAgentThenRefresh(agent, { jumpToNextPage:false });
   });
   document.getElementById("saveNextBtnTop").addEventListener("click", (e)=>{
     e.preventDefault();
-    saveAgentThenRefresh(agent, { jumpToNext:true });
+    saveAgentThenRefresh(agent, { jumpToNextPage:true });
   });
-  /* -------------- END SAVE HANDLER --------------- */
 
   async function refreshFromServer(){
     if (!locationId) return;
@@ -1238,6 +1229,85 @@ One question at a time per interaction.`
   exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
   exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
+  /* ------------------- CSV UPLOAD ------------------- */
+  const uploadUrlEcho = document.getElementById("uploadUrlEcho");
+  const uploadMode = document.getElementById("uploadMode");
+  const uploadFieldName = document.getElementById("uploadFieldName");
+  const uploadMeta = document.getElementById("uploadMeta");
+  const csvFile = document.getElementById("csvFile");
+  const uploadCsvBtn = document.getElementById("uploadCsvBtn");
+  const csvStatus = document.getElementById("csvStatus");
+  uploadUrlEcho.value = UPLOAD_URL || "(missing ?uploadUrl=…)";
+
+  function setCsvStatus(text, ok) {
+    csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
+    csvStatus.classList.toggle("has-value", !!ok);
+    csvStatus.classList.toggle("empty", !ok);
+  }
+
+  uploadCsvBtn.addEventListener("click", async (e)=>{
+    e.preventDefault();
+    if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
+    const file = csvFile.files?.[0];
+    if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
+
+    showOverlay("Uploading CSV…");
+    try {
+      const mode = uploadMode.value;
+      let res;
+
+      if (mode === "multipart"){
+        const fd = new FormData();
+        const field = (uploadFieldName.value || "file").trim();
+        fd.append(field, file, file.name);
+        fd.append("locationId", locationId || "");
+        fd.append("businessName", businessName || "");
+        fd.append("agent", String(agent));
+        // Optional extra meta JSON
+        const metaTxt = (uploadMeta.value || "").trim();
+        if (metaTxt){
+          fd.append("meta", metaTxt);
+        }
+        // Auth headers still apply, but DO NOT set content-type (browser sets boundary)
+        const headers = {};
+        if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+        if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+
+        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
+      } else {
+        // application/octet-stream with query/meta in headers
+        const headers = { "Content-Type":"application/octet-stream",
+                          "X-Filename": encodeURIComponent(file.name),
+                          "X-Location-Id": locationId || "",
+                          "X-Business-Name": businessName || "",
+                          "X-Agent": String(agent) };
+        if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+        if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+        const metaTxt = (uploadMeta.value || "").trim();
+        if (metaTxt) headers["X-Meta"] = metaTxt;
+
+        res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: file });
+      }
+
+      const status = res.status;
+      const text = await res.text();
+      let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
+      hideOverlay();
+
+      if (!res.ok){
+        setCsvStatus(`Error ${status}`, false);
+      } else {
+        setCsvStatus("Uploaded", true);
+      }
+      showWebhookResponse(parsed, { status });
+    } catch (err){
+      hideOverlay();
+      setCsvStatus("Network error", false);
+      showWebhookResponse({ error: String(err) }, { status: 0 });
+    }
+  });
+
+  /* ------------------- INIT ------------------- */
   (async function init(){
     ensureCadenceValues();
     for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
@@ -1264,6 +1334,7 @@ One question at a time per interaction.`
     }
     switchAgent(1);
     updateBumpVisibility();
+    gotoPage(1);
   })();
 </script>
 </body>
