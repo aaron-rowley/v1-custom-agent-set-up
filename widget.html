@@ -486,6 +486,35 @@
   </div>
 </div>
 
+  <!-- Field Mapping Modal -->
+<div id="mapModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="mapTitle">Map CSV Columns to Fields</div>
+      <button class="xbtn" id="mapClose">Close</button>
+    </div>
+    <div class="hint">Drag CSV column chips onto the field slots. Required: <code>first_name</code>, <code>last_name</code>, <code>email</code>.</div>
+    <div class="modal-body">
+      <div class="modelist">
+        <div class="list-title">CSV Columns</div>
+        <div class="col-list" id="csvCols"></div>
+      </div>
+      <div class="slotlist">
+        <div class="list-title">Map to fields</div>
+        <div id="slots"></div>
+      </div>
+    </div>
+    <div class="map-footer">
+      <div id="mapStatus" class="pill bad">Incomplete</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button class="xbtn" id="clearMap">Reset</button>
+        <button class="btn-sm" id="saveMap">Save mapping</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
 <script>
 /* ------------------- URL CONFIG ------------------- */
 const qs = new URLSearchParams(location.search);
@@ -1352,6 +1381,88 @@ function fakeProgress(to=100, ms=900){
   }
   requestAnimationFrame(tick);
 }
+
+
+
+/* ---------- Mapping modal wiring ---------- */
+const mapModal    = document.getElementById("mapModal");
+const mapClose    = document.getElementById("mapClose");
+const mapBtn      = document.getElementById("mapBtn");
+const csvCols     = document.getElementById("csvCols");
+const slots       = document.getElementById("slots");
+const mapStatus   = document.getElementById("mapStatus");
+const clearMapBtn = document.getElementById("clearMap");
+const saveMapBtn  = document.getElementById("saveMap");
+
+function buildMappingModal(){
+  // CSV column chips
+  csvCols.innerHTML = "";
+  (csvHeaders || []).forEach(h=>{
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.textContent = h || "(blank)";
+    chip.draggable = true;
+    chip.addEventListener("dragstart", ev=>{
+      ev.dataTransfer.setData("text/plain", h);
+    });
+    csvCols.appendChild(chip);
+  });
+
+  // Field slots
+  slots.innerHTML = "";
+  SYSTEM_FIELDS.forEach(f=>{
+    const slot = document.createElement("div");
+    slot.className = "slot";
+    slot.dataset.key = f.key;
+    slot.dataset.required = f.required ? "1" : "0";
+    slot.innerHTML = `
+      <div class="slot-name">${f.label}${f.required ? '<span class="req">*</span>' : ''}</div>
+      <div class="slot-target"><span class="placeholder">Not mapped</span></div>
+      <button class="clear" type="button">Clear</button>
+    `;
+    const target = slot.querySelector(".slot-target");
+
+    slot.querySelector(".clear").addEventListener("click", ()=>{
+      target.innerHTML = '<span class="placeholder">Not mapped</span>';
+      delete mapping[f.key];
+      validateMapping();
+    });
+
+    slot.addEventListener("dragover", e=>{ e.preventDefault(); slot.classList.add("dropping"); });
+    slot.addEventListener("dragleave", ()=> slot.classList.remove("dropping"));
+    slot.addEventListener("drop", e=>{
+      e.preventDefault();
+      slot.classList.remove("dropping");
+      const col = e.dataTransfer.getData("text/plain");
+      target.innerHTML = `<span class="chip">${col}</span>`;
+      mapping[f.key] = col;
+      validateMapping();
+    });
+
+    slots.appendChild(slot);
+  });
+
+  // reset mapping state on open
+  mapping = {};
+  validateMapping();
+}
+
+function validateMapping(){
+  const ok = SYSTEM_FIELDS.filter(f=>f.required).every(f => !!mapping[f.key]);
+  mapStatus.textContent = ok ? "Ready" : "Incomplete";
+  mapStatus.className = "pill " + (ok ? "ok" : "bad");
+  return ok;
+}
+
+// open/close/reset/save
+mapBtn?.addEventListener("click", ()=> mapModal.classList.add("show"));
+mapClose?.addEventListener("click", ()=> mapModal.classList.remove("show"));
+clearMapBtn?.addEventListener("click", buildMappingModal);
+saveMapBtn?.addEventListener("click", ()=>{
+  if (validateMapping()) mapModal.classList.remove("show");
+});
+
+
 
 /* Send flow: turn agent ON -> save fields -> upload CSV to UPLOAD_URL */
 async function sendAndActivate(){
