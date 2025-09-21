@@ -1287,7 +1287,7 @@ const sendCsvBtn = document.getElementById("sendCsvBtn");
 const csvStatus  = document.getElementById("csvStatus");
 
 // Must match your n8n Webhook node's binaryPropertyName
-const FIELD_NAME = "custom-campaign-agent.csv";
+const FIELD_NAME = "file";
 
 function setCsvStatus(text, ok){
   csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
