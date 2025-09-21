@@ -890,44 +890,6 @@ function setFollowups(n){
   updateBumpVisibility();
   recalcSaveVisibility();
 }
-
-// --- Agent readiness + gating ---
-function validateAgentReady(){
-  const vals = getFormValues();
-  const reasons = [];
-
-  if (!vals.campaign?.trim()) reasons.push("Campaign name");
-  if (!vals.perday)           reasons.push("Per-day limit");
-  if (!vals.cadence)          reasons.push("Follow-up cadence");
-  if (!vals.firstmsg?.trim()) reasons.push("First message");
-
-  const n = Number(vals.followups || 0);
-  if (n >= 1 && !vals.bump1?.trim()) reasons.push("Bump 1");
-  if (n >= 2 && !vals.bump2?.trim()) reasons.push("Bump 2");
-  if (n >= 3 && !vals.bump3?.trim()) reasons.push("Bump 3");
-
-  return { ok: reasons.length === 0, reasons };
-}
-
-function applyAgentGating(){
-  const { ok } = validateAgentReady();
-  setSendDisabled(!(ok && mappingComplete));
-
-  // Grey out the map button until the base fields exist
-  const gateMap = !ok;
-  const mapBtn = document.getElementById("mapBtn");
-  mapBtn.disabled = gateMap;
-  mapBtn.setAttribute("aria-disabled", gateMap ? "true" : "false");
-  mapBtn.style.opacity = gateMap ? .5 : 1;
-  mapBtn.style.pointerEvents = gateMap ? "none" : "auto";
-}
-
-// Hook into form inputs
-[campaignName, perDay, cadence, firstMessage, bump1, bump2, bump3].forEach(el=>{
-  el.addEventListener("input", ()=> applyAgentGating());
-  el.addEventListener("change", ()=> applyAgentGating());
-});
-
 followupsSeg.addEventListener('click', (e)=>{
   const btn = e.target.closest('.segbtn');
   if (!btn) return;
@@ -1462,15 +1424,18 @@ async function readCsvHeaders(file){
 }
 
 function wireDropzone(){
-dzInput.addEventListener("change", ()=>{
-  resetMappingState();
-  // ... your existing UI updates for showing file name etc ...
+  dzInput.addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0];
+    if (!f) return;
 
-  // Force mapping modal open every time a file is uploaded
-  document.getElementById("mapBtn").disabled = false;
-  document.getElementById("mapBtn").click();
-});
+    if (!isCsv(f))      { setCsvStatus("Only CSV files are allowed.", false); clearFile(); return; }
+    if (!withinLimit(f)){ setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); clearFile(); return; }
 
+    showSelected(f);
+    setCsvStatus(`Selected: ${f.name}`, true);
+
+    try { await readCsvHeaders(f); } catch {}
+  });
 
   const onDrop = (e) => {
     e.preventDefault();
