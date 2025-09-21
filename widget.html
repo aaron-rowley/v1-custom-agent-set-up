@@ -1689,40 +1689,6 @@ if (!validateMapping()){
   }
 }
 
-// --- Notify Email modal wiring ---
-const emailModal   = document.getElementById("emailModal");
-const emailInput   = document.getElementById("notifyEmailInput");
-const emailErr     = document.getElementById("emailError");
-const emailClose   = document.getElementById("emailClose");
-const emailSkip    = document.getElementById("emailSkip");
-const emailConfirm = document.getElementById("emailConfirm");
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-
-window.notifyEmail = localStorage.getItem("notifyEmail") || "";
-
-function openEmailModal(){
-  emailErr.style.display = "none";
-  emailInput.value = window.notifyEmail || "";
-  emailModal.classList.add("show");
-  setTimeout(()=> emailInput.focus(), 0);
-}
-function closeEmailModal(){ emailModal.classList.remove("show"); }
-
-emailClose.addEventListener("click", closeEmailModal);
-emailSkip.addEventListener("click", ()=>{
-  window.notifyEmail = "";
-  closeEmailModal();
-  sendAndActivate();
-});
-emailConfirm.addEventListener("click", ()=>{
-  const v = (emailInput.value || "").trim();
-  if (v && !EMAIL_RE.test(v)){ emailErr.style.display = "block"; return; }
-  window.notifyEmail = v;
-  if (v) localStorage.setItem("notifyEmail", v);
-  closeEmailModal();
-  sendAndActivate();
-});
-
 // --- Notify Email modal wiring (no Skip) ---
 const emailModal   = document.getElementById("emailModal");
 const emailInput   = document.getElementById("notifyEmailInput");
