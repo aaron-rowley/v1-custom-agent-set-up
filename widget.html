@@ -507,7 +507,7 @@
       <div class="modal-title" id="mapTitle">Map CSV Columns to Fields</div>
       <button class="xbtn" id="mapClose">Close</button>
     </div>
-    <div class="hint">Drag a CSV column or click it, then click a field slot. Required: <code>first_name</code>, <code>last_name</code>, <code>email</code>.</div>
+    <div class="hint">Drag a CSV column or click it, then click a field slot. Required: <strong>phone</strong> and <strong>either</strong> <code>full_name</code> <strong>or</strong> (<code>first_name</code> + <code>last_name</code>).</div>
     <div class="modal-body">
       <div class="modelist">
         <div class="list-title">CSV Columns</div>
@@ -1344,14 +1344,16 @@ function clearFile(){
 let csvHeaders = [];
 let mapping = {};
 const SYSTEM_FIELDS = [
-  { key:"first_name", label:"First name", required:true },
-  { key:"last_name",  label:"Last name",  required:true },
-  { key:"email",      label:"Email",      required:true },
-  { key:"phone",      label:"Phone" },
-  { key:"year_of_vehicle_manufacture", label:"Vehicle year" },
-  { key:"make", label:"Make" },
-  { key:"model", label:"Model" }
+  { key:"full_name", label:"Full name" },                // optional unless used instead of first+last
+  { key:"first_name", label:"First name" },
+  { key:"last_name",  label:"Last name" },
+  { key:"phone",      label:"Phone" },                   // will be required by custom rule
+  { key:"client_crm_contact_id", label:"Client CRM Contact ID" },
+  { key:"year",       label:"Year" },
+  { key:"make",       label:"Make" },
+  { key:"model",      label:"Model" }
 ];
+
 
 // Simple CSV parser
 function parseCsv(text){
@@ -1541,11 +1543,19 @@ function buildMappingModal(){
 }
 
 function validateMapping(){
-  const ok = SYSTEM_FIELDS.filter(f=>f.required).every(f => !!mapping[f.key]);
+  const hasPhone = !!mapping["phone"];
+  const hasFull  = !!mapping["full_name"];
+  const hasFirst = !!mapping["first_name"];
+  const hasLast  = !!mapping["last_name"];
+
+  const nameOk = hasFull || (hasFirst && hasLast);
+  const ok = hasPhone && nameOk;
+
   mapStatus.textContent = ok ? "Ready" : "Incomplete";
   mapStatus.className = "pill " + (ok ? "ok" : "bad");
   return ok;
 }
+
 
 mapBtn?.addEventListener("click", (e) => {
   e.preventDefault();
