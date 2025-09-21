@@ -152,25 +152,6 @@
   .modal .hint{ font-size:12px; color:#a7b0c0; margin-bottom:10px; }
   .modelist{ margin-bottom:12px; }
   .slotlist{ display:flex; flex-direction:column; gap:8px; }
-
-#emailModal input[type="email"]{
-  width:100%;
-  background:#11151b;
-  color:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  outline:none;
-}
-#emailModal input[type="email"]:focus{
-  border-color: rgba(237,108,3,.6);
-  box-shadow: 0 0 0 3px rgba(237,108,3,.18);
-}
-
-
-
-
-  
 </style>
 </head>
 <body>
@@ -1634,12 +1615,12 @@ async function sendAndActivate(){
   }
 
   // we always require a valid mapping because the server will receive mapped rows
-if (!validateMapping()){
-  setCsvStatus("Mapping incomplete. Phone AND (Full name OR First+Last) are required.", false);
-  try { buildMappingModal(); mapModal.classList.add("show"); } catch {}
-  return;
-}
-
+  if (!validateMapping()){
+    setCsvStatus("Mapping incomplete. Phone AND (Full name OR First+Last) are required.", false);
+    // optional: open the mapping modal automatically
+    try { mapModal.classList.add("show"); } catch {}
+    return;
+  }
 
   // 1) turn agent ON + save fields first
   setActive(true);
@@ -1689,11 +1670,12 @@ if (!validateMapping()){
   }
 }
 
-// --- Notify Email modal wiring (no Skip) ---
+// --- Notify Email modal wiring ---
 const emailModal   = document.getElementById("emailModal");
 const emailInput   = document.getElementById("notifyEmailInput");
 const emailErr     = document.getElementById("emailError");
 const emailClose   = document.getElementById("emailClose");
+const emailSkip    = document.getElementById("emailSkip");
 const emailConfirm = document.getElementById("emailConfirm");
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -1707,8 +1689,13 @@ function openEmailModal(){
 }
 function closeEmailModal(){ emailModal.classList.remove("show"); }
 
-emailClose?.addEventListener("click", closeEmailModal);
-emailConfirm?.addEventListener("click", ()=>{
+emailClose.addEventListener("click", closeEmailModal);
+emailSkip.addEventListener("click", ()=>{
+  window.notifyEmail = "";
+  closeEmailModal();
+  sendAndActivate();
+});
+emailConfirm.addEventListener("click", ()=>{
   const v = (emailInput.value || "").trim();
   if (v && !EMAIL_RE.test(v)){ emailErr.style.display = "block"; return; }
   window.notifyEmail = v;
@@ -1716,16 +1703,12 @@ emailConfirm?.addEventListener("click", ()=>{
   closeEmailModal();
   sendAndActivate();
 });
-emailInput?.addEventListener("keydown", (e)=>{
-  if (e.key === "Enter"){ e.preventDefault(); emailConfirm.click(); }
-});
 
-// NEW Send button handler → opens the email prompt
+// New Send button handler → opens the email prompt
 document.getElementById("sendCsvBtn").addEventListener("click", (e)=>{
   e.preventDefault();
   openEmailModal();
 });
-
 
 
 /* ---------- Boot ---------- */
