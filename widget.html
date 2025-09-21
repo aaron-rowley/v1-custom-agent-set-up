@@ -1382,6 +1382,28 @@ function fakeProgress(to=100, ms=900){
   requestAnimationFrame(tick);
 }
 
+async function transformCsvToJson(file){
+  const text = await file.text();
+
+  // Use your existing parseCsv (already in file)
+  const rows = parseCsv(text);
+  const header = rows.shift() || [];
+  const idx = Object.fromEntries(header.map((h,i)=>[String(h).trim(), i]));
+
+  const out = [];
+  rows.forEach(r=>{
+    if(!r || r.every(c=>String(c||"").trim()==="")) return; // skip empty rows
+    const obj = {};
+    for(const f of SYSTEM_FIELDS){
+      const col = mapping[f.key];
+      if(col && col in idx) obj[f.key] = r[idx[col]] ?? "";
+    }
+    out.push(obj);
+  });
+  return out;
+}
+
+
 
 
 /* ---------- Mapping modal wiring ---------- */
@@ -1464,51 +1486,68 @@ saveMapBtn?.addEventListener("click", ()=>{
 
 
 
-/* Send flow: turn agent ON -> save fields -> upload CSV to UPLOAD_URL */
 async function sendAndActivate(){
   if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
   const file = dzInput.files && dzInput.files[0];
   if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
-  if (!isCsv(file)){ setCsvStatus("Only CSV files are allowed.", false); return; }
-  if (!withinLimit(file)){ setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); return; }
 
-  // 1) ensure agent is ON
-  setActive(true);
-
-  // 2) save current page (posts all fields to submitUrl with auth)
-  showOverlay("Saving fields…");
-  try{
-    await saveAgentThenRefresh(agent, { action:"stay" });
-  }catch{
-    hideOverlay();
-    setCsvStatus("Couldn’t save fields.", false);
-    return;
+  // type/size checks
+  const isCsvType = (file.type||"").includes("csv") || (file.name||"").toLowerCase().endsWith(".csv");
+  if (!isCsvType){ setCsvStatus("Only CSV files are allowed.", false); return; }
+  if (typeof MAX_MB !== "undefined" && file.size > MAX_MB*1024*1024){
+    setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); return;
   }
 
-  // 3) multipart upload to your n8n webhook with auth headers
-  showOverlay("Uploading CSV…");
-  fakeProgress(90, 800);
-  try{
-    const fd = new FormData();
-    fd.append(FIELD_NAME, file, file.name);
-    fd.append("locationId", locationId || "");
-    fd.append("businessName", businessName || "");
-    fd.append("agent", String(agent));
-    fd.append("activate", "true");
+  // 1) turn agent ON + save fields
+  setActive(true);
+  showOverlay("Saving fields…");
+  try { await saveAgentThenRefresh(agent, { action:"stay" }); }
+  catch { hideOverlay(); setCsvStatus("Couldn’t save fields.", false); return; }
 
-    const headers = {};
-    if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-    if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+  // 2) upload
+  showOverlay("Uploading…"); fakeProgress(90, 800);
+  try {
+    let res, status, text;
+    const useMapped = document.getElementById("sendMapped")?.checked;
 
-    const res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
-    const status = res.status;
-    const text   = await res.text();
-    let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
-    hideOverlay();
-    dzBar.style.width = "100%";
+    if (useMapped){
+      // ensure mapping is complete
+      if (!validateMapping()){ hideOverlay(); setCsvStatus("Mapping incomplete.", false); return; }
+      const rows = await transformCsvToJson(file);
+      const headers = buildHeaders(); delete headers["Content-Type"];
+      res = await fetch(UPLOAD_URL, {
+        method: "POST",
+        mode: "cors",
+        credentials: "omit",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "custom-agent-setup",
+          agent, locationId, businessName,
+          mapping, rows
+        })
+      });
+    } else {
+      // raw CSV passthrough
+      const fd = new FormData();
+      fd.append("file", file, file.name);
+      fd.append("locationId", locationId || "");
+      fd.append("businessName", businessName || "");
+      fd.append("agent", String(agent));
+      fd.append("activate", "true");
+
+      const headers = {};
+      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+
+      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
+    }
+
+    status = res.status; text = await res.text();
+    let parsed; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+    hideOverlay(); dzBar.style.width = "100%";
     setCsvStatus(res.ok ? "Uploaded & agent activated" : `Upload error ${status}`, res.ok);
     showWebhookResponse(parsed, { status });
-  } catch (err){
+  } catch (err) {
     hideOverlay();
     setCsvStatus("Network error during upload", false);
     showWebhookResponse({ error:String(err) }, { status:0 });
@@ -1516,6 +1555,7 @@ async function sendAndActivate(){
     setTimeout(()=> dzProg.classList.add("hidden"), 800);
   }
 }
+
 
 sendCsvBtn.addEventListener("click", e => { e.preventDefault(); sendAndActivate(); });
 
