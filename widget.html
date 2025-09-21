@@ -783,9 +783,6 @@ const webhook      = document.getElementById("webhook");
 
 const statusEl     = document.getElementById("status");
 
-  
-
-
 /* Page tabs */
 const pageTabs = [...document.querySelectorAll(".pagetab")];
 const page1 = document.getElementById("page1");
@@ -957,61 +954,6 @@ followupsSeg.addEventListener('click', (e)=>{
   setFollowups(Number(btn.dataset.n));
 });
 
-  /* === PATCH START: Dropzone wiring === */
-// click/enter on dropzone => open file picker
-dropzone.addEventListener("click", ()=> dzInput.click());
-dropzone.addEventListener("keydown", (e)=>{
-  if (e.key==="Enter" || e.key===" "){ e.preventDefault(); dzInput.click(); }
-});
-
-// drag visuals
-["dragenter","dragover"].forEach(ev=> dropzone.addEventListener(ev, e=>{
-  e.preventDefault(); e.stopPropagation(); dropzone.classList.add("dz-hover");
-}));
-["dragleave","drop"].forEach(ev=> dropzone.addEventListener(ev, e=>{
-  e.preventDefault(); e.stopPropagation(); dropzone.classList.remove("dz-hover");
-}));
-
-// accept file via drop
-dropzone.addEventListener("drop", (e)=>{
-  const f = e.dataTransfer?.files?.[0];
-  if (f) handleCsvSelected(f);
-});
-
-// accept file via picker
-dzInput.addEventListener("change", ()=>{
-  const f = dzInput.files?.[0];
-  if (f) handleCsvSelected(f);
-});
-
-// clear selected file
-dzClear.addEventListener("click", ()=>{
-  dzInput.value = "";
-  dzChip.classList.add("hidden");
-  dzFileName.textContent = "";
-  mapping = {};
-  mappingComplete = false;
-  setCsvStatus("Not started", false);
-  applyAgentGating();
-});
-
-async function handleCsvSelected(file){
-  // show chip
-  dzFileName.textContent = file.name;
-  dzChip.classList.remove("hidden");
-  setCsvStatus("File selected — open “Map fields”", true);
-
-  // reset mapping state and open the mapper (required before send)
-  mapping = {};
-  mappingComplete = false;
-  // if you auto-open the mapper on select, uncomment:
-  // document.getElementById("mapModal").classList.add("show");
-
-  applyAgentGating();
-}
-/* === PATCH END === */
-
-
 /* Toggle behavior */
 function setActive(on){
   toggle.classList.toggle("on", !!on);
@@ -1039,51 +981,6 @@ document.querySelectorAll(".ti").forEach(ti=>{
   btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
 });
 
-
-  /* === PATCH START: Map modal open/close === */
-const mapModal  = document.getElementById("mapModal");
-const mapClose  = document.getElementById("mapClose");
-const saveMapBtn= document.getElementById("saveMap");
-const mapStatus = document.getElementById("mapStatus");
-
-mapBtn.addEventListener("click", ()=>{
-  // reset visual status each open
-  mapStatus.textContent = "Incomplete";
-  mapStatus.className = "pill bad";
-  mapping = {};
-  mappingComplete = false;
-  mapModal.classList.add("show");
-});
-
-mapClose.addEventListener("click", ()=> mapModal.classList.remove("show"));
-
-function validateMapping(){
-  const hasPhone = !!mapping["phone"];
-  const hasFull  = !!mapping["full_name"];
-  const hasFirst = !!mapping["first_name"];
-  const hasLast  = !!mapping["last_name"];
-  const nameOk   = hasFull || (hasFirst && hasLast);
-  const ok = hasPhone && nameOk;
-  mapStatus.textContent = ok ? "Ready" : "Incomplete";
-  mapStatus.className = "pill " + (ok ? "ok" : "bad");
-  mappingComplete = ok;
-  applyAgentGating();
-  return ok;
-}
-
-// NOTE: you likely already populate `mapping` via your chip/slot UI.
-// This handler just locks it in.
-saveMapBtn.addEventListener("click", ()=>{
-  if (validateMapping()){
-    setCsvStatus("Mapping saved.", true);
-    mappingComplete = true;
-    mapModal.classList.remove("show");
-    applyAgentGating();
-  }
-});
-/* === PATCH END === */
-
-  
 /* Helper pop-ups */
 const tip = document.getElementById("tooltip");
 function showTip(btn){
@@ -1294,75 +1191,13 @@ function recalcSaveVisibility(){
   topActions.classList.toggle("dirty", show);
 }
 
-
-/* === CSV Upload: Send button wiring === */
-sendCsvBtn.addEventListener("click", async ()=>{
-  const ready = validateAgentReady();
-  if (!ready.ok){ setStatus("Complete required fields first.", false); return; }
-  if (!mappingComplete){
-    setStatus("Complete field mapping first.", false);
-    document.getElementById("mapModal").classList.add("show");
-    return;
-  }
-  if (!dzInput.files || !dzInput.files.length){ setStatus("Choose a CSV file.", false); return; }
-  if (!UPLOAD_URL){ setStatus("Missing uploadUrl in query string.", false); return; }
-
-  const file = dzInput.files[0];
-  dzProg.classList.remove("hidden");
-  dzBar.style.width = "12%";
-  setCsvStatus("Uploading…", true);
-  setSendDisabled(true);
-
-  try{
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("locationId", locationId || "");
-    fd.append("agent", String(agent));
-    fd.append("mapping", JSON.stringify(mapping || {}));
-
-    const res = await fetch(UPLOAD_URL, {
-      method: "POST",
-      mode: "cors",
-      cache: "no-store",
-      credentials: "omit",
-      headers: buildHeaders(),
-      body: fd
-    });
-
-    dzBar.style.width = "72%";
-    const text = await res.text();
-    let json; try{ json = text ? JSON.parse(text) : {}; } catch{ json = { raw:text }; }
-
-    dzBar.style.width = "100%";
-    setCsvStatus(res.ok ? "Uploaded" : `Upload error (${res.status})`, res.ok);
-    setStatus(res.ok ? "Upload complete" : "Upload failed", res.ok);
-    showWebhookResponse(json, { status: res.status });
-  } catch(err){
-    setCsvStatus("Upload failed (network)", false);
-    setStatus("Network error. Try again.", false);
-    showWebhookResponse({ error:String(err) }, { status: 0 });
-  } finally{
-    setSendDisabled(false);
-    setTimeout(()=> dzProg.classList.add("hidden"), 600);
-    dzBar.style.width = "0%";
-  }
-});
-
 /* ---------------- SAVE HANDLER ---------------- */
-
-
-
-function parseMaybeJSON(t){ 
-  try{ return t ? JSON.parse(t) : {}; } 
-  catch{ return { raw:t }; } 
-}
-
+function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
 function ensureSubmitReady(){
   if (!locationId){ setStatus("Missing locationId", false); return false; }
   if (!SUBMIT_URL){ setStatus("Missing submitUrl in query string.", false); return false; }
   return true;
 }
-
 
 function buildPageScopedPayload(vals){
   const cadOpt = document.getElementById("cadence")?.selectedOptions?.[0];
@@ -2084,45 +1919,5 @@ document.getElementById("sendCsvBtn").addEventListener("click", (e)=>{
 switchAgent(1);
 if (FETCH_URL){ refreshFromServer(); }
 </script>
-
-<style>
-  #diagBanner{position:fixed;left:10px;bottom:10px;z-index:100000;background:#2b2f36;color:#ffd3b1;border:1px solid #ed6c03;
-  padding:10px 12px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.45);font-family:ui-monospace,Consolas,monospace;
-  max-width:70vw;white-space:pre-wrap}
-  #diagBanner.hidden{display:none}
-</style>
-<div id="diagBanner" class="hidden"></div>
-<script>
-(function(){
-  const banner = document.getElementById('diagBanner');
-  function show(msg){
-    banner.textContent = msg;
-    banner.classList.remove('hidden');
-  }
-  // 1) Global error trap
-  window.addEventListener('error', function(e){
-    show('[JS Error] ' + (e.message || e.error?.message || String(e.error || e)) + '\n' +
-         (e.filename ? ('at ' + e.filename + ':' + e.lineno + ':' + e.colno) : ''));
-  });
-  window.addEventListener('unhandledrejection', function(e){
-    const msg = (e.reason && (e.reason.message || e.reason)) || e;
-    show('[Promise Rejection] ' + String(msg));
-  });
-  // 2) Init heartbeat
-  console.log('[diag] script loaded');
-  document.addEventListener('DOMContentLoaded', ()=> console.log('[diag] DOM ready'));
-  // 3) Sanity ping for critical elements
-  window.addEventListener('load', ()=>{
-    const must = ['dropzone','dzInput','sendCsvBtn','mapBtn','csvStatus'];
-    const missing = must.filter(id => !document.getElementById(id));
-    if (missing.length){
-      show('[Missing elements] ' + missing.join(', '));
-    } else {
-      console.log('[diag] elements present');
-    }
-  });
-})();
-</script>
-
 </body>
 </html>
