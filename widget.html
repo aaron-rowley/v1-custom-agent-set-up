@@ -1,345 +1,1410 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Custom Agent Setup</title>
-  <!-- Tailwind via CDN for quick styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{color-scheme: dark;}
-    body{background:#0e0f13;color:#e7e7ea}
-    .card{background:#151720;border:1px solid #242733;border-radius:16px}
-    .btn{background:#ff7a00;color:#0b0c10;border-radius:12px;padding:.6rem 1rem;font-weight:700}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .btn-secondary{background:#242733;color:#e7e7ea}
-    .link{color:#c9d4ff;text-decoration:underline}
-    .dropzone{border:2px dashed #2e3344;border-radius:16px;padding:2.25rem;text-align:center;transition:all .15s ease}
-    .dropzone.dragover{background:#1a1d27;border-color:#3f4660}
-    .toast{position:fixed;right:18px;bottom:18px;background:#1b1e28;border:1px solid #2b3042;border-radius:12px;padding:.8rem 1rem;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    .toast h4{font-weight:700;margin:0 0 .25rem 0}
-    .badge{display:inline-block;background:#23283a;border:1px solid #2e3346;border-radius:10px;padding:.15rem .5rem;font-size:.75rem}
-    .muted{color:#a7adbe}
-    .input{background:#10121a;border:1px solid #262b3c;border-radius:10px;padding:.55rem .7rem}
-    progress::-webkit-progress-value{background:#ff7a00}
-    progress::-webkit-progress-bar{background:#2a2f41;border-radius:10px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Custom agent set up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0f1115; --panel:#17191e; --muted:#a7b0c0; --line:#2b2f36; --orange:#ed6c03; --red:#ef4444; --green:#10b981; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:"Outfit",system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; background:var(--bg); color:#fff; }
+  .wrap{ max-width:980px; margin:24px auto; padding:20px; }
+  .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .sop{ background:var(--red); color:#000; font-weight:800; border:none; text-decoration:none; padding:8px 12px; border-radius:12px; box-shadow:0 6px 14px rgba(239,68,68,.35); }
+  .xbtn{ background:transparent; color:#fff; border:1px solid var(--line); border-radius:10px; padding:6px 10px; cursor:pointer; }
+  h1{ margin:0 0 4px; font-size:22px; }
+  .sub{ color:var(--muted); font-size:13px; margin:2px 0 12px; }
+
+  /* Sticky tabs + top actions */
+  .tabs-wrap{ position:sticky; top:0; z-index:20; padding:10px 0 8px; background:linear-gradient(var(--bg), rgba(15,17,21,.92)); backdrop-filter: blur(2px); border-bottom:1px solid var(--line); }
+  .tabsbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .tabs{ display:flex; gap:10px; flex-wrap:wrap; }
+  .tab{ border:1px solid var(--line); padding:10px 14px; border-radius:999px; background:#0e1117; cursor:pointer; font-weight:700; font-size:13px; color:#cfd6e4; transition:.15s; }
+  .tab.active{ background:var(--orange); color:#000; border-color:var(--orange); box-shadow:0 6px 16px rgba(237,108,3,.35); }
+
+  .top-actions{ display:flex; align-items:center; gap:10px; }
+  .top-actions.hidden{ display:none; }
+  .btn-sm{ background:var(--orange); color:#000; border:0; padding:10px 16px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; }
+  .btn-sm.secondary{ background:transparent; border:1px solid var(--line); color:#fff; }
+  .dirty-dot{ width:8px; height:8px; border-radius:99px; background:var(--orange); box-shadow:0 0 0 4px rgba(237,108,3,.25); display:none; }
+  .top-actions.dirty .dirty-dot{ display:inline-block; }
+
+  /* Page chips */
+  .pagetabs{ display:flex; gap:8px; margin:10px 0 14px; flex-wrap:wrap; }
+  .pagetab{ border:1px solid var(--line); background:#0e1117; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-weight:800; cursor:pointer; }
+  .pagetab.active{ background:var(--green); color:#052; border-color:rgba(16,185,129,.6); box-shadow:0 6px 16px rgba(16,185,129,.35); }
+
+  /* Controls */
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow:0 10px 28px rgba(0,0,0,.28); }
+  .label-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  label{ display:block; font-size:13px; color:#dbe2f0; margin:14px 0 6px; }
+  input[type="text"], select, textarea{ width:100%; background:#11151b; color:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; outline:none; }
+  textarea.big{ min-height:120px; font-size:14px; line-height:1.4; }
+  .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .row-follow{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:end; }
+
+  .ti{ display:flex; gap:8px; align-items:center; margin:6px 0 8px; }
+  .ti select{ background:#0e1117; border:1px solid var(--line); color:#fff; border-radius:10px; padding:6px 10px; }
+  .ti button{ background:transparent; color:#fff; border:1px dashed var(--line); padding:6px 10px; border-radius:10px; cursor:pointer; }
+
+  .toggle{ position:relative; width:56px; height:30px; background:#0e1117; border:1px solid var(--line); border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; padding:3px; transition:.2s; }
+  .toggle.on{ background:rgba(237,108,3,.15); border-color:rgba(237,108,3,.4); }
+  .knob{ width:24px; height:24px; background:#fff; border-radius:999px; transform:translateX(0); transition:.2s; }
+  .toggle.on .knob{ transform:translateX(26px); background:#ffd3b1; }
+  .toggle-label{ margin-left:10px; min-width:36px; font-size:13px; color:#fff; opacity:.9; }
+
+  .ibtn{ background:transparent; border:1px dashed var(--line); color:#cfd6e4; font-size:12px; padding:4px 10px; border-radius:999px; cursor:pointer; }
+
+  .tip{ position:fixed; max-width:320px; background:#0b0f14; border:1px solid #273042; border-radius:10px; padding:10px 12px; z-index:10001; box-shadow:0 16px 48px rgba(0,0,0,.5); }
+  .tip.hidden{ display:none; }
+
+  .cv{ margin-top:6px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid #2a2f37; background:#0f141a; display:inline-block; }
+  .cv strong{ font-weight:800; }
+  .cv.has-value{ border-color:rgba(16,185,129,.55); background:rgba(16,185,129,.10); color:#a7f3d0; }
+  .cv.empty{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.10); color:#fecaca; }
+
+  .divider{ height:1px; background:var(--line); margin:30px 0; opacity:.8; }
+
+  .seg{ display:flex; gap:6px; background:#0e1117; border:1px solid var(--line); border-radius:999px; padding:4px; }
+  .segbtn{ background:transparent; border:none; color:#cfd6e4; font-weight:800; padding:8px 12px; border-radius:999px; cursor:pointer; }
+  .segbtn.seg-on{ background:var(--orange); color:#000; box-shadow:0 6px 14px rgba(237,108,3,.35); }
+
+  .hidden{ display:none !important; }
+
+  .overlay{ position:fixed; inset:0; background:rgba(15,17,21,.72); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .overlay.hidden{ display:none; }
+  .loading{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .bigspin{ width:46px; height:46px; border:5px solid rgba(237,108,3,.25); border-top-color:var(--orange); border-radius:999px; animation:spin .9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:10000; }
+  .modal.show{ display:flex; }
+  .modal-card{ width:min(820px, 92vw); background:#0f141a; border:1px solid #273042; border-radius:16px; padding:16px; box-shadow:0 16px 48px rgba(0,0,0,.5); max-height:80vh; }
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .modal-title{ font-weight:800; }
+  .ex-list{ display:flex; flex-direction:column; gap:14px; max-height:65vh; overflow:auto; padding-right:6px; }
+  .ex-group{ border:1px solid #263142; border-radius:12px; padding:10px; background:#0b0f14; }
+  .ex-group h4{ margin:0 0 8px; font-size:13px; color:#a7b0c0; letter-spacing:.2px; }
+  .ex-item{ border:1px solid #263142; border-radius:10px; padding:10px; background:#0f141a; display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
+  .ex-text{ white-space:pre-wrap; color:#dbe2f0; font-size:14px; line-height:1.35; }
+  .usebtn{ background:var(--green); color:#052; font-weight:800; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
+
+  .resp{ margin-top:14px; }
+  .resp.hidden{ display:none; }
+  .resp-card{ border:1px solid #263142; background:#0b0f14; border-radius:14px; padding:14px; }
+  .resp-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .pill{ font-size:12px; padding:6px 10px; border-radius:999px; font-weight:800; }
+  .ok{ background:rgba(16,185,129,.15); color:#a7f3d0; border:1px solid rgba(16,185,129,.45); }
+  .bad{ background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.45); }
+  .resp-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
+  .kvt{ border:1px solid #273042; border-radius:10px; padding:10px; background:#0f141a; }
+  .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
+  .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
+  .actions{ display:none !important; }
+
+
+
+
+
+
+/* --- Fancy dropzone --- */
+.dropzone{
+  border:2px dashed var(--line);
+  background:linear-gradient(180deg,#0f1115,#0d1118);
+  border-radius:18px;
+  padding:28px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s ease-in-out;
+  box-shadow:0 6px 22px rgba(0,0,0,.28) inset, 0 10px 26px rgba(0,0,0,.18);
+  outline:none;
+}
+.dropzone:focus-visible{ box-shadow:0 0 0 3px rgba(99,102,241,.35), 0 10px 26px rgba(0,0,0,.18); }
+.dropzone:hover, .dropzone.dz-hover{ border-color:var(--orange); background:linear-gradient(180deg,#11151b,#0e141b); }
+.dz-inner{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.dz-cloud{ color:#7b8697; background:rgba(123,134,151,.08); width:84px; height:84px; display:grid; place-items:center; border-radius:20px; box-shadow:inset 0 0 0 1px rgba(123,134,151,.18); }
+.dz-title{ font-size:16px; margin-top:4px; }
+.dz-sub{ font-size:13px; color:#a7b0c0; }
+.dz-cta{ text-decoration:underline; }
+.dz-chip{ margin-top:8px; display:inline-flex; align-items:center; gap:8px; background:#0b0f14; border:1px solid #273042; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-size:13px; }
+.dz-chip button{ all:unset; cursor:pointer; display:grid; place-items:center; width:20px; height:20px; border-radius:999px; background:#232a37; color:#cfd6e4; }
+.dz-chip button:hover{ background:#303a4a; }
+.dz-progress{ width:min(360px, 80%); height:6px; background:#11161d; border-radius:999px; overflow:hidden; border:1px solid #273042; margin-top:10px; }
+.dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
+.hidden{ display:none !important; }
+
+
+
+
+  
+</style>
 </head>
-<body class="min-h-screen">
-  <main class="max-w-5xl mx-auto px-5 py-10 space-y-6">
-
-    <header class="flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-extrabold">Custom Agent Setup</h1>
-        <p id="ctx" class="muted text-sm mt-1"></p>
-      </div>
-      <a id="dashLink" class="btn btn-secondary whitespace-nowrap" href="#" target="_blank" rel="noopener">Open dashboard for this location</a>
-    </header>
-
-    <!-- Fetch preview / health -->
-    <section class="card p-5">
-      <div class="flex items-center justify-between">
-        <div class="space-y-1">
-          <h2 class="text-lg font-bold">Connection</h2>
-          <p class="muted text-sm">We’ll ping <span class="badge" id="fetchHost">fetchUrl</span> with your auth header to verify connectivity.</p>
-        </div>
-        <button id="testBtn" class="btn btn-secondary">Test connection</button>
-      </div>
-      <div id="testResult" class="mt-4 text-sm whitespace-pre-wrap"></div>
-    </section>
-
-    <!-- Upload CSV -->
-    <section class="card p-5">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg font-bold">Upload CSV File</h2>
-        <button id="templateBtn" class="btn btn-secondary">Get Template</button>
-      </div>
-
-      <div id="dropzone" class="dropzone mt-4">
-        <div class="mx-auto w-12 h-12 mb-3 opacity-70">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 3l3.5 3.5-1.41 1.41L13 6.83V14h-2V6.83L9.91 7.91 8.5 6.5 12 3z"></path>
-            <path d="M5 18h14v2H5z"></path>
-          </svg>
-        </div>
-        <p class="font-semibold">Drag & drop your CSV here, or <button id="browse" class="link">click to browse</button></p>
-        <input id="fileInput" type="file" accept=".csv,text/csv" class="hidden" />
-      </div>
-
-      <div class="mt-4">
-        <label class="text-xs uppercase tracking-wide muted">Upload</label>
-        <div id="uploadState" class="mt-1 text-sm">Not started</div>
-        <progress id="progress" max="100" value="0" class="w-full h-2 rounded mt-2"></progress>
-      </div>
-
-      <div class="mt-5 flex gap-3">
-        <button id="sendBtn" class="btn">Send</button>
-        <button id="saveBtn" class="btn btn-secondary">Save (Page)</button>
-      </div>
-    </section>
-
-    <!-- Hidden simple form values (shown for transparency) -->
-    <section class="card p-5">
-      <h2 class="text-lg font-bold mb-3">Context</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="block">
-          <span class="muted text-sm">Location ID</span>
-          <input id="locField" class="input w-full mt-1" readonly />
-        </label>
-        <label class="block">
-          <span class="muted text-sm">Business Name</span>
-          <input id="bizField" class="input w-full mt-1" readonly />
-        </label>
-        <label class="block md:col-span-2">
-          <span class="muted text-sm">Auth header / token</span>
-          <input id="authPreview" class="input w-full mt-1" readonly />
-        </label>
-      </div>
-    </section>
-  </main>
-
-  <div id="toast" class="toast hidden">
-    <h4 id="toastTitle"></h4>
-    <div id="toastMsg" class="muted"></div>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="sop" href="https://airtable.com/appZY3R7wWCzEsIZT/pagMdmBUMsAVRNYMe?ZHpwB=recPcFlbdOVjRopk2" target="_blank" rel="noopener">Link to SOP</a>
+    <button class="xbtn" id="refreshBtn" title="Reload widget">Refresh</button>
   </div>
 
-  <script>
-    // --- Utilities -----------------------------------------------------------
-    const $ = sel => document.querySelector(sel);
-    const qs = new URLSearchParams(location.search);
+  <h1>Custom agent set up</h1>
+  <div class="sub" id="bizLine"></div>
+  <div class="sub" id="locLine"></div>
 
-    const ctx = {
-      locationId: qs.get('locationId') || '',
-      businessName: qs.get('businessName') || '',
-      fetchUrl: qs.get('fetchUrl') ? decodeURIComponent(qs.get('fetchUrl')) : '',
-      submitUrl: qs.get('submitUrl') ? decodeURIComponent(qs.get('submitUrl')) : '',
-      uploadUrl: qs.get('uploadUrl') ? decodeURIComponent(qs.get('uploadUrl')) : '',
-      authHeader: qs.get('authHeader') || 'Authorization',
-      authToken: qs.get('authToken') || '',
-      dashboardUrl: qs.get('dashboardUrl') ? decodeURIComponent(qs.get('dashboardUrl')) : ''
-    };
+  <!-- Sticky tabs + actions -->
+  <div class="tabs-wrap">
+    <div class="tabsbar">
+      <div class="tabs" id="tabs"></div>
+      <div class="top-actions hidden" id="topActions">
+        <span class="dirty-dot" title="Unsaved changes"></span>
+        <button class="btn-sm" id="submitBtnTop">Save (Page)</button>
+        <button class="btn-sm secondary" id="savePrevBtnTop">Save & Previous</button>
+        <button class="btn-sm secondary" id="saveNextBtnTop">Save & Next</button>
+      </div>
+    </div>
+  </div>
 
-    function authHeaders(extra = {}) {
-      const h = new Headers({
-        Accept: 'application/json',
-        [ctx.authHeader]: ctx.authToken,
-        ...extra
+  <div class="editing" style="display:flex; align-items:center; gap:10px; margin:10px 0;">
+    <span class="sub">Editing:</span>
+    <span class="chip" id="agentChip">Custom campaign agent 1</span>
+    <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
+    <span class="copy-note" id="copyNote"></span>
+    <span class="sub" id="status" style="margin-left:auto;"></span>
+  </div>
+
+  <div class="card" id="formCard">
+    <!-- Page tabs -->
+    <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
+      <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Overview</button>
+      <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Follow-ups & Messaging</button>
+      <button class="pagetab" data-page="3" aria-selected="false">Page 3 — Integrations</button>
+    </div>
+
+    <!-- PAGE 1 -->
+    <section id="page1" class="page">
+      <!-- Active -->
+      <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
+      <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
+      <span class="toggle-label" id="activeLabel">No</span>
+      <div class="cv empty" id="cv_active"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Campaign name -->
+      <div class="label-row"><label>Campaign name</label></div>
+      <input type="text" id="campaignName" placeholder="Campaign name" />
+      <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Notes / Prompt -->
+      <div class="label-row">
+        <label>Notes about campaign (Prompts/SOP)</label>
+      </div>
+      <div class="ti" data-target="notes">
+        <select>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="[Type business name here]">Business name</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
+      <textarea id="notes" class="big" placeholder="Write notes/prompts here…"></textarea>
+      <div class="cv empty" id="cv_notes"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Dashboard button -->
+      <div class="label-row">
+        <label>View Dashboard</label>
+      </div>
+      <a id="dashLink" class="xbtn" target="_blank" rel="noopener">Open dashboard for this location</a>
+
+      <div class="divider"></div>
+
+ <!-- Fancy CSV uploader -->
+<div class="label-row">
+  <label>Upload CSV File</label>
+  <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
+</div>
+
+<div id="dropzone" class="dropzone" aria-label="Upload CSV File" tabindex="0">
+  <div class="dz-inner">
+    <div class="dz-cloud" aria-hidden="true">
+      <!-- inline cloud icon -->
+      <svg viewBox="0 0 24 24" width="56" height="56">
+        <path d="M19 18a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.7A4 4 0 0 0 6 18h13z" fill="currentColor" opacity=".85"/>
+      </svg>
+    </div>
+    <div class="dz-title"><strong>Upload CSV File</strong></div>
+    <div class="dz-sub">Drag & drop your CSV here, or <span class="dz-cta">click to browse</span></div>
+
+    <div class="dz-chip hidden" id="dzChip">
+      <span id="dzFileName">filename.csv</span>
+      <button type="button" id="dzClear" aria-label="Remove file">×</button>
+    </div>
+
+    <div class="dz-progress hidden" id="dzProg">
+      <div class="dz-bar" id="dzBar"></div>
+    </div>
+  </div>
+
+  <input id="dzInput" type="file" accept=".csv,text/csv" hidden />
+</div>
+
+<div class="row" style="margin-top:10px;">
+  <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+  
+  <div style="margin-left:auto;">
+    <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload CSV">Send</button>
+  </div>
+</div>
+
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p1SavePrevAgent">Save & Previous Agent</button>
+        </div>
+        <div class="right">
+          <button class="btn-sm" id="p1Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p1SaveNextPage">Save & Next Page</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section id="page2" class="page hidden" aria-hidden="true">
+      <!-- Per-day + Followups + Cadence -->
+      <div class="row-follow">
+        <!-- Per-day -->
+        <div>
+          <div class="label-row">
+            <label>How many per day</label>
+            <button class="ibtn" data-tip="How many contacts per day we will send to between 8am and 8pm, Monday to Saturday.">What’s this?</button>
+          </div>
+          <select id="perDay">
+            <option>10</option><option>25</option><option>50</option><option>75</option>
+            <option>100</option><option>150</option><option>200</option><option>250</option>
+            <option>300</option><option>350</option><option>500</option>
+          </select>
+          <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
+        </div>
+
+        <!-- Follow-ups (segmented) -->
+        <div>
+          <div class="label-row">
+            <label>Number of follow ups</label>
+            <button class="ibtn" data-tip="How many follow-up bumps after the IM to schedule.">What’s this?</button>
+          </div>
+          <div id="followupsSeg" class="seg" role="tablist" aria-label="Number of follow ups">
+            <button type="button" class="segbtn" data-n="0" aria-selected="false">0</button>
+            <button type="button" class="segbtn" data-n="1" aria-selected="false">1</button>
+            <button type="button" class="segbtn" data-n="2" aria-selected="false">2</button>
+            <button type="button" class="segbtn seg-on" data-n="3" aria-selected="true">3</button>
+          </div>
+          <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
+        </div>
+
+        <!-- Cadence -->
+        <div>
+          <div class="label-row">
+            <label>Follow up cadence</label>
+            <button class="ibtn" data-tip="IM = Initial message. The numbers are delays between follow-ups (e.g. ‘IM > 24h > 48h > 72h’). Display shows only what will send based on # of follow-ups; saving always uses the FULL cadence string.">What’s this?</button>
+          </div>
+          <select id="cadence">
+            <option>IM > 15m > 24h > 24h</option>
+            <option>IM > 24h > 24h > 24h</option>
+            <option>IM > 24h > 48h > 72h</option>
+            <option>IM > 48h > 48h > 48h</option>
+            <option>IM > 72h > 72h > 72h</option>
+            <option>IM > 7d > 7d > 7d</option>
+          </select>
+          <div class="cv empty" id="cv_cadence"><strong>Current value:</strong> (not set)</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- First message -->
+      <div class="label-row">
+        <label>First message</label>
+        <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
+      </div>
+      <div class="ti" data-target="firstMessage">
+        <select>
+          <option value="{{contact.first_name}}">First name</option>
+          <option value="{{contact.last_name}}">Last name</option>
+          <option value="{{contact.full_name}}">Full name</option>
+          <option value="{{contact.email}}">Email</option>
+          <option value="{{contact.phone}}">Phone</option>
+          <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+          <option value="{{contact.make}}">Make</option>
+          <option value="{{contact.model}}">Model</option>
+          <option value="[Type business name here]">Business name</option>
+        </select>
+        <button type="button">Insert</button>
+      </div>
+      <textarea id="firstMessage" class="big" placeholder="Type the first message…"></textarea>
+      <div class="cv empty" id="cv_firstmsg"><strong>Current value:</strong> (not set)</div>
+
+      <div class="divider"></div>
+
+      <!-- Bumps -->
+      <div class="bump-block" data-b="1">
+        <div class="label-row">
+          <label>Bump 1</label>
+          <button class="ibtn" data-tip="Short nudge after IM based on the cadence.">What’s this?</button>
+        </div>
+        <div class="ti" data-target="bump1">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="[Type business name here]">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump1" class="big" placeholder="Bump 1…"></textarea>
+        <div class="cv empty" id="cv_bump1"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
+      </div>
+
+      <div class="bump-block" data-b="2">
+        <div class="label-row">
+          <label>Bump 2</label>
+          <button class="ibtn" data-tip="Second follow-up.">What’s this?</button>
+        </div>
+        <div class="ti" data-target="bump2">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="[Type business name here]">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump2" class="big" placeholder="Bump 2…"></textarea>
+        <div class="cv empty" id="cv_bump2"><strong>Current value:</strong> (not set)</div>
+        <div class="divider"></div>
+      </div>
+
+      <div class="bump-block" data-b="3">
+        <div class="label-row">
+          <label>Bump 3</label>
+          <button class="ibtn" data-tip="Final follow-up.">What’s this?</button>
+        </div>
+        <div class="ti" data-target="bump3">
+          <select>
+            <option value="{{contact.first_name}}">First name</option>
+            <option value="{{contact.last_name}}">Last name</option>
+            <option value="{{contact.full_name}}">Full name</option>
+            <option value="{{contact.email}}">Email</option>
+            <option value="{{contact.phone}}">Phone</option>
+            <option value="{{contact.year_of_vehicle_manufacture}}">Vehicle year</option>
+            <option value="{{contact.make}}">Make</option>
+            <option value="{{contact.model}}">Model</option>
+            <option value="[Type business name here]">Business name</option>
+          </select>
+          <button type="button">Insert</button>
+        </div>
+        <textarea id="bump3" class="big" placeholder="Bump 3…"></textarea>
+        <div class="cv empty" id="cv_bump3"><strong>Current value:</strong> (not set)</div>
+      </div>
+
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p2SavePrevPage">Save & Previous Page</button>
+        </div>
+        <div class="right">
+          <button class="btn-sm" id="p2Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p2SaveNextPage">Save & Next Page</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section id="page3" class="page hidden" aria-hidden="true">
+      <div class="label-row">
+        <label>Objective reached webhook endpoint (per agent)</label>
+        <button class="ibtn" data-tip="This endpoint will be called when the objective is reached for this agent.">What’s this?</button>
+      </div>
+      <input type="text" id="webhook" placeholder="https://your-n8n.example/workflow?agent={{n}}&locationId={{locationId}}" />
+      <div class="cv empty" id="cv_webhook"><strong>Current value:</strong> (not set)</div>
+
+      <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
+        <div class="left">
+          <button class="btn-sm secondary" id="p3SavePrevPage">Save & Previous Page</button>
+        </div>
+        <div class="right">
+          <button class="btn-sm" id="p3Save">Save (Page)</button>
+          <button class="btn-sm secondary" id="p3SaveNextAgent">Save & Next Agent</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Webhook response (pretty) -->
+    <div class="resp hidden" id="respBox">
+      <div class="label-row"><label>Webhook response</label></div>
+      <div class="resp-card">
+        <div class="resp-head">
+          <div id="respStatusPill" class="pill ok">200 OK</div>
+          <button class="rawtoggle" id="rawToggle">View raw JSON</button>
+        </div>
+        <div class="resp-grid" id="respGrid"></div>
+        <div class="rawbox" id="rawBox"><pre id="rawPre"></pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay loader -->
+<div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
+  <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
+</div>
+
+<!-- Floating helper tooltip -->
+<div id="tooltip" class="tip hidden" role="dialog" aria-live="polite"></div>
+
+<!-- Examples modal -->
+<div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="exTitle">Examples</div>
+      <button class="xbtn" id="exClose">Close</button>
+    </div>
+    <div class="ex-list" id="exList"></div>
+  </div>
+</div>
+
+<script>
+/* ------------------- URL CONFIG ------------------- */
+const qs = new URLSearchParams(location.search);
+const get = k => qs.get(k) || "";
+function getUrlMaybeEncoded(param){
+  const v = get(param) || "";
+  return /%[0-9A-Fa-f]{2}/.test(v) ? decodeURIComponent(v) : v;
+}
+const FETCH_URL  = getUrlMaybeEncoded("fetchUrl");
+const SUBMIT_URL = getUrlMaybeEncoded("submitUrl");
+const UPLOAD_URL = getUrlMaybeEncoded("uploadUrl");
+const AUTH_HEADER  = get("authHeader") || "";
+const AUTH_TOKEN   = get("authToken") || "";
+const APIKEY_HEADER= get("apiKeyHeader") || "";
+const APIKEY_VALUE = get("apiKey") || "";
+
+const AGENTS = 5;
+const locationId   = get("locationId");
+const businessName = get("businessName");
+
+// optional per-field prefills (from loader: data-value-*)
+const seedVals = {
+  active:   get("val_active"),
+  bump1:    get("val_bump1"),
+  bump2:    get("val_bump2"),
+  bump3:    get("val_bump3"),
+  campaign: get("val_campaign"),
+  firstmsg: get("val_firstmsg"),
+  cadence:  get("val_cadence"),
+  perday:   get("val_perday"),
+  notes:    get("val_notes"),
+  followups:get("val_followups"),
+  webhook:  get("val_webhook"),
+};
+
+function buildHeaders(){
+  const h = { "Content-Type":"application/json" };
+  if (AUTH_HEADER && AUTH_TOKEN) h[AUTH_HEADER] = AUTH_TOKEN;
+  if (APIKEY_HEADER && APIKEY_VALUE) h[APIKEY_HEADER] = APIKEY_VALUE;
+  return h;
+}
+
+/* ------------------- EXAMPLES DATA ------------------- */
+const swapPlaceholders = s => (s||"")
+  .replaceAll("{{location.name}}","[Type business name here]")
+  .replaceAll("{{agent.first_name}}","[Type Agent name here]")
+  .replaceAll("{{agent.name}}","[Type Agent name here]")
+  .replaceAll("{{agent}}","[Type Agent name here]");
+
+const EXAMPLES = {
+  first: [
+    { title: "DBR — IM", items: [
+      "Hey its [Agent Name] from [business name]. Is this the same {{contact.first_name}} who was looking for a vehicle recently?"
+    ]},
+    { title: "Service to Sales (Appraisal) — IM", items: [
+      "Hi {{contact.first_name}}, it’s [Type Agent name here] from [Type business name here] — how are you and your {{contact.model}} doing?"
+    ]},
+    { title: "Phone Up Follow Up — IM", items: [
+      "Hey {{contact.first_name}}, how are you? It’s [Type Agent name here] from [Type business name here]. I had a quick note to check in—how’s the vehicle search going?"
+    ]},
+    { title: "Internet Up Follow Up — IM", items: [
+      "Hi {{contact.first_name}}, it’s [Type Agent name here] with [Type business name here]. I saw your online request—how’s the vehicle search going?"
+    ]}
+  ],
+  bump1: [
+    { title: "Fresh Up Follow Up — Bump 1", items: [
+      "Quick nudge — want me to hold a 10-minute slot this week to revisit top picks?"
+    ]}
+  ],
+  bump2: [
+    { title: "Fresh Up Follow Up — Bump 2", items: [
+      "If nothing grabbed you yet, I can text 2–3 matches and hold one. Want me to do that?"
+    ]}
+  ],
+  bump3: [
+    { title: "Fresh Up Follow Up — Bump 3", items: [
+      "Last check-in from [Type business name here] — want me to keep looking or should I close this out for now?"
+    ]}
+  ],
+  notes: [
+    { title: "DBR — Campaign Objective", sop: [
+      "=If the chat history indicates that the most recent agent to be activated is the “dbr” Agent - we are doing a general reach out to see if {{contact.first_name}} has purchased a vehicle yet. Ask empathetic questions, avoid pricing/inventory specifics until booking. One question per interaction."
+    ]}
+  ]
+};
+
+/* ------------------- WEBHOOK UI HELPERS ------------------- */
+const respBox = document.getElementById("respBox");
+const respGrid = document.getElementById("respGrid");
+const rawBox   = document.getElementById("rawBox");
+const rawPre   = document.getElementById("rawPre");
+const respStatusPill = document.getElementById("respStatusPill");
+document.getElementById("rawToggle").addEventListener("click", ()=>{
+  rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
+  document.getElementById("rawToggle").textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
+});
+
+function showWebhookResponse(body, meta = {}) {
+  const ok = (meta.status ?? 200) >= 200 && (meta.status ?? 200) < 300;
+  respStatusPill.className = "pill " + (ok ? "ok" : "bad");
+  respStatusPill.textContent = (meta.status ? `${meta.status}` : "200") + (ok ? " OK" : " Error");
+
+  respGrid.innerHTML = "";
+  let blocks = [];
+  if (Array.isArray(body) && body[0]?.data) blocks = body[0].data;
+  else if (Array.isArray(body?.data)) blocks = body.data;
+
+  if (Array.isArray(blocks) && blocks.length) {
+    const group = document.createElement("div");
+    group.className = "kvt";
+    const h = document.createElement("h5");
+    h.textContent = "Saved fields";
+    group.appendChild(h);
+
+    blocks.slice(0, 100).forEach(item=>{
+      const box = document.createElement("div");
+      box.className = "kv";
+      const pairs = [
+        ["Custom value name", item["Custom value name"]],
+        ["Field key", item["Custom value field key"]],
+        ["Value", item["Custom value - Value"]],
+        ["Custom value ID", item["Custom value ID"]],
+        ["Trace", item["GHL Trace ID"]],
+      ];
+      pairs.forEach(([k,v])=>{
+        if (v===undefined || v===null) return;
+        const kEl=document.createElement("div");
+        kEl.style.color="#a7b0c0";
+        kEl.textContent=k;
+        const vEl=document.createElement("div");
+        vEl.textContent=String(v);
+        box.appendChild(kEl);
+        box.appendChild(vEl);
       });
-      return h;
-    }
-
-    function toast(title, msg, isError=false) {
-      $('#toast').classList.remove('hidden');
-      $('#toastTitle').textContent = title;
-      $('#toastMsg').textContent = msg || '';
-      $('#toast').style.borderColor = isError ? '#5a1120' : '#2b3042';
-      $('#toast').style.background = isError ? '#2a0f18' : '#1b1e28';
-      setTimeout(() => $('#toast').classList.add('hidden'), 3500);
-    }
-
-    function setUploadState(text){ $('#uploadState').textContent = text; }
-
-    function filenameFromPath(path) {
-      return (path || '').split('/').pop();
-    }
-
-    // Create a client-side CSV template if the API doesn't provide one.
-    function buildLocalTemplate() {
-      const header = [
-        'first_name','last_name','phone','email','notes'
-      ];
-      const sample = [
-        'Alex','Rios','+1-555-123-0000','alex@example.com','VIP'
-      ];
-      return header.join(',') + '\n' + sample.join(',') + '\n';
-    }
-
-    function download(filename, text) {
-      const blob = new Blob([text], {type:'text/csv;charset=utf-8;'});
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // --- Init UI -------------------------------------------------------------
-    (function init(){
-      $('#ctx').textContent = `Location: ${ctx.locationId || '—'}  •  Business: ${ctx.businessName || '—'}`;
-      $('#fetchHost').textContent = ctx.fetchUrl ? new URL(ctx.fetchUrl).host : '—';
-      $('#locField').value = ctx.locationId;
-      $('#bizField').value = ctx.businessName;
-      $('#authPreview').value = `${ctx.authHeader}: ${ctx.authToken ? ctx.authToken.slice(0, 12)+'…' : ''}`;
-
-      // dashboard link
-      if (ctx.dashboardUrl) {
-        $('#dashLink').href = ctx.dashboardUrl;
-      } else {
-        // Hide if not provided
-        $('#dashLink').classList.add('hidden');
-      }
-    })();
-
-    // --- Connection Test -----------------------------------------------------
-    $('#testBtn').addEventListener('click', async () => {
-      const out = $('#testResult');
-      out.textContent = 'Testing…';
-      try {
-        if (!ctx.fetchUrl) throw new Error('Missing fetchUrl');
-        const res = await fetch(ctx.fetchUrl, { method: 'GET', headers: authHeaders() });
-        const text = await res.text();
-        out.textContent = `Status: ${res.status}\n\n` + (text.slice(0, 2000) || '(empty response)');
-        toast('Connection tested', `Status ${res.status}`);
-      } catch (e) {
-        out.textContent = 'Error: ' + (e?.message || e);
-        toast('Connection failed', e?.message || String(e), true);
-      }
+      group.appendChild(box);
     });
+    respGrid.appendChild(group);
+  } else {
+    const g = document.createElement("div");
+    g.className="kvt";
+    const h=document.createElement("h5");
+    h.textContent="Response";
+    const p=document.createElement("div");
+    p.className="kv";
+    p.innerHTML = `<div style="color:#a7b0c0">Message</div><div>${typeof body==='string'? body : 'Complete'}</div>`;
+    g.appendChild(h); g.appendChild(p);
+    respGrid.appendChild(g);
+  }
 
-    // --- Template Download ---------------------------------------------------
-    $('#templateBtn').addEventListener('click', async () => {
-      try {
-        // Try to fetch a server-provided template first.
-        if (ctx.fetchUrl) {
-          const url = new URL(ctx.fetchUrl);
-          url.searchParams.set('template', 'true');
-          const res = await fetch(url.toString(), { headers: authHeaders() });
-          if (res.ok) {
-            const ct = res.headers.get('content-type') || '';
-            if (ct.includes('text/csv')) {
-              const text = await res.text();
-              download('import_template.csv', text);
-              toast('Template downloaded', 'From server');
-              return;
-            }
-            // Try JSON shape like { columns: ["a","b"] }
-            if (ct.includes('application/json')) {
-              const json = await res.json();
-              if (Array.isArray(json.columns) && json.columns.length) {
-                const csv = json.columns.join(',') + '\n';
-                download('import_template.csv', csv);
-                toast('Template generated', 'From server columns');
-                return;
-              }
-            }
-          }
-        }
-        // Fallback local template
-        download('import_template.csv', buildLocalTemplate());
-        toast('Template generated', 'Default columns used');
-      } catch (e) {
-        download('import_template.csv', buildLocalTemplate());
-        toast('Template generated', 'Fallback due to error', true);
-      }
-    });
+  rawPre.textContent = JSON.stringify(body, null, 2);
+  respBox.classList.remove("hidden");
+}
 
-    // --- Drag & Drop ---------------------------------------------------------
-    const dz = $('#dropzone');
-    const fileInput = $('#fileInput');
-    const browseBtn = $('#browse');
-    let fileRef = null;
+/* Header text + buttons */
+document.getElementById("locLine").textContent = locationId ? `Location: ${locationId}` : "Location ID missing";
+document.getElementById("bizLine").textContent = businessName ? `Business: ${businessName}` : "";
+document.getElementById("refreshBtn").addEventListener("click", ()=> location.reload());
 
-    function useFile(file){
-      if (!file) return;
-      fileRef = file;
-      setUploadState(`Ready: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+/* Dashboard button */
+const dashLink = document.getElementById("dashLink");
+dashLink.href = locationId ? `https://app.visquanta.com/v2/location/${encodeURIComponent(locationId)}/dashboard` : '#';
+dashLink.setAttribute("aria-disabled", locationId ? "false" : "true");
+
+/* Agent tabs */
+const tabsEl = document.getElementById("tabs");
+for (let i=1;i<=AGENTS;i++){
+  const t = document.createElement("button");
+  t.className = "tab" + (i===1?" active":"");
+  t.textContent = `Agent ${i}`;
+  t.dataset.agent = i;
+  t.setAttribute("aria-selected", i===1 ? "true" : "false");
+  t.onclick = () => switchAgent(i);
+  tabsEl.appendChild(t);
+}
+
+/* Elements */
+const agentChip  = document.getElementById("agentChip");
+const copyPrevBtn= document.getElementById("copyPrevBtn");
+const copyNote   = document.getElementById("copyNote");
+const toggle     = document.getElementById("activeToggle");
+const activeLabel= document.getElementById("activeLabel");
+
+const campaignName = document.getElementById("campaignName");
+const perDay       = document.getElementById("perDay");
+const cadence      = document.getElementById("cadence");
+const followupsSeg = document.getElementById("followupsSeg");
+const firstMessage = document.getElementById("firstMessage");
+const bump1        = document.getElementById("bump1");
+const bump2        = document.getElementById("bump2");
+const bump3        = document.getElementById("bump3");
+const notes        = document.getElementById("notes");
+const webhook      = document.getElementById("webhook");
+
+const statusEl     = document.getElementById("status");
+
+/* Page tabs + navigation */
+const pageTabs = [...document.querySelectorAll(".pagetab")];
+const page1 = document.getElementById("page1");
+const page2 = document.getElementById("page2");
+const page3 = document.getElementById("page3");
+let page = 1;
+
+function gotoPage(n){
+  page = n;
+  page1.classList.toggle("hidden", n!==1); page1.setAttribute("aria-hidden", n!==1 ? "true" : "false");
+  page2.classList.toggle("hidden", n!==2); page2.setAttribute("aria-hidden", n!==2 ? "true" : "false");
+  page3.classList.toggle("hidden", n!==3); page3.setAttribute("aria-hidden", n!==3 ? "true" : "false");
+  pageTabs.forEach(pt=>{
+    const is = Number(pt.dataset.page)===n;
+    pt.classList.toggle("active", is);
+    pt.setAttribute("aria-selected", is ? "true":"false");
+  });
+  recalcSaveVisibility();
+}
+pageTabs.forEach(pt=> pt.addEventListener("click", ()=> gotoPage(Number(pt.dataset.page)) ));
+
+/* Footer page buttons */
+document.getElementById("p1Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p1SaveNextPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextPage" }));
+document.getElementById("p1SavePrevAgent").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevAgent" }));
+
+document.getElementById("p2Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p2SaveNextPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextPage" }));
+document.getElementById("p2SavePrevPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevPage" }));
+
+document.getElementById("p3Save").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+document.getElementById("p3SaveNextAgent").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"nextAgent" }));
+document.getElementById("p3SavePrevPage").addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"prevPage" }));
+
+/* Sticky top actions (now aware of page) */
+const topActions   = document.getElementById("topActions");
+const submitBtnTop = document.getElementById("submitBtnTop");
+const savePrevBtnTop = document.getElementById("savePrevBtnTop");
+const saveNextBtnTop = document.getElementById("saveNextBtnTop");
+
+submitBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action:"stay" }));
+savePrevBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action: (page===1 ? "prevAgent" : "prevPage") }));
+saveNextBtnTop.addEventListener("click", ()=> saveAgentThenRefresh(agent, { action: (page===3 ? "nextAgent" : "nextPage") }));
+
+/* CV view buckets */
+const cv = {
+  active:   document.getElementById("cv_active"),
+  campaign: document.getElementById("cv_campaign"),
+  perday:   document.getElementById("cv_perday"),
+  followups:document.getElementById("cv_followups"),
+  cadence:  document.getElementById("cv_cadence"),
+  firstmsg: document.getElementById("cv_firstmsg"),
+  bump1:    document.getElementById("cv_bump1"),
+  bump2:    document.getElementById("cv_bump2"),
+  bump3:    document.getElementById("cv_bump3"),
+  notes:    document.getElementById("cv_notes"),
+  webhook:  document.getElementById("cv_webhook"),
+};
+
+/* Working/current snapshots */
+const working = {};
+const current = {};
+let agent = 1;
+
+/* Defaults for bumps */
+const BUMP1_DEFAULT = "Hopefully I have the right number — is this {{contact.first_name}}?";
+const BUMP2_DEFAULT = "Just making sure I’ve got the right person — is this {{contact.first_name}}?";
+const BUMP3_DEFAULT = "Just circling back {{contact.first_name}}. Need any help from us at [Type business name here]?";
+
+/* ---------- Cadence preview + per-day cap ---------- */
+const PERDAY_FULL = [10,25,50,75,100,150,200,250,300,350,500];
+function ensureCadenceValues(){
+  [...cadence.options].forEach(opt=>{
+    const full = opt.dataset.full || opt.getAttribute("value") || opt.textContent.trim();
+    if (!opt.dataset.full) opt.dataset.full = full;
+    opt.value = opt.dataset.full;
+  });
+}
+function previewCadence(full, n){
+  const parts = full.split(">").map(s=>s.trim()).filter(Boolean);
+  return parts.slice(0, Math.min(n+1, parts.length)).join(" > ");
+}
+function applyCadencePreview(n){
+  [...cadence.options].forEach(opt=>{
+    const full = opt.dataset.full || opt.value || opt.textContent.trim();
+    opt.textContent = previewCadence(full, n);
+  });
+}
+function restrictPerDay(n){
+  let max = 500;
+  if (n===1) max=250;
+  else if (n===2) max=200;
+  else if (n>=3) max=150;
+  const cur = Number(perDay.value) || 100;
+  const allowed = PERDAY_FULL.filter(v=>v<=max);
+  perDay.innerHTML = "";
+  allowed.forEach(v=>{
+    const o=document.createElement("option");
+    o.value=String(v); o.textContent=String(v);
+    perDay.appendChild(o);
+  });
+  const target = allowed.includes(cur) ? cur : Math.max(...allowed);
+  perDay.value = String(target);
+}
+
+/* Follow-ups segmented control + visibility */
+let followups = 3;
+function updateBumpVisibility(){
+  const blocks = document.querySelectorAll('.bump-block');
+  blocks.forEach(b=>{
+    const idx = Number(b.getAttribute('data-b'));
+    b.classList.toggle('hidden', idx > followups);
+  });
+}
+function setFollowups(n){
+  followups = Math.max(0, Math.min(3, Number(n)||0));
+  [...followupsSeg.querySelectorAll('.segbtn')].forEach(b=>{
+    const on = Number(b.dataset.n)===followups;
+    b.classList.toggle('seg-on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  setCV(cv.followups, followups);
+  applyCadencePreview(followups);
+  restrictPerDay(followups);
+  updateBumpVisibility();
+  recalcSaveVisibility();
+}
+
+/* Toggle behavior */
+function setActive(on){
+  toggle.classList.toggle("on", !!on);
+  toggle.setAttribute("aria-checked", !!on);
+  activeLabel.textContent = on ? "Yes" : "No";
+  recalcSaveVisibility();
+}
+toggle.addEventListener("click", ()=> setActive(!toggle.classList.contains("on")));
+toggle.addEventListener("keydown", (e)=>{ if (e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle.click(); }});
+
+/* Token inserter */
+function insertTokenInto(el, token){
+  const start = el.selectionStart ?? el.value.length;
+  const end   = el.selectionEnd ?? el.value.length;
+  const cur   = el.value || "";
+  el.value = cur.slice(0,start) + token + cur.slice(end);
+  el.focus();
+  el.selectionStart = el.selectionEnd = start + token.length;
+  recalcSaveVisibility();
+}
+document.querySelectorAll(".ti").forEach(ti=>{
+  const target = document.getElementById(ti.dataset.target);
+  const sel = ti.querySelector("select");
+  const btn = ti.querySelector("button");
+  btn.addEventListener("click", ()=> insertTokenInto(target, sel.value));
+});
+
+/* Helper pop-ups */
+const tip = document.getElementById("tooltip");
+function showTip(btn){
+  const text = btn.getAttribute("data-tip") || "";
+  if (!text) return;
+  tip.textContent = text;
+  const r = btn.getBoundingClientRect();
+  tip.style.left = Math.min(window.innerWidth - 340, r.left) + "px";
+  tip.style.top  = (r.bottom + 8) + "px";
+  tip.classList.remove("hidden");
+}
+function hideTip(){ tip.classList.add("hidden"); }
+document.addEventListener("click", (e)=>{
+  if (e.target.classList.contains("ibtn")) { showTip(e.target); }
+  else if (!tip.classList.contains("hidden")) { hideTip(); }
+});
+
+/* Inputs listeners (page-specific) */
+[campaignName, firstMessage, bump1, bump2, bump3, notes, perDay, cadence, webhook].forEach(el=>{
+  el.addEventListener("input", recalcSaveVisibility);
+  el.addEventListener("change", recalcSaveVisibility);
+});
+
+function setStatus(text, ok){
+  statusEl.textContent = text || "";
+  statusEl.style.color = ok ? "#86efac" : "#a7b0c0";
+}
+function setCV(el, value){
+  const has = value !== undefined && value !== null && String(value).trim() !== "";
+  el.innerHTML = `<strong>Current value:</strong> ${has ? String(value) : "(not set)"}`;
+  el.classList.toggle("has-value", has);
+  el.classList.toggle("empty", !has);
+}
+
+/* Keys for agent (override via key_*_N) */
+function cvKeys(n){
+  const base = `custom_campaign_agent_${n}__`;
+  return {
+    active:   base + "active_yes_or_leave_blank",
+    campaign: base + "campaign_name",
+    perday:   base + "how_many_per_day_see_sop",
+    followups:base + "number_of_follow_ups",
+    cadence:  base + "follow_up_cadence",
+    firstmsg: base + "first_message",
+    bump1:    base + "bump_1",
+    bump2:    base + "bump_2",
+    bump3:    base + "bump_3",
+    notes:    base + "notes_about_campaign",
+    webhook:  base + "objective_reached_webhook_endpoint"
+  };
+}
+function overrideKeysFromQuery(kmap, n){
+  const map = {...kmap};
+  for (const field of Object.keys(map)){
+    const q = qs.get(`key_${field}_${n}`) || qs.get(`key_${field}`);
+    if (q) map[field] = q;
+  }
+  return map;
+}
+
+function renderCV(){
+  setCV(cv.active,   current[agent]?.active);
+  setCV(cv.campaign, current[agent]?.campaign);
+  setCV(cv.perday,   current[agent]?.perday);
+  setCV(cv.followups,current[agent]?.followups);
+  setCV(cv.cadence,  current[agent]?.cadence);
+  setCV(cv.firstmsg, current[agent]?.firstmsg);
+  setCV(cv.bump1,    current[agent]?.bump1);
+  setCV(cv.bump2,    current[agent]?.bump2);
+  setCV(cv.bump3,    current[agent]?.bump3);
+  setCV(cv.notes,    current[agent]?.notes);
+  setCV(cv.webhook,  current[agent]?.webhook);
+}
+
+function switchAgent(n){
+  // persist working values for current agent
+  working[agent] = getFormValues();
+
+  [...tabsEl.children].forEach(btn=>{
+    const is = Number(btn.dataset.agent)===n;
+    btn.classList.toggle("active", is);
+    btn.setAttribute('aria-selected', is ? 'true' : 'false');
+  });
+  agent = n;
+  agentChip.textContent = `Custom campaign agent ${agent}`;
+  document.title = `Agent ${agent} • Custom agent set up`;
+  copyPrevBtn.style.display = agent === 1 ? "none" : "inline-flex";
+  copyNote.textContent = "";
+
+  const w = working[agent] || {};
+  const prevIndex = agent === 1 ? AGENTS : agent - 1;
+  const curA = current[agent] || {};
+  const prevA = current[prevIndex] || {};
+
+  ensureCadenceValues();
+
+  // Follow-ups first
+  const fuSeed = Number( w.followups ?? curA.followups ?? prevA.followups ?? seedVals.followups ?? 3 );
+  setFollowups(fuSeed);
+
+  campaignName.value = w.campaign || curA.campaign || prevA.campaign || seedVals.campaign || "";
+  perDay.value       = String(w.perday || curA.perday || prevA.perday || seedVals.perday || perDay.value);
+  cadence.value      = w.cadence || curA.cadence || prevA.cadence || seedVals.cadence || cadence.value;
+
+  firstMessage.value = w.firstmsg || curA.firstmsg || prevA.firstmsg || seedVals.firstmsg || "";
+  bump1.value        = w.bump1 || curA.bump1 || prevA.bump1 || seedVals.bump1 || BUMP1_DEFAULT;
+  bump2.value        = w.bump2 || curA.bump2 || prevA.bump2 || seedVals.bump2 || BUMP2_DEFAULT;
+  bump3.value        = w.bump3 || curA.bump3 || prevA.bump3 || seedVals.bump3 || BUMP3_DEFAULT;
+  notes.value        = w.notes || curA.notes || prevA.notes || seedVals.notes || "";
+  webhook.value      = w.webhook || curA.webhook || prevA.webhook || seedVals.webhook || "";
+
+  const activeSeed = (w.active || curA.active || prevA.active || seedVals.active || "");
+  setActive(String(activeSeed).toLowerCase()==="yes");
+
+  renderCV();
+  recalcSaveVisibility();
+  setStatus("");
+  respBox.classList.add("hidden");
+  gotoPage(1); // reset to Page 1 when switching agents
+}
+
+function getFormValues(){
+  return {
+    active:   toggle.classList.contains("on") ? "Yes" : "",
+    campaign: campaignName.value.trim(),
+    perday:   perDay.value,
+    followups:String(followups),
+    cadence:  cadence.value,
+    firstmsg: firstMessage.value,
+    bump1:    bump1.value,
+    bump2:    bump2.value,
+    bump3:    bump3.value,
+    notes:    notes.value,
+    webhook:  webhook.value.trim(),
+  };
+}
+
+function isBlankTextFields(){
+  const v = getFormValues();
+  const emptyActive = v.active==="";
+  const emptyTexts = !v.campaign && !v.firstmsg
+    && (!v.bump1 || v.bump1.trim()===BUMP1_DEFAULT.trim())
+    && (!v.bump2 || v.bump2.trim()===BUMP2_DEFAULT.trim())
+    && (!v.bump3 || v.bump3.trim()===BUMP3_DEFAULT.trim())
+    && !v.notes && !v.perday && !v.cadence && !v.webhook;
+  return emptyActive && emptyTexts;
+}
+
+function diffData(n, { ignoreDefaults=false } = {}){
+  const now = getFormValues();
+  const cur = current[n] || {};
+  const labels = {
+    active:   `Custom campaign agent ${n} – Active`,
+    campaign: `Custom campaign agent ${n} – Campaign name`,
+    perday:   `Custom campaign agent ${n} – How many per day`,
+    followups:`Custom campaign agent ${n} – Number of follow ups`,
+    cadence:  `Custom campaign agent ${n} – Follow up cadence`,
+    firstmsg: `Custom campaign agent ${n} – First message`,
+    bump1:    `Custom campaign agent ${n} – Bump 1`,
+    bump2:    `Custom campaign agent ${n} – Bump 2`,
+    bump3:    `Custom campaign agent ${n} – Bump 3`,
+    notes:    `Custom campaign agent ${n} – Notes about campaign`,
+    webhook:  `Custom campaign agent ${n} – Objective reached webhook endpoint`,
+  };
+  const changed = {};
+  for (const k of Object.keys(labels)){
+    let after = now[k] ?? "";
+    const before = cur[k] ?? "";
+    if (ignoreDefaults){
+      if (k==="bump1" && after.trim()===BUMP1_DEFAULT.trim() && !before.trim()) continue;
+      if (k==="bump2" && after.trim()===BUMP2_DEFAULT.trim() && !before.trim()) continue;
+      if (k==="bump3" && after.trim()===BUMP3_DEFAULT.trim() && !before.trim()) continue;
     }
+    if (String(before) !== String(after)) changed[ labels[k] ] = after;
+  }
+  return changed;
+}
 
-    browseBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', e => useFile(e.target.files?.[0]));
+function recalcSaveVisibility(){
+  // Only consider fields on the current page for "dirty" state
+  const changes = diffData(agent, { ignoreDefaults:true });
+  const page1Keys = ["Active","Campaign name","Notes about campaign","Objective reached webhook endpoint (none here)"]; // we only count actual page 1 fields
+  const page2Keys = ["How many per day","Number of follow ups","Follow up cadence","First message","Bump 1","Bump 2","Bump 3"];
+  const page3Keys = ["Objective reached webhook endpoint"];
 
-    ;['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, (e)=>{
-      e.preventDefault(); e.stopPropagation(); dz.classList.add('dragover');
-    }));
-    ;['dragleave','drop'].forEach(ev => dz.addEventListener(ev, (e)=>{
-      e.preventDefault(); e.stopPropagation(); dz.classList.remove('dragover');
-    }));
-    dz.addEventListener('drop', e => {
-      const file = e.dataTransfer.files?.[0];
-      if (file && /\.csv$/i.test(file.name)) useFile(file);
-      else toast('Unsupported file', 'Please drop a .csv file', true);
+  const relevant = Object.keys(changes).some(k=>{
+    if (page===1) return ["Active","Campaign name","Notes about campaign"].some(pk=>k.includes(pk));
+    if (page===2) return page2Keys.some(pk=>k.includes(pk));
+    if (page===3) return page3Keys.some(pk=>k.includes(pk));
+    return false;
+  });
+
+  const allEmpty = isBlankTextFields();
+  const show = relevant && !allEmpty;
+  topActions.classList.toggle("hidden", !show);
+  topActions.classList.toggle("dirty", show);
+}
+
+/* ---------------- SAVE HANDLER ---------------- */
+function parseMaybeJSON(t){ try{ return t ? JSON.parse(t) : {}; } catch{ return { raw:t }; } }
+function ensureSubmitReady(){
+  if (!locationId){ setStatus("Missing locationId", false); return false; }
+  if (!SUBMIT_URL){ setStatus("Missing submitUrl in query string.", false); return false; }
+  return true;
+}
+
+
+  
+function buildPageScopedPayload(vals){
+  // Always save the FULL cadence value (not the preview text)
+  const cadOpt = document.getElementById("cadence")?.selectedOptions?.[0];
+  const fullCad = (cadOpt && cadOpt.dataset && cadOpt.dataset.full) ? cadOpt.dataset.full : vals.cadence;
+
+  const data = {
+    active:   document.getElementById("activeToggle").classList.contains("on") ? "Yes" : "No",
+    campaign: vals.campaign,
+    perday:   vals.perday,
+    followups:vals.followups,
+    cadence:  fullCad,                     // <— full string
+    firstmsg: vals.firstmsg,
+    bump1:    vals.bump1,
+    bump2:    vals.bump2,
+    bump3:    vals.bump3,
+    notes:    vals.notes,
+    webhook:  vals.webhook,
+  };
+
+  // Convert real line breaks to the GHL-safe token once (UI can preview)
+  for (const k in data) {
+    if (typeof data[k] === "string") {
+      data[k] = data[k].replace(/\r?\n/g, "£%£%");
+    }
+  }
+  return data;
+}
+
+
+
+  
+async function saveAgentThenRefresh(agentNum, { action="stay" } = {}){
+  if (!ensureSubmitReady()) return;
+  const vals = getFormValues();
+  const keysFull = overrideKeysFromQuery(cvKeys(agentNum), agentNum);
+  const payload = { locationId, businessName, agent: agentNum, keys: keysFull, data: buildPageScopedPayload(vals) };
+
+  submitBtnTop.disabled = true;
+  savePrevBtnTop.disabled = true;
+  saveNextBtnTop.disabled = true;
+
+  showOverlay("Saving…");
+  try{
+    const res = await fetch(SUBMIT_URL, {
+      method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
+      headers: buildHeaders(),
+      body: JSON.stringify(payload)
     });
+    const status = res.status;
+    const text   = await res.text();
+    const parsed = parseMaybeJSON(text);
+    hideOverlay();
+    setStatus(res.ok ? "Saved" : `Save returned ${status}`, res.ok);
+    showWebhookResponse(parsed, { status });
 
-    // --- Send (upload & trigger) --------------------------------------------
-    $('#sendBtn').addEventListener('click', async () => {
-      try {
-        if (!ctx.uploadUrl) throw new Error('Missing uploadUrl');
-        if (!fileRef) throw new Error('No file selected');
+    if (FETCH_URL){ await refreshFromServer(); }
+    renderCV();
+    recalcSaveVisibility();
 
-        $('#sendBtn').disabled = true;
-        setUploadState('Uploading…');
-        $('#progress').value = 12;
+    // Navigation actions
+    if (action==="stay") return;
+    if (action==="nextPage"){
+      if (page===1) gotoPage(2);
+      else if (page===2) gotoPage(3);
+      else if (page===3) {/* fallthrough to nextAgent? top button handles that */ }
+    } else if (action==="prevPage"){
+      if (page===2) gotoPage(1);
+      else if (page===3) gotoPage(2);
+    } else if (action==="nextAgent"){
+      const next = agentNum === AGENTS ? 1 : agentNum + 1;
+      switchAgent(next);
+      gotoPage(1);
+    } else if (action==="prevAgent"){
+      const prev = agentNum === 1 ? AGENTS : agentNum - 1;
+      switchAgent(prev);
+      gotoPage(1);
+    }
+  } catch (err){
+    hideOverlay();
+    setStatus("Network error. Try again.", false);
+    showWebhookResponse({ error: String(err) }, { status: 0 });
+  } finally {
+    submitBtnTop.disabled = false;
+    savePrevBtnTop.disabled = false;
+    saveNextBtnTop.disabled = false;
+  }
+}
 
-        const form = new FormData();
-        form.append('file', fileRef, fileRef.name);
-        form.append('locationId', ctx.locationId || '');
-        form.append('businessName', ctx.businessName || '');
+/* Refresh current from server */
+async function refreshFromServer(){
+  if (!locationId) return;
+  if (!FETCH_URL){ setStatus("Missing fetchUrl in query string.", false); return; }
+  showOverlay("Refreshing…");
+  const urlWithBust = FETCH_URL + (FETCH_URL.includes("?") ? "&" : "?") + "t=" + Date.now();
+  try{
+    const res = await fetch(urlWithBust, {
+      method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
+      headers: buildHeaders(),
+      body: JSON.stringify({ locationId })
+    });
+    const text = await res.text();
+    let json; try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
 
-        // Using fetch without manual Content-Type (browser will set proper multipart boundary).
-        const res = await fetch(ctx.uploadUrl, {
-          method: 'POST',
-          headers: authHeaders(), // safe with multipart
-          body: form
+    const agents = json?.agents || {};
+    for (let i=1;i<=AGENTS;i++){
+      const a = agents[String(i)] || agents[i] || {};
+      current[i] = {
+        active:   a.active   ?? seedVals.active   ?? "",
+        campaign: a.campaign ?? seedVals.campaign ?? "",
+        perday:   a.perday   ?? seedVals.perday   ?? "",
+        followups:a.followups ?? a.number_of_follow_ups ?? seedVals.followups ?? "",
+        cadence:  a.cadence  ?? seedVals.cadence  ?? "",
+        firstmsg: swapPlaceholders(a.firstmsg ?? seedVals.firstmsg ?? ""),
+        bump1:    swapPlaceholders(a.bump1    ?? seedVals.bump1    ?? ""),
+        bump2:    swapPlaceholders(a.bump2    ?? seedVals.bump2    ?? ""),
+        bump3:    swapPlaceholders(a.bump3    ?? seedVals.bump3    ?? ""),
+        notes:    swapPlaceholders(a.notes    ?? seedVals.notes    ?? ""),
+        webhook:  a.webhook  ?? seedVals.webhook  ?? ""
+      };
+    }
+    renderCV();
+    updateBumpVisibility();
+    recalcSaveVisibility();
+    setStatus("Refreshed", true);
+  }catch{
+    setStatus("Could not refresh current values.", false);
+  }finally { hideOverlay(); }
+}
+
+/* Copy prev agent */
+document.getElementById("copyPrevBtn").addEventListener("click", ()=>{
+  const prev = agent === 1 ? AGENTS : agent - 1;
+  const src = current[prev] || {};
+  setActive((src.active || "").toLowerCase()==="yes");
+  setFollowups(Number(src.followups ?? 3));
+  campaignName.value = src.campaign || "";
+  perDay.value = src.perday || perDay.value;
+  cadence.value = src.cadence || cadence.value;
+  firstMessage.value = src.firstmsg || "";
+  bump1.value = src.bump1 || BUMP1_DEFAULT;
+  bump2.value = src.bump2 || BUMP2_DEFAULT;
+  bump3.value = src.bump3 || BUMP3_DEFAULT;
+  notes.value = src.notes || "";
+  webhook.value = src.webhook || "";
+  copyNote.textContent = `Copied values from Agent ${prev}.`;
+  setTimeout(()=> copyNote.textContent="", 3500);
+  recalcSaveVisibility();
+});
+
+/* Overlay helpers */
+function showOverlay(text){ document.getElementById("overlayText").textContent = text || "Loading…"; document.getElementById("overlay").classList.remove("hidden"); }
+function hideOverlay(){ document.getElementById("overlay").classList.add("hidden"); }
+
+/* ------------------- EXAMPLES MODAL ------------------- */
+const exModal = document.getElementById("exModal");
+const exList  = document.getElementById("exList");
+const exClose = document.getElementById("exClose");
+let exTargetEl = null;
+
+function openExamples(kind, targetId){
+  exTargetEl = document.getElementById(targetId);
+  exList.innerHTML = "";
+  const groups = EXAMPLES[kind] || [];
+  groups.forEach(g=>{
+    const group = document.createElement("div");
+    group.className = "ex-group";
+    const h = document.createElement("h4");
+    h.textContent = g.title || "Examples";
+    group.appendChild(h);
+
+    if (Array.isArray(g.sop) && g.sop.length){
+      g.sop.forEach(line=>{
+        const row = document.createElement("div");
+        row.className = "ex-item";
+        const txt = document.createElement("div");
+        txt.className = "ex-text";
+        txt.textContent = line;
+        row.appendChild(txt);
+        const btn = document.createElement("button");
+        btn.className = "usebtn";
+        btn.textContent = "Use";
+        btn.addEventListener("click", ()=>{
+          if (!exTargetEl) return;
+          exTargetEl.value = line;
+          exModal.classList.remove("show");
+          exTargetEl.focus();
+          recalcSaveVisibility();
         });
+        row.appendChild(btn);
+        group.appendChild(row);
+      });
+    }
 
-        $('#progress').value = 70;
-
-        const ct = res.headers.get('content-type') || '';
-        const payload = ct.includes('application/json') ? await res.json() : await res.text();
-
-        $('#progress').value = 100;
-
-        if (!res.ok) {
-          throw new Error((payload && (payload.message || payload.error)) || `HTTP ${res.status}`);
-        }
-
-        setUploadState(`Done: ${filenameFromPath(fileRef.name)} uploaded`);
-        toast('Upload complete', 'Agent triggered successfully');
-      } catch (e) {
-        $('#progress').value = 0;
-        setUploadState('Failed');
-        toast('Upload failed', e?.message || String(e), true);
-      } finally {
-        $('#sendBtn').disabled = false;
-      }
+    (g.items || []).forEach(text=>{
+      const row = document.createElement("div");
+      row.className = "ex-item";
+      const txt = document.createElement("div");
+      txt.className = "ex-text";
+      txt.textContent = text;
+      row.appendChild(txt);
+      const btn = document.createElement("button");
+      btn.className = "usebtn";
+      btn.textContent = "Use";
+      btn.addEventListener("click", ()=>{
+        if (!exTargetEl) return;
+        exTargetEl.value = text;
+        exModal.classList.remove("show");
+        exTargetEl.focus();
+        recalcSaveVisibility();
+      });
+      row.appendChild(btn);
+      group.appendChild(row);
     });
+    exList.appendChild(group);
+  });
+  exModal.classList.add("show");
+}
+document.querySelectorAll(".ex-btn").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const target = b.getAttribute("data-target");
+    const kind   = b.getAttribute("data-kind");
+    openExamples(kind, target);
+  });
+});
+exClose.addEventListener("click", ()=> exModal.classList.remove("show"));
+exModal.addEventListener("click", (e)=>{ if (e.target===exModal) exModal.classList.remove("show"); });
 
-    // --- Save (Page) ---------------------------------------------------------
-    $('#saveBtn').addEventListener('click', async () => {
-      try {
-        if (!ctx.submitUrl) throw new Error('Missing submitUrl');
 
-        $('#saveBtn').disabled = true;
 
-        const payload = {
-          locationId: ctx.locationId || null,
-          businessName: ctx.businessName || null,
-          savedAt: new Date().toISOString(),
-          // You can add more fixed config fields here if the backend expects them:
-          // e.g., agentType, campaignId, etc.
-        };
+  
+/* --------- Simple CSV Dropzone + Send --------- */
+const dropzone   = document.getElementById("dropzone");
+const dzInput    = document.getElementById("dzInput");
+const sendCsvBtn = document.getElementById("sendCsvBtn");
+const csvStatus  = document.getElementById("csvStatus");
 
-        const res = await fetch(ctx.submitUrl, {
-          method: 'POST',
-          headers: authHeaders({ 'Content-Type': 'application/json' }),
-          body: JSON.stringify(payload)
-        });
+// Must match your n8n Webhook node's binaryPropertyName
+const FIELD_NAME = "file";
 
-        const ct = res.headers.get('content-type') || '';
-        const data = ct.includes('application/json') ? await res.json() : await res.text();
+function setCsvStatus(text, ok){
+  csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
+  csvStatus.classList.toggle("has-value", !!ok);
+  csvStatus.classList.toggle("empty", !ok);
+}
 
-        if (!res.ok) {
-          throw new Error((data && (data.message || data.error)) || `HTTP ${res.status}`);
-        }
+function getChosenFile(){
+  return dzInput.files && dzInput.files[0] ? dzInput.files[0] : null;
+}
 
-        toast('Saved', 'Page configuration saved');
-      } catch (e) {
-        toast('Save failed', e?.message || String(e), true);
-      } finally {
-        $('#saveBtn').disabled = false;
-      }
-    });
-  </script>
+function chooseFile(){ dzInput.click(); }
+
+function wireDropzone(){
+  const onChoose = e => { if (e.target.files?.[0]) setCsvStatus(`Selected: ${e.target.files[0].name}`, true); };
+  dzInput.addEventListener("change", onChoose);
+
+  const onDrop = e => {
+    e.preventDefault();
+    dropzone.classList.remove("dz-hover");
+    const f = e.dataTransfer?.files?.[0];
+    if (f){ dzInput.files = e.dataTransfer.files; setCsvStatus(`Selected: ${f.name}`, true); }
+  };
+  const onOver  = e => { e.preventDefault(); dropzone.classList.add("dz-hover"); };
+  const onLeave = () => dropzone.classList.remove("dz-hover");
+
+  ["dragenter","dragover"].forEach(ev => dropzone.addEventListener(ev, onOver));
+  ["dragleave","dragend"].forEach(ev => dropzone.addEventListener(ev, onLeave));
+  dropzone.addEventListener("drop", onDrop);
+  dropzone.addEventListener("click", chooseFile);
+  dropzone.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); chooseFile(); }});
+}
+wireDropzone();
+
+/* Send flow: turn agent ON -> save fields -> upload CSV to UPLOAD_URL */
+async function sendAndActivate(){
+  if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
+  const file = getChosenFile();
+  if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
+
+  // 1) ensure agent is ON
+  setActive(true);
+
+  // 2) save current page (posts all fields to submitUrl with auth)
+  showOverlay("Saving fields…");
+  try{
+    await saveAgentThenRefresh(agent, { action:"stay" });
+  }catch{
+    hideOverlay();
+    setCsvStatus("Couldn’t save fields.", false);
+    return;
+  }
+
+  // 3) multipart upload to your n8n webhook with auth headers
+  showOverlay("Uploading CSV…");
+  try{
+    const fd = new FormData();
+    fd.append(FIELD_NAME, file, file.name);
+    fd.append("locationId", locationId || "");
+    fd.append("businessName", businessName || "");
+    fd.append("agent", String(agent));
+    fd.append("activate", "true"); // optional flag for backend
+
+    const headers = {};
+    if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+    if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+
+    const res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
+    const status = res.status;
+    const text   = await res.text();
+    let parsed; try{ parsed = JSON.parse(text); } catch{ parsed = { raw:text }; }
+    hideOverlay();
+
+    setCsvStatus(res.ok ? "Uploaded & agent activated" : `Upload error ${status}`, res.ok);
+    showWebhookResponse(parsed, { status });
+  } catch (err){
+    hideOverlay();
+    setCsvStatus("Network error during upload", false);
+    showWebhookResponse({ error:String(err) }, { status:0 });
+  }
+}
+
+sendCsvBtn.addEventListener("click", e => { e.preventDefault(); sendAndActivate(); });
+
+
+
+  
+/* ------------------- INIT ------------------- */
+(async function init(){
+  ensureCadenceValues();
+  for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
+  if (!locationId){ setStatus("Missing locationId", false); return; }
+
+  showOverlay("Loading current values…");
+  if (FETCH_URL){ await refreshFromServer(); }
+  else {
+    for (let i=1;i<=AGENTS;i++){
+      current[i] = {
+        active:   seedVals.active   ?? "",
+        campaign: seedVals.campaign ?? "",
+        perday:   seedVals.perday   ?? "",
+        followups:seedVals.followups ?? "3",
+        cadence:  seedVals.cadence  || "IM > 15m > 24h > 24h",
+        firstmsg: swapPlaceholders(seedVals.firstmsg ?? ""),
+        bump1:    swapPlaceholders(seedVals.bump1 || BUMP1_DEFAULT),
+        bump2:    swapPlaceholders(seedVals.bump2 || BUMP2_DEFAULT),
+        bump3:    swapPlaceholders(seedVals.bump3 || BUMP3_DEFAULT),
+        notes:    swapPlaceholders(seedVals.notes ?? ""),
+        webhook:  seedVals.webhook  ?? ""
+      };
+    }
+    hideOverlay();
+  }
+  switchAgent(1);
+  updateBumpVisibility();
+  gotoPage(1);
+})();
+</script>
 </body>
 </html>
