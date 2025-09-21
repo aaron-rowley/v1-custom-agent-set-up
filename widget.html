@@ -1323,56 +1323,7 @@ function recalcSaveVisibility(){
 
 /* ---------------- SAVE HANDLER ---------------- */
 
-/* === PATCH START: CSV upload (Send) === */
-sendCsvBtn.addEventListener("click", async ()=>{
-  const { ok } = validateAgentReady();
-  if (!ok){ setStatus("Complete required fields first.", false); return; }
-  if (!mappingComplete){
-    setStatus("Complete field mapping first.", false);
-    document.getElementById("mapModal").classList.add("show");
-    return;
-  }
-  if (!dzInput.files?.length){ setStatus("Choose a CSV file.", false); return; }
-  if (!UPLOAD_URL){ setStatus("Missing uploadUrl in query string.", false); return; }
 
-  const file = dzInput.files[0];
-  dzProg.classList.remove("hidden");
-  dzBar.style.width = "12%";
-  setCsvStatus("Uploading…", true);
-  setSendDisabled(true);
-
-  try{
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("locationId", locationId || "");
-    fd.append("agent", String(agent));
-    fd.append("mapping", JSON.stringify(mapping));
-
-    const res = await fetch(UPLOAD_URL, {
-      method:"POST", mode:"cors", cache:"no-store", credentials:"omit",
-      headers: buildHeaders(),
-      body: fd
-    });
-
-    dzBar.style.width = "72%";
-    const text = await res.text();
-    let json; try{ json = text ? JSON.parse(text) : {}; } catch{ json = { raw:text }; }
-
-    dzBar.style.width = "100%";
-    setCsvStatus(res.ok ? "Uploaded" : `Upload error (${res.status})`, res.ok);
-    setStatus(res.ok ? "Upload complete" : "Upload failed", res.ok);
-    showWebhookResponse(json, { status: res.status });
-  } catch(err){
-    setCsvStatus("Upload failed (network)", false);
-    setStatus("Network error. Try again.", false);
-    showWebhookResponse({ error:String(err) }, { status: 0 });
-  } finally{
-    setSendDisabled(false);
-    setTimeout(()=> dzProg.classList.add("hidden"), 600);
-    dzBar.style.width = "0%";
-  }
-});
-/* === PATCH END === */
 
 function parseMaybeJSON(t){ 
   try{ return t ? JSON.parse(t) : {}; } 
