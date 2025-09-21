@@ -105,6 +105,7 @@
   .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
   .actions{ display:none !important; }
 
+  
   /* --- Fancy dropzone --- */
   .dropzone{
     border:2px dashed var(--line);
@@ -527,7 +528,7 @@
 </div>
 
 
-  <!-- Notify Email Modal -->
+<!-- Notify Email Modal -->
 <div id="emailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
   <div class="modal-card" style="max-width:480px">
     <div class="modal-header">
@@ -535,16 +536,16 @@
       <button class="xbtn" id="emailClose">Close</button>
     </div>
     <div class="modal-body">
-      <label for="notifyEmailInput" style="margin-top:0">Email (optional)</label>
+      <label for="notifyEmailInput" style="margin-top:0;font-size:12px;color:#a7b0c0;">Email (optional)</label>
       <input type="email" id="notifyEmailInput" placeholder="name@company.com" />
       <div id="emailError" style="display:none;color:#fecaca;font-size:12px;margin-top:8px;">Enter a valid email</div>
     </div>
-    <div class="map-footer">
-      <button class="xbtn" id="emailSkip">Skip</button>
+    <div class="map-footer" style="justify-content:flex-end;">
       <button class="btn-sm" id="emailConfirm">Send</button>
     </div>
   </div>
 </div>
+
 
 
   
