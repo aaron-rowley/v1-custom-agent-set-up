@@ -193,22 +193,44 @@
 
       <div class="divider"></div>
 
-    <!-- Simple CSV uploader -->
+ <!-- Fancy CSV uploader -->
 <div class="label-row">
   <label>Upload CSV File</label>
   <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
 </div>
 
 <div id="dropzone" class="dropzone" aria-label="Upload CSV File" tabindex="0">
-  <div class="dz-text">
-    <strong>Drag & drop</strong> your CSV here, or <span class="dz-cta">click to choose</span>
-    <div class="dz-sub">Accepted: .csv</div>
+  <div class="dz-inner">
+    <div class="dz-cloud" aria-hidden="true">
+      <!-- inline cloud icon -->
+      <svg viewBox="0 0 24 24" width="56" height="56">
+        <path d="M19 18a4 4 0 0 0 0-8 5 5 0 0 0-9.7-1.7A4 4 0 0 0 6 18h13z" fill="currentColor" opacity=".85"/>
+      </svg>
+    </div>
+    <div class="dz-title"><strong>Upload CSV File</strong></div>
+    <div class="dz-sub">Drag & drop your CSV here, or <span class="dz-cta">click to browse</span></div>
+
+    <div class="dz-chip hidden" id="dzChip">
+      <span id="dzFileName">filename.csv</span>
+      <button type="button" id="dzClear" aria-label="Remove file">×</button>
+    </div>
+
+    <div class="dz-progress hidden" id="dzProg">
+      <div class="dz-bar" id="dzBar"></div>
+    </div>
   </div>
+
   <input id="dzInput" type="file" accept=".csv,text/csv" hidden />
 </div>
 
 <div class="row" style="margin-top:10px;">
   <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+  <div style="margin-left:auto;">
+    <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload CSV">Send</button>
+  </div>
+</div>
+
+      
   <div style="margin-left:auto;">
     <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload CSV">Send</button>
   </div>
