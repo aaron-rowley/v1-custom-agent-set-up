@@ -1492,38 +1492,25 @@ function validateMapping(){
   return ok;
 }
 
-// open/close/reset/save
-mapBtn?.addEventListener("click", ()=> mapModal.classList.add("show"));
-mapClose?.addEventListener("click", ()=> mapModal.classList.remove("show"));
-clearMapBtn?.addEventListener("click", buildMappingModal);
-saveMapBtn?.addEventListener("click", ()=>{
-  if (validateMapping()) mapModal.classList.remove("show");
-});
-
-// --- Map Fields button: force-open modal and (re)build UI ---
-const mapBtn   = document.getElementById("mapBtn");
-const mapModal = document.getElementById("mapModal");
-const mapClose = document.getElementById("mapClose");
-
+// --- Single opener/closer (reads headers if needed, then opens) ---
 mapBtn?.addEventListener("click", (e) => {
   e.preventDefault();
-  // Ensure a CSV is chosen
   const f = dzInput.files && dzInput.files[0];
   if (!f) { setCsvStatus("Choose a CSV first.", false); return; }
 
-  // If we don't have headers yet, read them, then open.
-  if (!Array.isArray(csvHeaders) || csvHeaders.length === 0) {
-    readCsvHeaders(f).then(()=> {
-      buildMappingModal();
-      mapModal.classList.add("show");
-    });
-  } else {
+  const ready = (Array.isArray(csvHeaders) && csvHeaders.length)
+    ? Promise.resolve()
+    : readCsvHeaders(f);
+
+  ready.then(() => {
     buildMappingModal();
     mapModal.classList.add("show");
-  }
+  });
 });
 
 mapClose?.addEventListener("click", () => mapModal.classList.remove("show"));
+clearMapBtn?.addEventListener("click", buildMappingModal);
+saveMapBtn?.addEventListener("click", () => { if (validateMapping()) mapModal.classList.remove("show"); });
 
 
 async function sendAndActivate(){
