@@ -104,31 +104,50 @@
   .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
   .actions{ display:none !important; }
 
-  /* --- Fancy dropzone --- */
-  .dropzone{
-    border:2px dashed var(--line);
-    background:linear-gradient(180deg,#0f1115,#0d1118);
-    border-radius:18px;
-    padding:28px;
-    text-align:center;
-    cursor:pointer;
-    transition:.15s ease-in-out;
-    box-shadow:0 6px 22px rgba(0,0,0,.28) inset, 0 10px 26px rgba(0,0,0,.18);
-    outline:none;
-  }
-  .dropzone:focus-visible{ box-shadow:0 0 0 3px rgba(99,102,241,.35), 0 10px 26px rgba(0,0,0,.18); }
-  .dropzone:hover, .dropzone.dz-hover{ border-color:var(--orange); background:linear-gradient(180deg,#11151b,#0e141b); }
-  .dz-inner{ display:flex; flex-direction:column; align-items:center; gap:10px; }
-  .dz-cloud{ color:#7b8697; background:rgba(123,134,151,.08); width:84px; height:84px; display:grid; place-items:center; border-radius:20px; box-shadow:inset 0 0 0 1px rgba(123,134,151,.18); }
-  .dz-title{ font-size:16px; margin-top:4px; }
-  .dz-sub{ font-size:13px; color:#a7b0c0; }
-  .dz-cta{ text-decoration:underline; }
-  .dz-chip{ margin-top:8px; display:inline-flex; align-items:center; gap:8px; background:#0b0f14; border:1px solid #273042; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-size:13px; }
-  .dz-chip button{ all:unset; cursor:pointer; display:grid; place-items:center; width:20px; height:20px; border-radius:999px; background:#232a37; color:#cfd6e4; }
-  .dz-chip button:hover{ background:#303a4a; }
-  .dz-progress{ width:min(360px, 80%); height:6px; background:#11161d; border-radius:999px; overflow:hidden; border:1px solid #273042; margin-top:10px; }
-  .dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
-  .hidden{ display:none !important; }
+/* --- Fancy dropzone --- */
+.dropzone{
+  border:2px dashed var(--line);
+  background:linear-gradient(180deg,#0f1115,#0d1118);
+  border-radius:18px;
+  padding:28px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s ease-in-out;
+  box-shadow:0 6px 22px rgba(0,0,0,.28) inset, 0 10px 26px rgba(0,0,0,.18);
+  outline:none;
+}
+.dropzone:focus-visible{ box-shadow:0 0 0 3px rgba(99,102,241,.35), 0 10px 26px rgba(0,0,0,.18); }
+.dropzone:hover, .dropzone.dz-hover{ border-color:var(--orange); background:linear-gradient(180deg,#11151b,#0e141b); }
+.dz-inner{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.dz-cloud{ color:#7b8697; background:rgba(123,134,151,.08); width:84px; height:84px; display:grid; place-items:center; border-radius:20px; box-shadow:inset 0 0 0 1px rgba(123,134,151,.18); }
+.dz-title{ font-size:16px; margin-top:4px; }
+.dz-sub{ font-size:13px; color:#a7b0c0; }
+.dz-cta{ text-decoration:underline; }
+.dz-chip{ margin-top:8px; display:inline-flex; align-items:center; gap:8px; background:#0b0f14; border:1px solid #273042; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-size:13px; }
+.dz-chip button{ all:unset; cursor:pointer; display:grid; place-items:center; width:20px; height:20px; border-radius:999px; background:#232a37; color:#cfd6e4; }
+.dz-chip button:hover{ background:#303a4a; }
+.dz-progress{ width:min(360px, 80%); height:6px; background:#11161d; border-radius:999px; overflow:hidden; border:1px solid #273042; margin-top:10px; }
+.dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
+.hidden{ display:none !important; }
+
+/* --- Field Mapping Modal --- */
+.hint{ font-size:12px; color:var(--muted); margin:10px 0 14px; padding:10px; background:#0b0f14; border:1px solid #273042; border-radius:10px; }
+.modal-body{ display:grid; grid-template-columns:320px 1fr; gap:20px; }
+.list-title{ font-size:13px; color:#a7b0c0; margin-bottom:10px; }
+.col-list{ display:flex; flex-wrap:wrap; gap:6px; max-height:45vh; overflow:auto; padding:10px; border:1px solid #273042; border-radius:10px; background:#0b0f14; }
+.chip{ background:#1c2431; border:1px solid #343f52; color:#dbe2f0; padding:6px 10px; border-radius:8px; font-size:12px; cursor:grab; }
+.chip:active{ cursor:grabbing; }
+.slotlist{ display:flex; flex-direction:column; gap:8px; }
+.slot{ display:grid; grid-template-columns:1fr 1fr auto; align-items:center; gap:10px; border:1px solid #273042; border-radius:10px; padding:8px 10px; background:#0b0f14; }
+.slot.dropping .slot-target{ border-color:var(--orange); background:rgba(237,108,3,.1); }
+.slot-name{ font-size:13px; color:#dbe2f0; }
+.slot-name .req{ color:var(--red); margin-left:4px; }
+.slot-target{ border:2px dashed #273042; border-radius:8px; padding:6px 10px; min-height:34px; transition:.1s; }
+.slot-target .placeholder{ font-size:12px; color:#6b7280; }
+.slot-target .chip{ background:var(--green); color:#052; border-color:rgba(16,185,129,.6); box-shadow:0 4px 10px rgba(16,185,129,.25); padding:4px 8px; font-size:12px; display:inline-block; border-radius:6px; }
+.slot .clear{ all:unset; cursor:pointer; color:#a7b0c0; background:#232a37; border-radius:99px; width:20px; height:20px; display:grid; place-items:center; }
+.slot .clear:hover{ background:#303a4a; }
+.map-footer{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; border-top:1px solid #273042; padding-top:14px; }
 </style>
 </head>
 <body>
@@ -142,7 +161,6 @@
   <div class="sub" id="bizLine"></div>
   <div class="sub" id="locLine"></div>
 
-  <!-- Sticky tabs + actions -->
   <div class="tabs-wrap">
     <div class="tabsbar">
       <div class="tabs" id="tabs"></div>
@@ -157,23 +175,20 @@
 
   <div class="editing" style="display:flex; align-items:center; gap:10px; margin:10px 0;">
     <span class="sub">Editing:</span>
-    <span class="chip" id="agentChip">Custom campaign agent 1</span>
+    <span id="agentChip">Custom campaign agent 1</span>
     <button class="xbtn" id="copyPrevBtn" title="Copy current values from previous agent">Copy prev</button>
     <span class="copy-note" id="copyNote"></span>
     <span class="sub" id="status" style="margin-left:auto;"></span>
   </div>
 
   <div class="card" id="formCard">
-    <!-- Page tabs -->
     <div class="pagetabs" role="tablist" aria-label="Agent page tabs">
       <button class="pagetab active" data-page="1" aria-selected="true">Page 1 — Overview</button>
       <button class="pagetab" data-page="2" aria-selected="false">Page 2 — Follow-ups & Messaging</button>
       <button class="pagetab" data-page="3" aria-selected="false">Page 3 — Integrations</button>
     </div>
 
-    <!-- PAGE 1 -->
     <section id="page1" class="page">
-      <!-- Active -->
       <div class="label-row"><label>Active? ("Yes" or leave blank)</label></div>
       <div id="activeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
       <span class="toggle-label" id="activeLabel">No</span>
@@ -181,14 +196,12 @@
 
       <div class="divider"></div>
 
-      <!-- Campaign name -->
       <div class="label-row"><label>Campaign name</label></div>
       <input type="text" id="campaignName" placeholder="Campaign name" />
       <div class="cv empty" id="cv_campaign"><strong>Current value:</strong> (not set)</div>
 
       <div class="divider"></div>
 
-      <!-- Notes / Prompt -->
       <div class="label-row">
         <label>Notes about campaign (Prompts/SOP)</label>
       </div>
@@ -211,7 +224,6 @@
 
       <div class="divider"></div>
 
-      <!-- Dashboard button -->
       <div class="label-row">
         <label>View Dashboard</label>
       </div>
@@ -219,14 +231,14 @@
 
       <div class="divider"></div>
 
-      <!-- Lead Import • CSV (dedicated section) -->
       <div class="label-row">
-        <label>Lead Import • CSV</label>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
-          <button class="xbtn" id="mapBtn" disabled>Map fields</button>
-        </div>
-      </div>
+  <label>Lead Import • CSV</label>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
+    <button class="xbtn" id="mapBtn" disabled>Map fields</button>
+  </div>
+</div>
+
 
       <div id="dropzone" class="dropzone" aria-label="Upload CSV File" tabindex="0">
         <div class="dz-inner">
@@ -249,15 +261,16 @@
         <input id="dzInput" type="file" accept=".csv,text/csv" hidden />
       </div>
 
-      <div class="row" style="margin-top:10px;">
-        <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
-        <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a7b0c0;">
-            <input type="checkbox" id="sendMapped" checked /> Send mapped JSON
-          </label>
-          <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
-        </div>
-      </div>
+ <div class="row" style="margin-top:10px;">
+  <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a7b0c0;">
+      <input type="checkbox" id="sendMapped" checked /> Send mapped JSON
+    </label>
+    <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
+  </div>
+</div>
+
 
       <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
         <div class="left">
@@ -270,11 +283,8 @@
       </div>
     </section>
 
-    <!-- PAGE 2 -->
     <section id="page2" class="page hidden" aria-hidden="true">
-      <!-- Per-day + Followups + Cadence -->
       <div class="row-follow">
-        <!-- Per-day -->
         <div>
           <div class="label-row">
             <label>How many per day</label>
@@ -288,7 +298,6 @@
           <div class="cv empty" id="cv_perday"><strong>Current value:</strong> (not set)</div>
         </div>
 
-        <!-- Follow-ups (segmented) -->
         <div>
           <div class="label-row">
             <label>Number of follow ups</label>
@@ -303,7 +312,6 @@
           <div class="cv empty" id="cv_followups"><strong>Current value:</strong> (not set)</div>
         </div>
 
-        <!-- Cadence -->
         <div>
           <div class="label-row">
             <label>Follow up cadence</label>
@@ -323,7 +331,6 @@
 
       <div class="divider"></div>
 
-      <!-- First message -->
       <div class="label-row">
         <label>First message</label>
         <button class="ibtn" data-tip="This is the first outbound message of the campaign (IM). Keep it short and human.">What’s this?</button>
@@ -347,7 +354,6 @@
 
       <div class="divider"></div>
 
-      <!-- Bumps -->
       <div class="bump-block" data-b="1">
         <div class="label-row">
           <label>Bump 1</label>
@@ -430,7 +436,6 @@
       </div>
     </section>
 
-    <!-- PAGE 3 -->
     <section id="page3" class="page hidden" aria-hidden="true">
       <div class="label-row">
         <label>Objective reached webhook endpoint (per agent)</label>
@@ -450,30 +455,26 @@
       </div>
     </section>
 
-    <!-- Webhook response (pretty) -->
     <div class="resp hidden" id="respBox">
       <div class="label-row"><label>Webhook response</label></div>
       <div class="resp-card">
         <div class="resp-head">
           <div id="respStatusPill" class="pill ok">200 OK</div>
-          <button class="rawtoggle" id="rawToggle">View raw JSON</button>
+          <button id="rawToggle" class="xbtn" style="padding: 4px 8px; font-size: 12px;">View raw JSON</button>
         </div>
         <div class="resp-grid" id="respGrid"></div>
-        <div class="rawbox" id="rawBox"><pre id="rawPre"></pre></div>
+        <div class="rawbox hidden" id="rawBox" style="margin-top:10px; background:#0b0f14; border:1px solid #273042; border-radius:10px; max-height:300px; overflow:auto;"><pre id="rawPre" style="font-size:12px; padding:10px; margin:0;"></pre></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Overlay loader -->
 <div id="overlay" class="overlay hidden" aria-live="polite" aria-busy="true">
   <div class="loading"><div class="bigspin"></div><div id="overlayText">Loading…</div></div>
 </div>
 
-<!-- Floating helper tooltip -->
 <div id="tooltip" class="tip hidden" role="dialog" aria-live="polite"></div>
 
-<!-- Examples modal -->
 <div id="exModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="exTitle">
   <div class="modal-card">
     <div class="modal-header">
@@ -484,8 +485,7 @@
   </div>
 </div>
 
-<!-- Field Mapping Modal -->
-<div id="mapModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+  <div id="mapModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
   <div class="modal-card">
     <div class="modal-header">
       <div class="modal-title" id="mapTitle">Map CSV Columns to Fields</div>
@@ -512,7 +512,57 @@
   </div>
 </div>
 
+  
 <script>
+/* ---------- CSV Mapping setup ---------- */
+// 1. Define the fields you want to map to.
+const SYSTEM_FIELDS = [
+  { key: 'first_name', label: 'First Name', required: true },
+  { key: 'last_name',  label: 'Last Name',  required: true },
+  { key: 'email',      label: 'Email',      required: true },
+  { key: 'phone',      label: 'Phone',      required: false },
+  { key: 'year_of_vehicle_manufacture', label: 'Vehicle Year', required: false },
+  { key: 'make',       label: 'Make',       required: false },
+  { key: 'model',      label: 'Model',      required: false },
+];
+
+// 2. Add variables for mapping state
+let csvHeaders = [];
+let mapping = {};
+
+// 3. Add helper functions to parse the CSV and read its headers.
+function parseCsv(text, options={}){
+  const lines=text.trim().split('\n');
+  const header=lines[0].split(',').map(h=>h.trim());
+  if (options.header) return header;
+  return lines.slice(1).map(line=>{
+    const row={};
+    const values=line.split(',');
+    header.forEach((h,i)=>row[h]=values[i]?.trim());
+    return row;
+  });
+}
+async function readCsvHeaders(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        const firstLine = text.slice(0, text.indexOf('\n')).trim();
+        // Basic CSV parsing for the header row
+        const headers = firstLine.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+          .map(h => h.replace(/^"|"$/g, '').trim());
+        csvHeaders = headers.filter(Boolean); // Store headers globally
+        resolve(csvHeaders);
+      } catch (err) { reject(err); }
+    };
+    reader.onerror = (e) => reject(e);
+    // Read only the first 5KB to quickly get the header
+    const blob = file.slice(0, 5120);
+    reader.readAsText(blob);
+  });
+}
+
 /* ------------------- URL CONFIG ------------------- */
 const qs = new URLSearchParams(location.search);
 const get = k => qs.get(k) || "";
@@ -606,8 +656,8 @@ const rawBox   = document.getElementById("rawBox");
 const rawPre   = document.getElementById("rawPre");
 const respStatusPill = document.getElementById("respStatusPill");
 document.getElementById("rawToggle").addEventListener("click", ()=>{
-  rawBox.style.display = rawBox.style.display === "block" ? "none" : "block";
-  document.getElementById("rawToggle").textContent = rawBox.style.display === "block" ? "Hide raw JSON" : "View raw JSON";
+  rawBox.classList.toggle("hidden");
+  document.getElementById("rawToggle").textContent = rawBox.classList.contains("hidden") ? "View raw JSON" : "Hide raw JSON";
 });
 
 function showWebhookResponse(body, meta = {}) {
@@ -921,7 +971,7 @@ function cvKeys(n){
   };
 }
 function overrideKeysFromQuery(kmap, n){
-  const map = { ...kmap };
+  const map = {...kmap};
   for (const field of Object.keys(map)){
     const q = qs.get(`key_${field}_${n}`) || qs.get(`key_${field}`);
     if (q) map[field] = q;
@@ -1308,6 +1358,7 @@ const dzBar      = document.getElementById("dzBar");
 
 const sendCsvBtn = document.getElementById("sendCsvBtn");
 const csvStatus  = document.getElementById("csvStatus");
+const FIELD_NAME = "file"; // n8n binaryPropertyName
 
 function setCsvStatus(text, ok){
   csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
@@ -1327,52 +1378,13 @@ function withinLimit(file){
 function showSelected(file){
   dzFileName.textContent = `${file.name} • ${(file.size/1024/1024).toFixed(2)} MB (limit ${MAX_MB} MB)`;
   dzChip.classList.remove("hidden");
-  mapBtn.disabled = false;
+  mapBtn.disabled = false;              // <-- this line required
 }
 
 function clearFile(){
   dzInput.value = "";
   dzChip.classList.add("hidden");
-}
-
-let csvHeaders = [];
-let mapping = {};
-const SYSTEM_FIELDS = [
-  { key:"first_name", label:"First name", required:true },
-  { key:"last_name",  label:"Last name",  required:true },
-  { key:"email",      label:"Email",      required:true },
-  { key:"phone",      label:"Phone" },
-  { key:"year_of_vehicle_manufacture", label:"Vehicle year" },
-  { key:"make", label:"Make" },
-  { key:"model", label:"Model" }
-];
-
-// Simple CSV parser (no external libs)
-function parseCsv(text){
-  const rows = [];
-  let row = [], cur = "", inQ = false;
-  for (let i=0;i<text.length;i++){
-    const c = text[i], n = text[i+1];
-    if (inQ){
-      if (c === '"' && n === '"'){ cur += '"'; i++; }
-      else if (c === '"'){ inQ = false; }
-      else cur += c;
-    } else {
-      if (c === '"'){ inQ = true; }
-      else if (c === ','){ row.push(cur); cur=""; }
-      else if (c === '\n'){ row.push(cur); rows.push(row); row=[]; cur=""; }
-      else if (c === '\r'){ /* ignore */ }
-      else cur += c;
-    }
-  }
-  row.push(cur); rows.push(row);
-  return rows;
-}
-
-async function readCsvHeaders(file){
-  const text = await file.text();
-  const rows = parseCsv(text);
-  csvHeaders = (rows[0] || []).map(h => String(h||"").trim());
+  mapBtn.disabled = true;
 }
 
 function wireDropzone(){
@@ -1384,11 +1396,15 @@ function wireDropzone(){
     if (!isCsv(f))      { setCsvStatus("Only CSV files are allowed.", false); clearFile(); return; }
     if (!withinLimit(f)){ setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); clearFile(); return; }
 
-    showSelected(f);
+    showSelected(f);                              // shows chip, enables mapBtn
     setCsvStatus(`Selected: ${f.name}`, true);
 
-    // pre-read headers (enables mapping quickly)
-    try { await readCsvHeaders(f); } catch {}
+    // Read header row so the mapping modal has chips ready
+    try {
+      await readCsvHeaders(f);                    // fills csvHeaders[]
+      // optional: prebuild to avoid a small delay on first open
+      if (typeof buildMappingModal === "function") buildMappingModal();
+    } catch { /* ignore parse issues here; modal will handle */ }
   });
 
   // Drag & drop
@@ -1413,9 +1429,13 @@ function wireDropzone(){
   dropzone.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); dzInput.click(); }});
 
   // Clear chip/button
-  dzClear.addEventListener("click", clearFile);
+  dzClear.addEventListener("click", (e) => {
+    e.stopPropagation();
+    clearFile();
+  });
 }
 wireDropzone();
+
 
 function fakeProgress(to=100, ms=900){
   dzProg.classList.remove("hidden");
@@ -1431,22 +1451,31 @@ function fakeProgress(to=100, ms=900){
 
 async function transformCsvToJson(file){
   const text = await file.text();
-  const rows = parseCsv(text);
-  const header = rows.shift() || [];
+  const lines = text.trim().split('\n');
+  const headerLine = lines.shift() || "";
+  const header = headerLine.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+    .map(h => h.replace(/^"|"$/g, '').trim());
+
   const idx = Object.fromEntries(header.map((h,i)=>[String(h).trim(), i]));
 
   const out = [];
-  rows.forEach(r=>{
-    if(!r || r.every(c=>String(c||"").trim()==="")) return; // skip empty rows
+  lines.forEach(line => {
+    if(!line || !line.trim()) return; // skip empty rows
+    const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+      .map(v => v.replace(/^"|"$/g, '').trim());
+
     const obj = {};
     for(const f of SYSTEM_FIELDS){
       const col = mapping[f.key];
-      if(col && col in idx) obj[f.key] = r[idx[col]] ?? "";
+      if(col && col in idx) obj[f.key] = values[idx[col]] ?? "";
     }
     out.push(obj);
   });
   return out;
 }
+
+
+
 
 /* ---------- Mapping modal wiring ---------- */
 const mapModal    = document.getElementById("mapModal");
@@ -1476,17 +1505,21 @@ function buildMappingModal(){
   slots.innerHTML = "";
   SYSTEM_FIELDS.forEach(f=>{
     const slot = document.createElement("div");
-    slot.className = "ex-item";
+    slot.className = "slot";
+    slot.dataset.key = f.key;
+    slot.dataset.required = f.required ? "1" : "0";
     slot.innerHTML = `
-      <div class="ex-text"><strong>${f.label}</strong>${f.required ? " • required" : ""}</div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div class="target" style="min-width:180px; min-height:28px; border:1px dashed #263142; padding:6px 8px; border-radius:8px;">
-          <span class="placeholder">Not mapped</span>
-        </div>
-        <button class="xbtn clear">Clear</button>
-      </div>
+      <div class="slot-name">${f.label}${f.required ? '<span class="req">*</span>' : ''}</div>
+      <div class="slot-target"><span class="placeholder">Not mapped</span></div>
+      <button class="clear" type="button" aria-label="Clear mapping for ${f.label}">×</button>
     `;
-    const target = slot.querySelector(".target");
+    const target = slot.querySelector(".slot-target");
+    
+    // Restore saved mapping if it exists
+    if (mapping[f.key]) {
+      target.innerHTML = `<span class="chip">${mapping[f.key]}</span>`;
+    }
+
     slot.querySelector(".clear").addEventListener("click", ()=>{
       target.innerHTML = '<span class="placeholder">Not mapped</span>';
       delete mapping[f.key];
@@ -1507,8 +1540,6 @@ function buildMappingModal(){
     slots.appendChild(slot);
   });
 
-  // reset mapping state on open
-  mapping = {};
   validateMapping();
 }
 
@@ -1516,6 +1547,7 @@ function validateMapping(){
   const ok = SYSTEM_FIELDS.filter(f=>f.required).every(f => !!mapping[f.key]);
   mapStatus.textContent = ok ? "Ready" : "Incomplete";
   mapStatus.className = "pill " + (ok ? "ok" : "bad");
+  saveMapBtn.disabled = !ok;
   return ok;
 }
 
@@ -1532,12 +1564,19 @@ mapBtn?.addEventListener("click", (e) => {
   ready.then(() => {
     buildMappingModal();
     mapModal.classList.add("show");
+  }).catch(err => {
+    setCsvStatus("Could not read CSV headers.", false);
+    console.error("Error reading CSV headers:", err);
   });
 });
 
 mapClose?.addEventListener("click", () => mapModal.classList.remove("show"));
-clearMapBtn?.addEventListener("click", buildMappingModal);
+clearMapBtn?.addEventListener("click", () => {
+  mapping = {};
+  buildMappingModal();
+});
 saveMapBtn?.addEventListener("click", () => { if (validateMapping()) mapModal.classList.remove("show"); });
+
 
 async function sendAndActivate(){
   if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
@@ -1609,7 +1648,39 @@ async function sendAndActivate(){
   }
 }
 
+
 sendCsvBtn.addEventListener("click", e => { e.preventDefault(); sendAndActivate(); });
+
+/* ------------------- INIT ------------------- */
+(async function init(){
+  ensureCadenceValues();
+  for (let i=1;i<=AGENTS;i++){ working[i]={}; current[i]={}; }
+  if (!locationId){ setStatus("Missing locationId", false); return; }
+
+  showOverlay("Loading current values…");
+  if (FETCH_URL){ await refreshFromServer(); }
+  else {
+    for (let i=1;i<=AGENTS;i++){
+      current[i] = {
+        active:   seedVals.active   ?? "",
+        campaign: seedVals.campaign ?? "",
+        perday:   seedVals.perday   ?? "",
+        followups:seedVals.followups ?? "3",
+        cadence:  seedVals.cadence  || "IM > 15m > 24h > 24h",
+        firstmsg: swapPlaceholders(seedVals.firstmsg ?? ""),
+        bump1:    swapPlaceholders(seedVals.bump1 || BUMP1_DEFAULT),
+        bump2:    swapPlaceholders(seedVals.bump2 || BUMP2_DEFAULT),
+        bump3:    swapPlaceholders(seedVals.bump3 || BUMP3_DEFAULT),
+        notes:    swapPlaceholders(seedVals.notes ?? ""),
+        webhook:  seedVals.webhook  ?? ""
+      };
+    }
+    hideOverlay();
+  }
+  switchAgent(1);
+  updateBumpVisibility();
+  gotoPage(1);
+})();
 </script>
 </body>
 </html>
