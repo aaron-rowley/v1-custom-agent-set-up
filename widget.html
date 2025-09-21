@@ -221,9 +221,13 @@
 
       <!-- Lead Import • CSV (dedicated section) -->
       <div class="label-row">
-        <label>Lead Import • CSV</label>
-        <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
-      </div>
+  <label>Lead Import • CSV</label>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <a class="xbtn" href="https://docs.google.com/spreadsheets/d/1w6FL23bNuLVfT7HuCf4kEVlgOeyn77tzV7A52u7OxAE/edit?usp=sharing" target="_blank" rel="noopener">Get Template</a>
+    <button class="xbtn" id="mapBtn" disabled>Map fields</button>
+  </div>
+</div>
+
 
       <div id="dropzone" class="dropzone" aria-label="Upload CSV File" tabindex="0">
         <div class="dz-inner">
@@ -246,12 +250,16 @@
         <input id="dzInput" type="file" accept=".csv,text/csv" hidden />
       </div>
 
-      <div class="row" style="margin-top:10px;">
-        <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
-        <div style="margin-left:auto;">
-          <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload CSV">Send</button>
-        </div>
-      </div>
+ <div class="row" style="margin-top:10px;">
+  <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
+  <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a7b0c0;">
+      <input type="checkbox" id="sendMapped" checked /> Send mapped JSON
+    </label>
+    <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
+  </div>
+</div>
+
 
       <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
         <div class="left">
@@ -493,7 +501,7 @@ const AUTH_HEADER  = get("authHeader") || "";
 const AUTH_TOKEN   = get("authToken") || "";
 const APIKEY_HEADER= get("apiKeyHeader") || "";
 const APIKEY_VALUE = get("apiKey") || "";
-const MAX_MB = Number(get("maxMb") || 5); // CSV size limit (default 5 MB)
+const MAX_MB = Number(get("maxMb") || 5); // CSV size cap (default 5 MB)
 
 const AGENTS = 5;
 const locationId   = get("locationId");
