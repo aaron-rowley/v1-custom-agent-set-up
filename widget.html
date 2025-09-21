@@ -1331,44 +1331,60 @@ function withinLimit(file){
 function showSelected(file){
   dzFileName.textContent = `${file.name} • ${(file.size/1024/1024).toFixed(2)} MB (limit ${MAX_MB} MB)`;
   dzChip.classList.remove("hidden");
+  mapBtn.disabled = false;              // <-- this line required
 }
+
 function clearFile(){
   dzInput.value = "";
   dzChip.classList.add("hidden");
 }
 
 function wireDropzone(){
-  const onChoose = e => {
+  // File picker
+  dzInput.addEventListener("change", async (e)=>{
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!isCsv(f)){ setCsvStatus("Only CSV files are allowed.", false); clearFile(); return; }
-    if (!withinLimit(f)){ setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); clearFile(); return; }
-    showSelected(f);
-    setCsvStatus(`Selected: ${f.name}`, true);
-  };
-  dzInput.addEventListener("change", onChoose);
 
-  const onDrop = e => {
+    if (!isCsv(f))      { setCsvStatus("Only CSV files are allowed.", false); clearFile(); return; }
+    if (!withinLimit(f)){ setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); clearFile(); return; }
+
+    showSelected(f);                              // shows chip, enables mapBtn
+    setCsvStatus(`Selected: ${f.name}`, true);
+
+    // Read header row so the mapping modal has chips ready
+    try {
+      await readCsvHeaders(f);                    // fills csvHeaders[]
+      // optional: prebuild to avoid a small delay on first open
+      if (typeof buildMappingModal === "function") buildMappingModal();
+    } catch { /* ignore parse issues here; modal will handle */ }
+  });
+
+  // Drag & drop
+  const onDrop = (e) => {
     e.preventDefault();
     dropzone.classList.remove("dz-hover");
     const f = e.dataTransfer?.files?.[0];
     if (f){
       dzInput.files = e.dataTransfer.files;
-      dzInput.dispatchEvent(new Event("change"));
+      dzInput.dispatchEvent(new Event("change")); // reuse the same validation flow
     }
   };
-  const onOver  = e => { e.preventDefault(); dropzone.classList.add("dz-hover"); };
-  const onLeave = () => dropzone.classList.remove("dz-hover");
+  const onOver  = (e) => { e.preventDefault(); dropzone.classList.add("dz-hover"); };
+  const onLeave = ()  => { dropzone.classList.remove("dz-hover"); };
 
   ["dragenter","dragover"].forEach(ev => dropzone.addEventListener(ev, onOver));
   ["dragleave","dragend"].forEach(ev => dropzone.addEventListener(ev, onLeave));
   dropzone.addEventListener("drop", onDrop);
-  dropzone.addEventListener("click", ()=> dzInput.click());
-  dropzone.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); dzInput.click(); }});
 
+  // Keyboard/mouse open
+  dropzone.addEventListener("click", ()=> dzInput.click());
+  dropzone.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); dzInput.click(); }});
+
+  // Clear chip/button
   dzClear.addEventListener("click", clearFile);
 }
 wireDropzone();
+
 
 function fakeProgress(to=100, ms=900){
   dzProg.classList.remove("hidden");
@@ -1484,6 +1500,30 @@ saveMapBtn?.addEventListener("click", ()=>{
   if (validateMapping()) mapModal.classList.remove("show");
 });
 
+// --- Map Fields button: force-open modal and (re)build UI ---
+const mapBtn   = document.getElementById("mapBtn");
+const mapModal = document.getElementById("mapModal");
+const mapClose = document.getElementById("mapClose");
+
+mapBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  // Ensure a CSV is chosen
+  const f = dzInput.files && dzInput.files[0];
+  if (!f) { setCsvStatus("Choose a CSV first.", false); return; }
+
+  // If we don't have headers yet, read them, then open.
+  if (!Array.isArray(csvHeaders) || csvHeaders.length === 0) {
+    readCsvHeaders(f).then(()=> {
+      buildMappingModal();
+      mapModal.classList.add("show");
+    });
+  } else {
+    buildMappingModal();
+    mapModal.classList.add("show");
+  }
+});
+
+mapClose?.addEventListener("click", () => mapModal.classList.remove("show"));
 
 
 async function sendAndActivate(){
