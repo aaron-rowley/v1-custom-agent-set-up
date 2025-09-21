@@ -103,6 +103,42 @@
   .kvt h5{ margin:0 0 8px; font-size:12px; color:#a7b0c0; letter-spacing:.2px; }
   .kv{ display:grid; grid-template-columns:200px 1fr; gap:8px; font-size:13px; }
   .actions{ display:none !important; }
+
+
+
+
+
+
+/* --- Fancy dropzone --- */
+.dropzone{
+  border:2px dashed var(--line);
+  background:linear-gradient(180deg,#0f1115,#0d1118);
+  border-radius:18px;
+  padding:28px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s ease-in-out;
+  box-shadow:0 6px 22px rgba(0,0,0,.28) inset, 0 10px 26px rgba(0,0,0,.18);
+  outline:none;
+}
+.dropzone:focus-visible{ box-shadow:0 0 0 3px rgba(99,102,241,.35), 0 10px 26px rgba(0,0,0,.18); }
+.dropzone:hover, .dropzone.dz-hover{ border-color:var(--orange); background:linear-gradient(180deg,#11151b,#0e141b); }
+.dz-inner{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.dz-cloud{ color:#7b8697; background:rgba(123,134,151,.08); width:84px; height:84px; display:grid; place-items:center; border-radius:20px; box-shadow:inset 0 0 0 1px rgba(123,134,151,.18); }
+.dz-title{ font-size:16px; margin-top:4px; }
+.dz-sub{ font-size:13px; color:#a7b0c0; }
+.dz-cta{ text-decoration:underline; }
+.dz-chip{ margin-top:8px; display:inline-flex; align-items:center; gap:8px; background:#0b0f14; border:1px solid #273042; color:#cfd6e4; padding:8px 12px; border-radius:999px; font-size:13px; }
+.dz-chip button{ all:unset; cursor:pointer; display:grid; place-items:center; width:20px; height:20px; border-radius:999px; background:#232a37; color:#cfd6e4; }
+.dz-chip button:hover{ background:#303a4a; }
+.dz-progress{ width:min(360px, 80%); height:6px; background:#11161d; border-radius:999px; overflow:hidden; border:1px solid #273042; margin-top:10px; }
+.dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
+.hidden{ display:none !important; }
+
+
+
+
+  
 </style>
 </head>
 <body>
