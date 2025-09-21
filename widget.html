@@ -1462,14 +1462,43 @@ async function readCsvHeaders(file){
 }
 
 function wireDropzone(){
-dzInput.addEventListener("change", ()=>{
-  resetMappingState();
-  // ... your existing UI updates for showing file name etc ...
+  dzInput.addEventListener("change", async (e)=>{
+    const f = e.target.files?.[0];
+    if (!f) return;
 
-  // Force mapping modal open every time a file is uploaded
-  document.getElementById("mapBtn").disabled = false;
-  document.getElementById("mapBtn").click();
-});
+    // keep your existing guards
+    if (!isCsv(f)) {
+      setCsvStatus("Only CSV files are allowed.", false);
+      clearFile();
+      return;
+    }
+    if (!withinLimit(f)) {
+      setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false);
+      clearFile();
+      return;
+    }
+
+    showSelected(f);
+    setCsvStatus(`Selected: ${f.name}`, true);
+
+    try {
+      // this should populate your CSV column list for mapping
+      await readCsvHeaders(f);
+    } catch {
+      // if parsing fails, bail and keep Send disabled
+      setCsvStatus("Could not read CSV headers.", false);
+      setSendDisabled(true);
+      return;
+    }
+
+    // reset mapping state and force the modal open
+    resetMappingState();             // sets mappingComplete=false and disables Send
+    const mapBtn = document.getElementById("mapBtn");
+    mapBtn.disabled = false;
+    mapBtn.click();
+  });
+}
+
 
 
   const onDrop = (e) => {
