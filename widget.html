@@ -132,6 +132,22 @@
   .dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
   .hidden{ display:none !important; }
 
+  /* === PATCH START: dropzone disabled visuals === */
+  .dropzone.dz-disabled{
+    opacity:.55;
+    pointer-events:none;
+    filter:grayscale(1);
+  }
+  .status-msg{
+    margin-top:8px;
+    font-size:12px;
+    color:#a7b0c0;
+  }
+  .status-msg .pill{ margin-left:6px; }
+  /* === PATCH END === */
+
+  
+
   /* --- Field mapping chips/slots --- */
   .chip{
     display:inline-flex; align-items:center; gap:8px;
@@ -294,9 +310,13 @@
       <div class="row" style="margin-top:10px;">
         <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
         <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
-        
-          <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
-        </div>
+  <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
+
+  <!-- === PATCH START: next-step helper === -->
+  <div id="csvNextStep" class="status-msg"></div>
+  <!-- === PATCH END === -->
+</div>
+
       </div>
 
       <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
