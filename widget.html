@@ -2084,5 +2084,45 @@ document.getElementById("sendCsvBtn").addEventListener("click", (e)=>{
 switchAgent(1);
 if (FETCH_URL){ refreshFromServer(); }
 </script>
+
+<style>
+  #diagBanner{position:fixed;left:10px;bottom:10px;z-index:100000;background:#2b2f36;color:#ffd3b1;border:1px solid #ed6c03;
+  padding:10px 12px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.45);font-family:ui-monospace,Consolas,monospace;
+  max-width:70vw;white-space:pre-wrap}
+  #diagBanner.hidden{display:none}
+</style>
+<div id="diagBanner" class="hidden"></div>
+<script>
+(function(){
+  const banner = document.getElementById('diagBanner');
+  function show(msg){
+    banner.textContent = msg;
+    banner.classList.remove('hidden');
+  }
+  // 1) Global error trap
+  window.addEventListener('error', function(e){
+    show('[JS Error] ' + (e.message || e.error?.message || String(e.error || e)) + '\n' +
+         (e.filename ? ('at ' + e.filename + ':' + e.lineno + ':' + e.colno) : ''));
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    const msg = (e.reason && (e.reason.message || e.reason)) || e;
+    show('[Promise Rejection] ' + String(msg));
+  });
+  // 2) Init heartbeat
+  console.log('[diag] script loaded');
+  document.addEventListener('DOMContentLoaded', ()=> console.log('[diag] DOM ready'));
+  // 3) Sanity ping for critical elements
+  window.addEventListener('load', ()=>{
+    const must = ['dropzone','dzInput','sendCsvBtn','mapBtn','csvStatus'];
+    const missing = must.filter(id => !document.getElementById(id));
+    if (missing.length){
+      show('[Missing elements] ' + missing.join(', '));
+    } else {
+      console.log('[diag] elements present');
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
