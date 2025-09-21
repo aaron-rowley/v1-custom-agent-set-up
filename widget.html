@@ -274,9 +274,7 @@
       <div class="row" style="margin-top:10px;">
         <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
         <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#a7b0c0;">
-            <input type="checkbox" id="sendMapped" checked /> Send mapped JSON
-          </label>
+        
           <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
         </div>
       </div>
@@ -507,7 +505,7 @@
       <div class="modal-title" id="mapTitle">Map CSV Columns to Fields</div>
       <button class="xbtn" id="mapClose">Close</button>
     </div>
-    <div class="hint">Drag a CSV column or click it, then click a field slot. Required: <code>first_name</code>, <code>last_name</code>, <code>email</code>.</div>
+    <div class="hint">Drag a CSV column or click it, then click a field slot. Required: <strong>phone</strong> and <strong>either</strong> <code>full_name</code> <strong>or</strong> (<code>first_name</code> + <code>last_name</code>).</div>
     <div class="modal-body">
       <div class="modelist">
         <div class="list-title">CSV Columns</div>
@@ -528,6 +526,28 @@
   </div>
 </div>
 
+
+  <!-- Notify Email Modal -->
+<div id="emailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
+  <div class="modal-card" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="emailTitle">Where should we send status updates?</div>
+      <button class="xbtn" id="emailClose">Close</button>
+    </div>
+    <div class="modal-body">
+      <label for="notifyEmailInput" style="margin-top:0">Email (optional)</label>
+      <input type="email" id="notifyEmailInput" placeholder="name@company.com" />
+      <div id="emailError" style="display:none;color:#fecaca;font-size:12px;margin-top:8px;">Enter a valid email</div>
+    </div>
+    <div class="map-footer">
+      <button class="xbtn" id="emailSkip">Skip</button>
+      <button class="btn-sm" id="emailConfirm">Send</button>
+    </div>
+  </div>
+</div>
+
+
+  
 <script>
 /* ------------------- URL CONFIG ------------------- */
 const qs = new URLSearchParams(location.search);
@@ -1344,14 +1364,16 @@ function clearFile(){
 let csvHeaders = [];
 let mapping = {};
 const SYSTEM_FIELDS = [
-  { key:"first_name", label:"First name", required:true },
-  { key:"last_name",  label:"Last name",  required:true },
-  { key:"email",      label:"Email",      required:true },
-  { key:"phone",      label:"Phone" },
-  { key:"year_of_vehicle_manufacture", label:"Vehicle year" },
-  { key:"make", label:"Make" },
-  { key:"model", label:"Model" }
+  { key:"full_name", label:"Full name" },                // optional unless used instead of first+last
+  { key:"first_name", label:"First name" },
+  { key:"last_name",  label:"Last name" },
+  { key:"phone",      label:"Phone" },                   // will be required by custom rule
+  { key:"client_crm_contact_id", label:"Client CRM Contact ID" },
+  { key:"year",       label:"Year" },
+  { key:"make",       label:"Make" },
+  { key:"model",      label:"Model" }
 ];
+
 
 // Simple CSV parser
 function parseCsv(text){
@@ -1541,11 +1563,19 @@ function buildMappingModal(){
 }
 
 function validateMapping(){
-  const ok = SYSTEM_FIELDS.filter(f=>f.required).every(f => !!mapping[f.key]);
+  const hasPhone = !!mapping["phone"];
+  const hasFull  = !!mapping["full_name"];
+  const hasFirst = !!mapping["first_name"];
+  const hasLast  = !!mapping["last_name"];
+
+  const nameOk = hasFull || (hasFirst && hasLast);
+  const ok = hasPhone && nameOk;
+
   mapStatus.textContent = ok ? "Ready" : "Incomplete";
   mapStatus.className = "pill " + (ok ? "ok" : "bad");
   return ok;
 }
+
 
 mapBtn?.addEventListener("click", (e) => {
   e.preventDefault();
@@ -1571,62 +1601,62 @@ saveMapBtn?.addEventListener("click", () => {
   }
 });
 
-/* -------------------- Send & Activate -------------------- */
 async function sendAndActivate(){
   if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
   const file = dzInput.files && dzInput.files[0];
   if (!file){ setCsvStatus("Choose a CSV file first.", false); return; }
 
+  // basic checks
   const isCsvType = (file.type||"").includes("csv") || (file.name||"").toLowerCase().endsWith(".csv");
   if (!isCsvType){ setCsvStatus("Only CSV files are allowed.", false); return; }
   if (typeof MAX_MB !== "undefined" && file.size > MAX_MB*1024*1024){
     setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false); return;
   }
 
+  // we always require a valid mapping because the server will receive mapped rows
+  if (!validateMapping()){
+    setCsvStatus("Mapping incomplete. Phone AND (Full name OR First+Last) are required.", false);
+    // optional: open the mapping modal automatically
+    try { mapModal.classList.add("show"); } catch {}
+    return;
+  }
+
+  // 1) turn agent ON + save fields first
   setActive(true);
   showOverlay("Saving fields…");
   try { await saveAgentThenRefresh(agent, { action:"stay" }); }
   catch { hideOverlay(); setCsvStatus("Couldn’t save fields.", false); return; }
 
+  // 2) build BOTH payloads: raw CSV (file) + mapped rows JSON (rows) + mapping object
   showOverlay("Uploading…"); fakeProgress(90, 800);
   try {
-    let res, status, text;
-    const useMapped = document.getElementById("sendMapped")?.checked;
+    // build mapped rows JSON from CSV using current mapping
+    const rows = await transformCsvToJson(file);
 
-    if (useMapped){
-      if (!validateMapping()){ hideOverlay(); setCsvStatus("Mapping incomplete.", false); return; }
-      const rows = await transformCsvToJson(file);
-      const headers = buildHeaders(); delete headers["Content-Type"];
-      res = await fetch(UPLOAD_URL, {
-        method: "POST",
-        mode: "cors",
-        credentials: "omit",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "custom-agent-setup",
-          agent, locationId, businessName,
-          mapping, rows
-        })
-      });
-    } else {
-      const fd = new FormData();
-      fd.append("file", file, file.name);
-      fd.append("locationId", locationId || "");
-      fd.append("businessName", businessName || "");
-      fd.append("agent", String(agent));
-      fd.append("activate", "true");
+    const fd = new FormData();
+    fd.append("file", file, file.name);                      // raw CSV
+    fd.append("locationId", locationId || "");
+    fd.append("businessName", businessName || "");
+    fd.append("agent", String(agent));
+    fd.append("activate", "true");
+    fd.append("mode", "both");                                // lets backend know we’re sending both
+    fd.append("mapping", JSON.stringify(mapping));            // mapping used to parse/validate server-side too
+    fd.append("rows", JSON.stringify(rows));                  // mapped records as JSON
 
-      const headers = {};
-      if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
-      if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
+    const headers = {};
+    if (AUTH_HEADER && AUTH_TOKEN) headers[AUTH_HEADER] = AUTH_TOKEN;
+    if (APIKEY_HEADER && APIKEY_VALUE) headers[APIKEY_HEADER] = APIKEY_VALUE;
 
-      res = await fetch(UPLOAD_URL, { method:"POST", mode:"cors", credentials:"omit", headers, body: fd });
-    }
+    const res = await fetch(UPLOAD_URL, {
+      method:"POST", mode:"cors", credentials:"omit", headers, body: fd
+    });
 
-    status = res.status; text = await res.text();
+    const status = res.status;
+    const text = await res.text();
     let parsed; try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+
     hideOverlay(); dzBar.style.width = "100%";
-    setCsvStatus(res.ok ? "Uploaded & agent activated" : `Upload error ${status}`, res.ok);
+    setCsvStatus(res.ok ? "Uploaded (CSV + mapped JSON) & agent activated" : `Upload error ${status}`, res.ok);
     showWebhookResponse(parsed, { status });
   } catch (err) {
     hideOverlay();
