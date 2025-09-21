@@ -526,6 +526,28 @@
   </div>
 </div>
 
+
+  <!-- Notify Email Modal -->
+<div id="emailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
+  <div class="modal-card" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="emailTitle">Where should we send status updates?</div>
+      <button class="xbtn" id="emailClose">Close</button>
+    </div>
+    <div class="modal-body">
+      <label for="notifyEmailInput" style="margin-top:0">Email (optional)</label>
+      <input type="email" id="notifyEmailInput" placeholder="name@company.com" />
+      <div id="emailError" style="display:none;color:#fecaca;font-size:12px;margin-top:8px;">Enter a valid email</div>
+    </div>
+    <div class="map-footer">
+      <button class="xbtn" id="emailSkip">Skip</button>
+      <button class="btn-sm" id="emailConfirm">Send</button>
+    </div>
+  </div>
+</div>
+
+
+  
 <script>
 /* ------------------- URL CONFIG ------------------- */
 const qs = new URLSearchParams(location.search);
