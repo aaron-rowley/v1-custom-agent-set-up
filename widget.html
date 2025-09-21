@@ -132,22 +132,6 @@
   .dz-bar{ width:0%; height:100%; background:linear-gradient(90deg,#f59e0b,#ff7a18); transition:width .25s ease; }
   .hidden{ display:none !important; }
 
-  /* === PATCH START: dropzone disabled visuals === */
-  .dropzone.dz-disabled{
-    opacity:.55;
-    pointer-events:none;
-    filter:grayscale(1);
-  }
-  .status-msg{
-    margin-top:8px;
-    font-size:12px;
-    color:#a7b0c0;
-  }
-  .status-msg .pill{ margin-left:6px; }
-  /* === PATCH END === */
-
-  
-
   /* --- Field mapping chips/slots --- */
   .chip{
     display:inline-flex; align-items:center; gap:8px;
@@ -310,13 +294,9 @@
       <div class="row" style="margin-top:10px;">
         <div class="cv" id="csvStatus"><strong>Upload:</strong> Not started</div>
         <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
-  <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
-
-  <!-- === PATCH START: next-step helper === -->
-  <div id="csvNextStep" class="status-msg"></div>
-  <!-- === PATCH END === -->
-</div>
-
+        
+          <button class="btn-sm" id="sendCsvBtn" title="Turn agent on, save fields, and upload">Send</button>
+        </div>
       </div>
 
       <div class="step-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px;">
@@ -1096,25 +1076,9 @@ function switchAgent(n){
   renderCV();
   recalcSaveVisibility();
   setStatus("");
- respBox.classList.add("hidden");
-
-/* === PATCH START: reset CSV state when switching agents === */
-try{
-  // clear selected file UI
-  document.getElementById("dzInput").value = "";
-  document.getElementById("dzChip").classList.add("hidden");
-  // reset mapping state
-  mapping = {};
-  mappingComplete = false;
-  // update UI + gating
-  setCsvStatus("Upload: Not started", false);
-  applyAgentGating();
-}catch(_){}
- /* === PATCH END === */
-
-gotoPage(1);
+  respBox.classList.add("hidden");
+  gotoPage(1);
 }
-
 
 function getFormValues(){
   return {
@@ -1429,82 +1393,6 @@ const dzBar      = document.getElementById("dzBar");
 const sendCsvBtn = document.getElementById("sendCsvBtn");
 const csvStatus  = document.getElementById("csvStatus");
 
-  /* === PATCH START: CSV gating helpers === */
-let mappingComplete = false;   // single source of truth for mapping readiness
-
-function getDzBits(){
-  return {
-    dropzone: document.getElementById("dropzone"),
-    dzInput:  document.getElementById("dzInput"),
-    dzChip:   document.getElementById("dzChip"),
-    mapBtn:   document.getElementById("mapBtn"),
-    nextEl:   document.getElementById("csvNextStep"),
-    sendBtn:  document.getElementById("sendCsvBtn"),
-  };
-}
-
-function setSendDisabled(disabled){
-  const { sendBtn } = getDzBits();
-  if (!sendBtn) return;
-  sendBtn.disabled = !!disabled;
-  sendBtn.setAttribute("aria-disabled", disabled ? "true" : "false");
-}
-
-function setDropzoneDisabled(disabled){
-  const { dropzone, dzInput } = getDzBits();
-  if (dropzone){
-    dropzone.classList.toggle("dz-disabled", !!disabled);
-    dropzone.setAttribute("aria-disabled", disabled ? "true" : "false");
-  }
-  if (dzInput){
-    dzInput.disabled = !!disabled;
-    dzInput.setAttribute("aria-disabled", disabled ? "true" : "false");
-  }
-}
-
-/* Small “what’s left” explainer under the Send button */
-function updateCsvNextStep(){
-  const { nextEl } = getDzBits();
-  if (!nextEl) return;
-
-  const { ok, reasons } = validateAgentReady();     // already exists in file
-  const filePicked = !document.getElementById("dzChip")?.classList.contains("hidden");
-  const need = [];
-
-  if (!ok) need.push(`Complete: ${reasons.join(", ")}`);
-  if (!filePicked) need.push("Choose a CSV file");
-  if (!mappingComplete) need.push("Create a valid mapping (Phone AND [Full name OR First+Last])");
-
-  if (need.length === 0){
-    nextEl.innerHTML = `Ready to launch <span class="pill ok">OK</span>`;
-  } else {
-    nextEl.innerHTML = `Next step: ${need[0]}`;
-  }
-}
-
-/* Master gate that controls dropzone, Map button, and Send button */
-function applyAgentGating(){
-  const { ok } = validateAgentReady();                                // in file
-  const { mapBtn } = getDzBits();
-  const allowCsv = ok;                                                // CSV area allowed only when base fields are ready
-
-  // gate the dropzone and map button
-  setDropzoneDisabled(!allowCsv);
-  if (mapBtn){
-    mapBtn.disabled = !allowCsv;
-    mapBtn.setAttribute("aria-disabled", allowCsv ? "false" : "true");
-    mapBtn.style.opacity = allowCsv ? 1 : .5;
-    mapBtn.style.pointerEvents = allowCsv ? "auto" : "none";
-  }
-
-  // gate the Send button: needs base fields + mapping
-  setSendDisabled(!(ok && mappingComplete));
-
-  updateCsvNextStep();
-}
-/* === PATCH END === */
-
-
 function setCsvStatus(text, ok){
   csvStatus.innerHTML = `<strong>Upload:</strong> ${text}`;
   csvStatus.classList.toggle("has-value", !!ok);
@@ -1574,43 +1462,14 @@ async function readCsvHeaders(file){
 }
 
 function wireDropzone(){
-  dzInput.addEventListener("change", async (e)=>{
-    const f = e.target.files?.[0];
-    if (!f) return;
+dzInput.addEventListener("change", ()=>{
+  resetMappingState();
+  // ... your existing UI updates for showing file name etc ...
 
-    // keep your existing guards
-    if (!isCsv(f)) {
-      setCsvStatus("Only CSV files are allowed.", false);
-      clearFile();
-      return;
-    }
-    if (!withinLimit(f)) {
-      setCsvStatus(`File too large. Limit ${MAX_MB} MB.`, false);
-      clearFile();
-      return;
-    }
-
-    showSelected(f);
-    setCsvStatus(`Selected: ${f.name}`, true);
-
-    try {
-      // this should populate your CSV column list for mapping
-      await readCsvHeaders(f);
-    } catch {
-      // if parsing fails, bail and keep Send disabled
-      setCsvStatus("Could not read CSV headers.", false);
-      setSendDisabled(true);
-      return;
-    }
-
-    // reset mapping state and force the modal open
-    resetMappingState();             // sets mappingComplete=false and disables Send
-    const mapBtn = document.getElementById("mapBtn");
-    mapBtn.disabled = false;
-    mapBtn.click();
-  });
-}
-
+  // Force mapping modal open every time a file is uploaded
+  document.getElementById("mapBtn").disabled = false;
+  document.getElementById("mapBtn").click();
+});
 
 
   const onDrop = (e) => {
@@ -1758,7 +1617,6 @@ function buildMappingModal(){
   validateMapping();
 }
 
-/* === PATCH START: validateMapping replacement === */
 function validateMapping(){
   const hasPhone = !!mapping["phone"];
   const hasFull  = !!mapping["full_name"];
@@ -1770,13 +1628,8 @@ function validateMapping(){
 
   mapStatus.textContent = ok ? "Ready" : "Incomplete";
   mapStatus.className = "pill " + (ok ? "ok" : "bad");
-
-  mappingComplete = ok;
-  applyAgentGating();     // keep Send + DZ in sync
   return ok;
 }
-/* === PATCH END === */
-
 
 
 mapBtn?.addEventListener("click", (e) => {
@@ -1796,17 +1649,12 @@ mapBtn?.addEventListener("click", (e) => {
 
 mapClose?.addEventListener("click", () => mapModal.classList.remove("show"));
 clearMapBtn?.addEventListener("click", buildMappingModal);
-/* === PATCH START: save map click === */
 saveMapBtn?.addEventListener("click", () => {
   if (validateMapping()){
-    mappingComplete = true;
     mapModal.classList.remove("show");
     setCsvStatus("Mapping saved.", true);
-    applyAgentGating();
   }
 });
-/* === PATCH END === */
-
 
 async function sendAndActivate(){
   if (!UPLOAD_URL){ setCsvStatus("No uploadUrl provided in query string.", false); return; }
